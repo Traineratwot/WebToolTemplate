@@ -1,0 +1,12 @@
+{
+    "name": "nefediev/gertruda",
+    "authors": [
+        {
+            "name": "Kirill",
+            "email": "41589091+Traineratwot@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "nilportugues/sql-query-builder": "^1.8"
+    }
+}
