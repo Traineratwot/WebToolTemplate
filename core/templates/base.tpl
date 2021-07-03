@@ -5,8 +5,9 @@
     {include 'head.tpl'}
 </head>
 <body>
-{include 'navbar.tpl'}
+
 <div class="container">
+    {include 'navbar.tpl'}
     {block name='content'}
     {/block}
 </div>
