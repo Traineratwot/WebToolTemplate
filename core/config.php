@@ -15,11 +15,29 @@
 	//определяем подключение к своей базе
 	define('local_HOST', 'localhost');
 	define('local_PORT', '3306');
-	define('local_DATABASE', '');
-	define('local_USER', '');
-	define('local_PASS', '');
+	define('local_DATABASE', 'stat');
+	define('local_USER', 'pi');
+	define('local_PASS', '240997');
 	define('local_DSN', "mysql:host=" . local_HOST . ";dbname=" . local_DATABASE . ";charset=utf8mb4");
-	foreach ([BASE_PATH, CORE_PATH, CACHE_PATH, VENDOR_PATH, CLASSES_PATH, ASSETS_PATH, IMAGES_PATH] as $v) {
+	//Настройки шаблонизатора
+	define('SMARTY_TEMPLATE', CORE_PATH . 'templates');
+	define('SMARTY_COMPILE', CORE_PATH . 'smarty/compile');
+	define('SMARTY_CONFIG', CORE_PATH . 'smarty/config');
+	define('SMARTY_CACHE', CORE_PATH . 'smarty/cache');
+
+	foreach ([
+		         BASE_PATH,
+		         CORE_PATH,
+		         CACHE_PATH,
+		         VENDOR_PATH,
+		         CLASSES_PATH,
+		         ASSETS_PATH,
+		         IMAGES_PATH,
+		         SMARTY_TEMPLATE,
+		         SMARTY_COMPILE,
+		         SMARTY_CONFIG,
+		         SMARTY_CACHE,
+	         ] as $v) {
 		if (!file_exists($v) or !is_dir($v)) {
 			if (!mkdir($v, 0777, 1) && !is_dir($v)) {
 				throw new \RuntimeException(sprintf('Directory "%s" was not created', $v));
