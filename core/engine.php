@@ -2,8 +2,6 @@
 
 	namespace core;
 
-	use core\modules\Core;
-
 	require_once realpath(__DIR__ . '/config.php');
 	require_once realpath(CORE_PATH . 'errors.php');
 	require_once realpath(CORE_PATH . 'core.php');

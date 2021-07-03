@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@types/jquery": "^3.5.5",
+    "bootstrap": "^5.0.2",
+    "jquery": "^3.6.0",
+    "pnotify": "^5.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
+}

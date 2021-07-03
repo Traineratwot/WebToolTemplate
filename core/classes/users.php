@@ -1,8 +1,7 @@
 <?php
 
-	namespace core\modules;
-
-	use core\Err;
+	namespace core\classes;
+	use core\bdObject;
 
 	/**
 	 * Класс для работы с таблицей `users`

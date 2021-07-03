@@ -1,0 +1,30 @@
+<?php
+
+	namespace ajax;
+
+	use core\Err;
+	use core\Core;
+	use core\util;
+
+	/** @var Core $core */
+
+	include_once '../core/engine.php';
+	$email = $_REQUEST['email'];
+	$password = $_REQUEST['password'];
+	try {
+		if ($email and $password) {
+			$User = $core->getUser(['email' => $email]);
+			if (!$User->isNew()) {
+				if ($User->get('password') !== md5($password)) {
+					Err::fatal('Wrong password');
+				} else {
+					util::setCookie('authKey', $User->get('authKey'));
+					die(util::success('Ok'));
+				}
+			} else {
+				Err::fatal('User not exists');
+			}
+		}
+	} catch (\Exception $e) {
+		die(util::failure($e->getMessage()));
+	}

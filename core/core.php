@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\modules;
+	namespace core;
 
-	use core\Err;
+	use core\classes\user;
 	use Exception;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
@@ -13,6 +13,9 @@
 	 */
 	class Core
 	{
+		public $db = NULL;
+		public $user = NULL;
+
 		public function __construct()
 		{
 			try {
@@ -20,16 +23,19 @@
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
+			if (isset($_COOKIE['authKey']) and $_COOKIE['authKey']) {
+				$u = $this->getUser(['authKey' => $_COOKIE['authKey']]);
+				if (!$u->isNew) {
+					$this->user = &$u;
+				} else {
+					util::setCookie('authKey', NULL);
+				}
+			}
 		}
 
 		public function getUser($where = [])
 		{
 			return new User($this, $where);
-		}
-
-		public function getPicture($where = [])
-		{
-			return new Picture($this, $where);
 		}
 	}
 
@@ -38,7 +44,8 @@
 	 */
 	abstract class CoreObject
 	{
-		public function __construct(Core &$core)
+
+		public function __construct(Core $core)
 		{
 			$this->core = &$core;
 		}
@@ -64,6 +71,10 @@
 			parent::__construct($core);
 			try {
 				$this->getSchema();
+			} catch (Exception $e) {
+				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+			}
+			try {
 				if (!empty($where)) {
 					if (!is_array($where)) {
 						$this->update([$this->primaryKey => $where]);
@@ -134,10 +145,10 @@
 			} else {
 				$data = $this->getColumnNames($this->table);
 			}
-			$this->schema = $data;
 			foreach ($data as $k => $v) {
 				$this->_fields[$v['name']] = $k;
 				$this->data[$v['name']] = $v['default'];
+				$this->schema[$v['name']] = $v;
 			}
 		}
 
@@ -196,9 +207,12 @@
 					$sql = strtr($sql, $values);
 					//Err::info($sql, __LINE__, __FILE__);
 
-					$q = $this->core->db->query($sql);
-					if ($this->isNew()) {
+					$q = $this->core->db->exec($sql);
+					if ($q !== FALSE and $this->isNew()) {
 						$this->data[$this->primaryKey] = $this->core->db->lastInsertId();
+						$this->isNew = FALSE;
+					} else {
+						Err::error($sql, __LINE__, __FILE__);
 					}
 				}
 				$this->update([$this->primaryKey => $this->data[$this->primaryKey]]);
@@ -222,9 +236,9 @@
 							'name' => $row['COLUMN_NAME'],
 							'key' => $row['COLUMN_KEY'] ?: NULL,
 							'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
-							'comment' => $row['COLUMN_COMMENT'],
-							'type' => $row['DATA_TYPE'],
-							'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'],
+							'comment' => $row['COLUMN_COMMENT'] ?? '',
+							'type' => $row['DATA_TYPE'] ?? '',
+							'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
 							'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
 						];
 					}
@@ -370,5 +384,31 @@
 				}
 			}
 			return FALSE;
+		}
+
+		public static function success($msg, $object = [])
+		{
+			return json_encode([
+				'success' => TRUE,
+				'message' => $msg,
+				'object' => $object,
+			], 256);
+
+		}
+
+		public static function failure($msg, $object = [])
+		{
+			return json_encode([
+				'success' => FALSE,
+				'message' => $msg,
+				'object' => $object,
+			], 256);
+
+		}
+
+		public static function setCookie($name, $value, $time = 0)
+		{
+			$expire = $time ?: time() + 31556926;
+			setcookie($name, $value, $expire, '/');
 		}
 	}
