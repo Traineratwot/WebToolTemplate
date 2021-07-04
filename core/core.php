@@ -82,7 +82,7 @@
 	abstract class CoreObject
 	{
 
-		public Core $core;
+		public $core;
 
 		public function __construct(Core $core)
 		{
