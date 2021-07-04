@@ -2,7 +2,7 @@
 
 	namespace core;
 
-	use core\classes\user;
+	use core\classes\User;
 	use Exception;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
@@ -44,7 +44,22 @@
 			$class = "core\classes\\$class";
 			if (class_exists($class)) {
 				$cls = new $class($this);
-				$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}`";
+				if (empty($where)) {
+					$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}`";
+				} else {
+					$builder = new GenericBuilder();
+					$query = $builder->select()
+						->setTable($cls->table)
+						->where();
+					foreach ($where as $key => $value) {
+						$query->equals($key, $value);
+					}
+					$query = $query->end();
+					$sql = $builder->write($query);
+					$values = $builder->getValues();
+					$values = bdObject::prepareBinds($values);
+					$sql = strtr($sql, $values);
+				}
 				$q = $this->db->query($sql);
 				if ($q) {
 					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
@@ -67,6 +82,8 @@
 	abstract class CoreObject
 	{
 
+		public Core $core;
+
 		public function __construct(Core $core)
 		{
 			$this->core = &$core;
@@ -80,8 +97,8 @@
 	 */
 	abstract class bdObject extends CoreObject
 	{
-		public $table = 'users';
-		public $primaryKey = 'id';
+		public $table = '';
+		public $primaryKey = '';
 		public $isNew = TRUE;
 		public $schema = [];
 		public $update = [];
@@ -137,7 +154,7 @@
 				$query->equals($key, $value);
 			}
 			$query = $query->end();
-			$sql = $builder->write($query);;
+			$sql = $builder->write($query);
 			$values = $builder->getValues();
 			$values = $this->prepareBinds($values);
 			$sql = strtr($sql, $values);
@@ -228,7 +245,6 @@
 					$values = $this->prepareBinds($values);
 					$sql = strtr($sql, $values);
 					//Err::info($sql, __LINE__, __FILE__);
-
 					$q = $this->core->db->exec($sql);
 					if ($q !== FALSE and $this->isNew()) {
 						$this->data[$this->primaryKey] = $this->core->db->lastInsertId();
@@ -271,7 +287,7 @@
 			}
 		}
 
-		private function prepareBinds($values)
+		public static function prepareBinds($values)
 		{
 			foreach ($values as $k => $v) {
 				if (!is_null($v) and $v != 'NULL' and $v != 'null' and $v != NULL and !is_numeric($v)) {
@@ -379,12 +395,12 @@
 						$opts = [
 							'http' => [
 								'timeout' => $timeout,
-								'header' => "User-Agent: Mozilla/5.0\r\n",
+								'header' => "User - Agent: Mozilla / 5.0\r\n",
 
 							],
 							'https' => [
 								'timeout' => $timeout,
-								'header' => "User-Agent: Mozilla/5.0\r\n",
+								'header' => "User - Agent: Mozilla / 5.0\r\n",
 							],
 						];
 						if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
