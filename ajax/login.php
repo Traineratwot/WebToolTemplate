@@ -9,8 +9,8 @@
 	/** @var Core $core */
 
 	include_once '../core/engine.php';
-	$email = $_REQUEST['email'];
-	$password = $_REQUEST['password'];
+	$email = strip_tags($_REQUEST['email']);
+	$password = strip_tags($_REQUEST['password']);
 	try {
 		if ($email and $password) {
 			$User = $core->getUser(['email' => $email]);
