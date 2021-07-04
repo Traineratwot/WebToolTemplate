@@ -37,6 +37,28 @@
 		{
 			return new User($this, $where);
 		}
+
+		public function getCollection($class, $where = [])
+		{
+			$data = [];
+			$class = "core\classes\\$class";
+			if (class_exists($class)) {
+				$cls = new $class($this);
+				$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}`";
+				$q = $this->db->query($sql);
+				if ($q) {
+					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+						$id = $row[$cls->primaryKey];
+						$key = $cls->primaryKey;
+						$data[] = new $class($this, [$key => $id]);
+					}
+				}
+				return $data;
+			} else {
+				Err::fatal($class . " not exists");
+			}
+
+		}
 	}
 
 	/**
