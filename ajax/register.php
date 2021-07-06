@@ -21,23 +21,25 @@
 				if (strlen($password) < 6) {
 					Err::fatal('Please enter a password length > 5 characters');
 				}
-				$salt = rand(1000000,9999999);
+				$salt = rand(1000000, 9999999);
 				$authKey = md5($password . $email . $salt);
 				/** @var Core $newUser */
 				$newUser->set('email', $email);
 				$newUser->set('password', md5($password));
 				$newUser->set('salt', $salt);
-				$newUser->set('authKey',$authKey);
+				$newUser->set('authKey', $authKey);
 				$newUser->save();
 				if ($newUser->isNew()) {
 					Err::fatal('Failed write to DataBase');
 				} else {
-					util::setCookie('authKey', $authKey,['path'=>'/']);
+					util::setCookie('authKey', $authKey);
 					die(util::success('Ok'));
 				}
-			}else{
+			} else {
 				Err::fatal('User already exists');
 			}
+		} else {
+			die(util::failure('empty login or password'));
 		}
 	} catch (\Exception $e) {
 		die(util::failure($e->getMessage()));

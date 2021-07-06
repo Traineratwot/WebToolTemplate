@@ -38,6 +38,20 @@
 			return new User($this, $where);
 		}
 
+		public function getObject($class, $where = [])
+		{
+			if (class_exists($class)) {
+				return new $class($this, $where);
+			} else {
+				$class = "core\classes\\$class";
+				if (class_exists($class)) {
+					return new $class($this, $where);
+				} else {
+					Err::fatal($class . " not exists");
+				}
+			}
+		}
+
 		public function getCollection($class, $where = [])
 		{
 			$data = [];
@@ -116,7 +130,11 @@
 			try {
 				if (!empty($where)) {
 					if (!is_array($where)) {
-						$this->update([$this->primaryKey => $where]);
+						if (is_int($where) OR is_numeric($where)) {
+							$this->update([$this->primaryKey => $where]);
+						} else {
+							$this->update($where, 1);
+						}
 					} else {
 						$this->update($where);
 					}
@@ -126,6 +144,26 @@
 			}
 			foreach ($this->_fields as $k => $v) {
 				$this->data[$k] = $this->data[$k] ?: NULL;
+			}
+		}
+
+		public function repair()
+		{
+			foreach ($this->data as $key => $value) {
+				if (is_numeric($value)) {
+					$this->data[$key] = (float)$value;
+				}
+				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+					$this->data[$key] = NULL;
+				}
+			}
+			foreach ($this->update as $key => $value) {
+				if (is_numeric($value)) {
+					$this->update[$key] = (float)$value;
+				}
+				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+					$this->update[$key] = NULL;
+				}
 			}
 		}
 
@@ -144,20 +182,26 @@
 			return $this;
 		}
 
-		private function update($where)
+		private function update($where, $type = 0)
 		{
-			$builder = new GenericBuilder();
-			$query = $builder->select()
-				->setTable($this->table)
-				->where();
-			foreach ($where as $key => $value) {
-				$query->equals($key, $value);
+			if (!$type) {
+				$builder = new GenericBuilder();
+				$query = $builder->select()
+					->setTable($this->table)
+					->where();
+				foreach ($where as $key => $value) {
+					$query->equals($key, $value);
+				}
+				$query = $query->end();
+				$sql = $builder->write($query);
+				$values = $builder->getValues();
+				$values = $this->prepareBinds($values);
+				$sql = strtr($sql, $values);
+			} else {
+				$sql = <<<SQL
+SELECT * FROM `{$this->table}` WHERE $where
+SQL;
 			}
-			$query = $query->end();
-			$sql = $builder->write($query);
-			$values = $builder->getValues();
-			$values = $this->prepareBinds($values);
-			$sql = strtr($sql, $values);
 			$q = $this->core->db->query($sql);
 			if ($q) {
 				$data = $q->fetch(PDO::FETCH_ASSOC);
@@ -200,12 +244,14 @@
 				$this->update[$key] = $value;
 			}
 			$this->data[$key] = $value;
+			$this->repair();
 			$this->validate();
 			return $this;
 		}
 
 		public function get($key, $default = NULL)
 		{
+			$this->repair();
 			if (is_null($default)) {
 				$default = $this->schema[$key]['default'];
 			}
