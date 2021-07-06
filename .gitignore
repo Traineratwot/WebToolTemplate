@@ -1,4 +1,5 @@
 composer.phar
+/core/cache/
 /vendor/
 .idea
 .vscode
