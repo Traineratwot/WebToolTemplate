@@ -47,7 +47,7 @@
 				if (class_exists($class)) {
 					return new $class($this, $where);
 				} else {
-					Err::fatal($class . " not exists");
+					Err::fatal($class . " not exists", __FILE__, __FILE__);
 				}
 			}
 		}
@@ -72,6 +72,7 @@
 					$sql = $builder->write($query);
 					$values = $builder->getValues();
 					$values = bdObject::prepareBinds($values);
+					$sql = bdObject::prepareSql($sql, $cls->table);
 					$sql = strtr($sql, $values);
 				}
 				$q = $this->db->query($sql);
@@ -84,7 +85,7 @@
 				}
 				return $data;
 			} else {
-				Err::fatal($class . " not exists");
+				Err::fatal($class . " not exists", __FILE__, __FILE__);
 			}
 
 		}
@@ -130,7 +131,7 @@
 			try {
 				if (!empty($where)) {
 					if (!is_array($where)) {
-						if (is_int($where) OR is_numeric($where)) {
+						if (is_int($where) or is_numeric($where)) {
 							$this->update([$this->primaryKey => $where]);
 						} else {
 							$this->update($where, 1);
@@ -171,12 +172,12 @@
 		{
 			foreach ($this->data as $key => $value) {
 				if (!array_key_exists($key, $this->_fields)) {
-					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"');
+					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
 				}
 			}
 			foreach ($this->update as $key => $value) {
 				if (!array_key_exists($key, $this->_fields)) {
-					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"');
+					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
 				}
 			}
 			return $this;
@@ -196,6 +197,7 @@
 				$sql = $builder->write($query);
 				$values = $builder->getValues();
 				$values = $this->prepareBinds($values);
+				$sql = $this->prepareSql($sql, $this->table);
 				$sql = strtr($sql, $values);
 			} else {
 				$sql = <<<SQL
@@ -228,10 +230,12 @@ SQL;
 			} else {
 				$data = $this->getColumnNames($this->table);
 			}
-			foreach ($data as $k => $v) {
-				$this->_fields[$v['name']] = $k;
-				$this->data[$v['name']] = $v['default'];
-				$this->schema[$v['name']] = $v;
+			if (!empty($data)) {
+				foreach ($data as $k => $v) {
+					$this->_fields[$v['name']] = $k;
+					$this->data[$v['name']] = $v['default'];
+					$this->schema[$v['name']] = $v;
+				}
 			}
 		}
 
@@ -289,6 +293,7 @@ SQL;
 				}
 				if ($sql) {
 					$values = $this->prepareBinds($values);
+					$sql = $this->prepareSql($sql, $this->table);
 					$sql = strtr($sql, $values);
 					//Err::info($sql, __LINE__, __FILE__);
 					$q = $this->core->db->exec($sql);
@@ -311,23 +316,25 @@ SQL;
 			$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table";
 			try {
 				$stmt = $this->core->db->prepare($sql);
-				$stmt->bindValue(':table', $table, PDO::PARAM_STR);
-				$stmt->execute();
-				$output = [];
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-					if ($row['TABLE_SCHEMA'] != 'performance_schema') {
-						$output[$row['ORDINAL_POSITION']] = [
-							'name' => $row['COLUMN_NAME'],
-							'key' => $row['COLUMN_KEY'] ?: NULL,
-							'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
-							'comment' => $row['COLUMN_COMMENT'] ?? '',
-							'type' => $row['DATA_TYPE'] ?? '',
-							'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
-							'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
-						];
+				if ($stmt) {
+					$stmt->bindValue(':table', $table, PDO::PARAM_STR);
+					$stmt->execute();
+					$output = [];
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+						if ($row['TABLE_SCHEMA'] != 'performance_schema') {
+							$output[$row['ORDINAL_POSITION']] = [
+								'name' => $row['COLUMN_NAME'],
+								'key' => $row['COLUMN_KEY'] ?: NULL,
+								'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
+								'comment' => $row['COLUMN_COMMENT'] ?? '',
+								'type' => $row['DATA_TYPE'] ?? '',
+								'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
+								'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+							];
+						}
 					}
+					return $output;
 				}
-				return $output;
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
@@ -341,6 +348,13 @@ SQL;
 				}
 			}
 			return $values;
+		}
+
+		public static function prepareSql($sql, $table)
+		{
+			return strtr($sql, [
+				$table . '.' => '',
+			]);
 		}
 
 		public function toArray()

@@ -16,13 +16,13 @@
 			$User = $core->getUser(['email' => $email]);
 			if (!$User->isNew()) {
 				if ($User->get('password') !== md5($password)) {
-					Err::fatal('Wrong password');
+					Err::fatal('Wrong password',__FILE__,__FILE__);
 				} else {
 					util::setCookie('authKey', $User->get('authKey'));
 					die(util::success('Ok'));
 				}
 			} else {
-				Err::fatal('User not exists');
+				Err::fatal('User not exists',__FILE__,__FILE__);
 			}
 		}
 	} catch (\Exception $e) {

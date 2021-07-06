@@ -13,12 +13,12 @@
 	//ВНЕШНИЙ URL
 	define('DOMAIN_URL', 'stat.aytour.ru');
 	//определяем подключение к своей базе
-	define('local_HOST', 'localhost');
-	define('local_PORT', '3306');
-	define('local_DATABASE', 'stat');
-	define('local_USER', 'pi');
+	define('local_HOST', CORE_PATH . 'databases/database.db');
+	define('local_PORT', '');
+	define('local_DATABASE', '');
+	define('local_USER', '');
 	define('local_PASS', '240997');
-	define('local_DSN', "mysql:host=" . local_HOST . ";dbname=" . local_DATABASE . ";charset=utf8mb4");
+	define('local_DSN', "sqlite:" . local_HOST);
 	//Настройки шаблонизатора
 	define('SMARTY_TEMPLATE', CORE_PATH . 'templates');
 	define('SMARTY_COMPILE', CORE_PATH . 'smarty/compile');
@@ -43,4 +43,10 @@
 				throw new \RuntimeException(sprintf('Directory "%s" was not created', $v));
 			}
 		}
+	}
+	if(!file_exists(VENDOR_PATH . 'autoload.php')){
+		exec('composer update');
+	}
+	if(!file_exists(BASE_PATH . 'node_modules')){
+		exec('npm update');
 	}
