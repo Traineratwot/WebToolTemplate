@@ -280,6 +280,9 @@ SQL;
 
 		public static function prepareSql($sql, $table)
 		{
+			if(DB_TYPE != 'sqlite'){
+				return $sql;
+			}
 			return strtr($sql, [
 				$table . '.' => '',
 			]);
@@ -371,6 +374,7 @@ SQL;
 
 			return $this;
 		}
+
 		public function remove()
 		{
 			try {
