@@ -38,6 +38,12 @@
 			return new User($this, $where);
 		}
 
+		/**
+		 * @param       $class extends bdObject
+		 * @param array $where
+		 * @return bdObject
+		 * @throws Exception
+		 */
 		public function getObject($class, $where = [])
 		{
 			if (class_exists($class)) {
@@ -52,6 +58,12 @@
 			}
 		}
 
+		/**
+		 * @param       $class extends bdObject
+		 * @param array $where
+		 * @return [bdObject]
+		 * @throws Exception
+		 */
 		public function getCollection($class, $where = [])
 		{
 			$data = [];

@@ -17,6 +17,7 @@ var Core = /** @class */ (function () {
     Core.prototype.events = function () {
         var Core = this;
         $(document).on('submit', 'form', function (e) {
+            e.preventDefault();
             if (this instanceof HTMLFormElement) {
                 var form = $(this);
                 var formData = new FormData(this);
@@ -52,11 +53,12 @@ var Core = /** @class */ (function () {
                             }
                         }).done(function (e) {
                             e.success = false;
-                            form.trigger('submit', e);
+                            form.trigger('afterSubmit', e);
                         });
                     }
                 }
             }
+            return false;
         });
     };
     return Core;
