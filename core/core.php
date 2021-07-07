@@ -119,7 +119,7 @@
 		public $update = [];
 		public $data = [];
 		public $_fields = [];
-
+		//--------------------------------------------------------
 		public function __construct(Core &$core, $where = [])
 		{
 			parent::__construct($core);
@@ -148,7 +148,7 @@
 			}
 		}
 
-		public function repair()
+		private function repair()
 		{
 			foreach ($this->data as $key => $value) {
 				if (is_numeric($value)) {
@@ -217,7 +217,7 @@ SQL;
 			return $this;
 		}
 
-		public function getSchema($catch = TRUE)
+		private function getSchema($catch = TRUE)
 		{
 			if ($catch) {
 				$c = CACHE_PATH . $this->table . '.json';
@@ -237,6 +237,66 @@ SQL;
 					$this->schema[$v['name']] = $v;
 				}
 			}
+		}
+
+		private function getColumnNames($table)
+		{
+			$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table";
+			try {
+				$stmt = $this->core->db->prepare($sql);
+				if ($stmt) {
+					$stmt->bindValue(':table', $table, PDO::PARAM_STR);
+					$stmt->execute();
+					$output = [];
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+						if ($row['TABLE_SCHEMA'] != 'performance_schema') {
+							$output[$row['ORDINAL_POSITION']] = [
+								'name' => $row['COLUMN_NAME'],
+								'key' => $row['COLUMN_KEY'] ?: NULL,
+								'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
+								'comment' => $row['COLUMN_COMMENT'] ?? '',
+								'type' => $row['DATA_TYPE'] ?? '',
+								'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
+								'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+							];
+						}
+					}
+					return $output;
+				}
+			} catch (PDOException $e) {
+				Err::error($e->getMessage(), __LINE__, __FILE__);
+			}
+		}
+
+		public static function prepareBinds($values)
+		{
+			foreach ($values as $k => $v) {
+				if (!is_null($v) and $v != 'NULL' and $v != 'null' and $v != NULL and !is_numeric($v)) {
+					$values[$k] = json_encode($v, 256);
+				}
+			}
+			return $values;
+		}
+
+		public static function prepareSql($sql, $table)
+		{
+			return strtr($sql, [
+				$table . '.' => '',
+			]);
+		}
+
+		//--------------------------------------------------------
+
+		public function toArray()
+		{
+			return $this->data;
+		}
+
+		public function fromArray($data)
+		{
+			array_merge($this->data, $data);
+			array_merge($this->update, $data);
+			return $this;
 		}
 
 		public function set($key, $value = NULL)
@@ -308,64 +368,22 @@ SQL;
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
+
 			return $this;
 		}
-
-		public function getColumnNames($table)
+		public function remove()
 		{
-			$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table";
 			try {
-				$stmt = $this->core->db->prepare($sql);
-				if ($stmt) {
-					$stmt->bindValue(':table', $table, PDO::PARAM_STR);
-					$stmt->execute();
-					$output = [];
-					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-						if ($row['TABLE_SCHEMA'] != 'performance_schema') {
-							$output[$row['ORDINAL_POSITION']] = [
-								'name' => $row['COLUMN_NAME'],
-								'key' => $row['COLUMN_KEY'] ?: NULL,
-								'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
-								'comment' => $row['COLUMN_COMMENT'] ?? '',
-								'type' => $row['DATA_TYPE'] ?? '',
-								'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
-								'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
-							];
-						}
-					}
-					return $output;
+				if(!$this->isNew()) {
+					$id = $this->get($this->primaryKey);
+					$sql = <<<SQL
+DELETE FROM `{$this->table}` where `{$this->primaryKey}` = {$id}
+SQL;
+					$q = $this->core->db->exec($sql);
 				}
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
-		}
-
-		public static function prepareBinds($values)
-		{
-			foreach ($values as $k => $v) {
-				if (!is_null($v) and $v != 'NULL' and $v != 'null' and $v != NULL and !is_numeric($v)) {
-					$values[$k] = json_encode($v, 256);
-				}
-			}
-			return $values;
-		}
-
-		public static function prepareSql($sql, $table)
-		{
-			return strtr($sql, [
-				$table . '.' => '',
-			]);
-		}
-
-		public function toArray()
-		{
-			return $this->data;
-		}
-
-		public function fromArray($data)
-		{
-			array_merge($this->data, $data);
-			array_merge($this->update, $data);
 			return $this;
 		}
 	}
