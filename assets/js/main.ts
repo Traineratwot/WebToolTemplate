@@ -17,7 +17,7 @@ class Core {
 
 	events() {
 		var Core = this;
-		$('form').on('submit', function (e) {
+		$(document).on('submit', 'form', function (e) {
 			if (this instanceof HTMLFormElement) {
 				var form = $(this);
 				var formData = new FormData(this);
