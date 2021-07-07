@@ -18,8 +18,8 @@
 	define('DB_DATABASE', '');
 	define('DB_TYPE', 'sqlite');
 	define('DB_USER', '');
-	define('DB_PASS', '240997');
-	define('DB_DSN', DB_TYPE . ":" . local_HOST);
+	define('DB_PASS', '');
+	define('DB_DSN', DB_TYPE . ":" . DB_HOST);
 	//Настройки шаблонизатора
 	define('SMARTY_TEMPLATE', CORE_PATH . 'templates');
 	define('SMARTY_COMPILE', CORE_PATH . 'smarty/compile');

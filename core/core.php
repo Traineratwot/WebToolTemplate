@@ -19,7 +19,7 @@
 		public function __construct()
 		{
 			try {
-				$this->db = new PDO(local_DSN, local_USER, local_PASS);
+				$this->db = new PDO(DB_DSN, DB_USER, DB_PASS);
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
