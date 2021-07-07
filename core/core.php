@@ -131,6 +131,7 @@
 		public $update = [];
 		public $data = [];
 		public $_fields = [];
+
 		//--------------------------------------------------------
 		public function __construct(Core &$core, $where = [])
 		{
@@ -292,7 +293,7 @@ SQL;
 
 		public static function prepareSql($sql, $table)
 		{
-			if(DB_TYPE != 'sqlite'){
+			if (DB_TYPE != 'sqlite') {
 				return $sql;
 			}
 			return strtr($sql, [
@@ -390,7 +391,7 @@ SQL;
 		public function remove()
 		{
 			try {
-				if(!$this->isNew()) {
+				if (!$this->isNew()) {
 					$id = $this->get($this->primaryKey);
 					$sql = <<<SQL
 DELETE FROM `{$this->table}` where `{$this->primaryKey}` = {$id}
@@ -542,5 +543,36 @@ SQL;
 		{
 			$expire = $time ?: time() + 31556926;
 			setcookie($name, $value, $expire, '/');
+		}
+
+		public static function id($length = 6)
+		{
+			$length--;
+			$password = 'a';
+			$arr = [
+				'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+				'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+				'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+				'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+			];
+
+			for ($i = 0; $i < $length; $i++) {
+				$password .= $arr[random_int(0, count($arr) - 1)];
+			}
+			return $password;
+		}
+
+		public static function getIp()
+		{
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+
+			return filter_var($ip, FILTER_VALIDATE_IP) ? (string)$ip : FALSE;
 		}
 	}
