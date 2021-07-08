@@ -1,53 +1,31 @@
 <?php
 
-	namespace core;
+	namespace core\model;
 	//определяем основные пути
-	define('BASE_PATH', realpath(dirname(__DIR__)) . '/');
-	define('CORE_PATH', realpath(__DIR__) . '/');
-	define('CACHE_PATH', CORE_PATH . 'cache/');
-	define('VENDOR_PATH', BASE_PATH . 'vendor/');
-	define('PAGES_PATH', BASE_PATH . 'pages/');
-	define('CLASSES_PATH', CORE_PATH . 'classes/');
-	define('ASSETS_PATH', BASE_PATH . 'assets/');
-	define('IMAGES_PATH', ASSETS_PATH . 'images/');
+	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . '/');
+	define('WT_CORE_PATH', realpath(__DIR__) . '/');
+	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache/');
+	define('WT_MODEL_PATH', WT_CORE_PATH . 'model/');
+	define('WT_VENDOR_PATH', WT_BASE_PATH . 'vendor/');
+	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages/');
+	define('WT_VIEW_PATH', WT_CORE_PATH . 'view/');
+	define('WT_CLASSES_PATH', WT_CORE_PATH . 'classes/');
+	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax/');
+	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets/');
+	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images/');
 	//ВНЕШНИЙ URL
-	define('DOMAIN_URL', 'stat.aytour.ru');
+	define('WT_DOMAIN_URL', $_SERVER['SERVER_NAME'] ?: $_SERVER['HTTP_HOST']);
+	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules/');
 	//определяем подключение к своей базе
-	define('DB_HOST', CORE_PATH . 'databases/database.db');
-	define('DB_PORT', '');
-	define('DB_DATABASE', '');
-	define('DB_TYPE', 'sqlite');
-	define('DB_USER', '');
-	define('DB_PASS', '');
-	define('DB_DSN', DB_TYPE . ":" . DB_HOST);
+	define('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db');
+	define('WT_PORT_DB', '');
+	define('WT_DATABASE_DB', '');
+	define('WT_TYPE_DB', 'sqlite');
+	define('WT_USER_DB', '');
+	define('WT_PASS_DB', '');
+	define('WT_DSN_DB', WT_TYPE_DB . ":" . WT_HOST_DB);
 	//Настройки шаблонизатора
-	define('SMARTY_TEMPLATE', CORE_PATH . 'templates');
-	define('SMARTY_COMPILE', CORE_PATH . 'smarty/compile');
-	define('SMARTY_CONFIG', CORE_PATH . 'smarty/config');
-	define('SMARTY_CACHE', CORE_PATH . 'smarty/cache');
-
-	foreach ([
-		         BASE_PATH,
-		         CORE_PATH,
-		         CACHE_PATH,
-		         VENDOR_PATH,
-		         CLASSES_PATH,
-		         ASSETS_PATH,
-		         IMAGES_PATH,
-		         SMARTY_TEMPLATE,
-		         SMARTY_COMPILE,
-		         SMARTY_CONFIG,
-		         SMARTY_CACHE,
-	         ] as $v) {
-		if (!file_exists($v) or !is_dir($v)) {
-			if (!mkdir($v, 0777, 1) && !is_dir($v)) {
-				throw new \RuntimeException(sprintf('Directory "%s" was not created', $v));
-			}
-		}
-	}
-	if (!file_exists(VENDOR_PATH . 'autoload.php')) {
-		exec('composer update');
-	}
-	if (!file_exists(BASE_PATH . 'node_modules')) {
-		exec('npm update');
-	}
+	define('WT_SMARTY_TEMPLATE_PATH', WT_CORE_PATH . 'templates');
+	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');
+	define('WT_SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config');
+	define('WT_SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache');

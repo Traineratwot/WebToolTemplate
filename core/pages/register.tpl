@@ -1,6 +1,6 @@
 {extends file='base.tpl'}
 {block name='content'}
-	<form class="" id="reg" method="POST" action="/ajax/register.php">
+	<form class="" id="reg" method="POST" action="register">
 		<h2>Register</h2>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Email address</label>

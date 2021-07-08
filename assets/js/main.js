@@ -31,7 +31,7 @@ var Core = /** @class */ (function () {
                         e.preventDefault();
                         $.ajax({
                             type: method,
-                            url: action,
+                            url: '/index.php?a=' + action,
                             cache: false,
                             contentType: false,
                             processData: false,
@@ -67,3 +67,4 @@ var Core = /** @class */ (function () {
 $(function () {
     window['core'] = new Core();
 });
+//# sourceMappingURL=main.js.map

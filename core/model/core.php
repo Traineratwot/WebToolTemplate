@@ -1,8 +1,8 @@
 <?php
 
-	namespace core;
+	namespace core\model;
 
-	use core\classes\User;
+	use core\classes\user;
 	use Exception;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
@@ -19,7 +19,7 @@
 		public function __construct()
 		{
 			try {
-				$this->db = new PDO(DB_DSN, DB_USER, DB_PASS);
+				$this->db = new PDO(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
@@ -233,7 +233,7 @@ SQL;
 		private function getSchema($catch = TRUE)
 		{
 			if ($catch) {
-				$c = CACHE_PATH . $this->table . '.json';
+				$c = WT_CACHE_PATH . $this->table . '.json';
 				if (file_exists($c)) {
 					$data = json_decode(file_get_contents($c), 1);
 				} else {
@@ -293,7 +293,7 @@ SQL;
 
 		public static function prepareSql($sql, $table)
 		{
-			if (DB_TYPE != 'sqlite') {
+			if (WT_TYPE_DB != 'sqlite') {
 				return $sql;
 			}
 			return strtr($sql, [
@@ -574,5 +574,22 @@ SQL;
 			}
 
 			return filter_var($ip, FILTER_VALIDATE_IP) ? (string)$ip : FALSE;
+		}
+
+		public static function rawText($a = '')
+		{
+			return mb_strtolower(preg_replace('@[^A-zА-я0-9]|[\/_\\\.\,]@u', '', (string)$a));
+		}
+
+		public static function getSystem()
+		{
+			$sys = util::rawText(php_uname('s'));
+			if (strpos($sys, 'windows') !== FALSE) {
+				return 'win';
+			}
+			if (strpos($sys, 'linux') !== FALSE) {
+				return 'nix';
+			}
+			return 'nix';
 		}
 	}

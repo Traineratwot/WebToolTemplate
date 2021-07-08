@@ -1,6 +1,5 @@
 composer.phar
 /core/cache/
-/core/smarty/
 /vendor/
 .idea
 .vscode

@@ -9,6 +9,7 @@
 <div class="container">
     {include 'navbar.tpl'}
     {block name='content'}
+
     {/block}
 </div>
 

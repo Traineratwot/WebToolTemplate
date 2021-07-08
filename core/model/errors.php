@@ -1,6 +1,6 @@
 <?php
 
-	namespace core;
+	namespace core\model;
 
 	use Exception;
 
@@ -21,7 +21,7 @@
 
 		public static function save($str)
 		{
-			file_put_contents(CACHE_PATH . 'error.log', $str, FILE_APPEND);
+			file_put_contents(WT_CACHE_PATH . 'error.log', $str, FILE_APPEND);
 		}
 
 		public static function err($msg, $line = __LINE__, $file = __FILE__)

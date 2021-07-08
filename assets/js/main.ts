@@ -32,7 +32,7 @@ class Core {
 						e.preventDefault();
 						$.ajax({
 							type: method,
-							url: action,
+							url: '/index.php?a=' + action,
 							cache: false,
 							contentType: false,
 							processData: false,

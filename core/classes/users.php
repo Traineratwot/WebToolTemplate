@@ -1,14 +1,14 @@
 <?php
 
 	namespace core\classes;
-	use core\bdObject;
+	use core\model\bdObject;
 
 	/**
 	 * Класс для работы с таблицей `users`
 	 *
 	 * вызывается core::getUser()
 	 */
-	class user extends bdObject
+	class User extends bdObject
 	{
 		public $table = 'users';
 		public $primaryKey = 'id';
