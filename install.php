@@ -3,7 +3,6 @@
 	use core\model\util;
 
 	require_once realpath(__DIR__ . '/core/config.php');
-	require_once realpath(WT_MODEL_PATH . 'engine.php');
 	$config = get_defined_constants();
 	foreach ($config as $v => $i) {
 		if (stripos($v, 'WT_') === 0) {
@@ -29,6 +28,7 @@
 	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
 		exec('npm update');
 	}
+	require_once realpath(WT_MODEL_PATH . 'engine.php');
 	if (util::getSystem() == 'nix') {
 		exec('chmod 755 -R -f '.WT_MODEL_PATH);
 		exec('chmod 744 -R -f '.WT_CORE_PATH.'config.php');
