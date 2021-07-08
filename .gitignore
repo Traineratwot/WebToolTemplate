@@ -1,5 +1,6 @@
 composer.phar
 /core/cache/
+config.json
 /vendor/
 .idea
 .vscode
