@@ -12,9 +12,8 @@ Simple FrameWork for tiny web application
 #### install
 1. unpack this in dirrectoy
 
-2. `composer update`
+2. `run install.php`
 
-3. `npm update`
 
 #### Instructions
  - ###### File Structure
