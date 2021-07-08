@@ -332,7 +332,7 @@ SQL;
 		public function get($key, $default = NULL)
 		{
 			$this->repair();
-			if (is_null($default)) {
+			if (is_null($default) and isset($this->schema[$key])) {
 				$default = $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;
