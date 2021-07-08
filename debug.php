@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>You shel not passs</title>
+    <title>Debug</title>
 	<?= file_get_contents('core/templates/head.tpl') ?>
 </head>
 <body>
