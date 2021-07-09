@@ -6,7 +6,7 @@
 	define('WT_CORE_PATH', realpath(__DIR__) . '/');
 	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache/');
 	define('WT_MODEL_PATH', WT_CORE_PATH . 'model/');
-	define('WT_VENDOR_PATH', WT_BASE_PATH . 'vendor/');
+	define('WT_VENDOR_PATH', WT_CORE_PATH . 'vendor/');
 	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages/');
 	define('WT_VIEW_PATH', WT_CORE_PATH . 'view/');
 	define('WT_CLASSES_PATH', WT_CORE_PATH . 'classes/');
