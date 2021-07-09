@@ -22,7 +22,6 @@
 		}
 	}
 	file_put_contents(WT_CORE_PATH . 'config.json', json_encode($myConfig));
-	
 	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
 		exec('npm update');
 	}
@@ -33,7 +32,7 @@
 		exec('cd '.WT_CORE_PATH );
 		exec('composer update');
 	}
-	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
+	if (!file_exists(WT_VENDOR_PATH . 'autoload.php')) {
 		echo "Не удалось установить composer";
 	}else{
 		require_once realpath(WT_MODEL_PATH . 'engine.php');
