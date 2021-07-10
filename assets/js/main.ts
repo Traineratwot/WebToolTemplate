@@ -1,4 +1,4 @@
-class Core {
+class Wt {
 	constructor() {
 		this.events()
 	}
@@ -63,8 +63,7 @@ class Core {
 	}
 }
 
-
 // @ts-ignore
 $(() => {
-	window['core'] = new Core();
+	window['wt'] = new Wt();
 })

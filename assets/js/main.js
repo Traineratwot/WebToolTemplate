@@ -1,8 +1,8 @@
-var Core = /** @class */ (function () {
-    function Core() {
+var Wt = /** @class */ (function () {
+    function Wt() {
         this.events();
     }
-    Core.prototype.id = function (length) {
+    Wt.prototype.id = function (length) {
         if (length === void 0) { length = 6; }
         length = length - 1;
         var result = 'a';
@@ -14,7 +14,7 @@ var Core = /** @class */ (function () {
         }
         return result;
     };
-    Core.prototype.events = function () {
+    Wt.prototype.events = function () {
         var Core = this;
         $(document).on('submit', 'form', function (e) {
             e.preventDefault();
@@ -61,10 +61,9 @@ var Core = /** @class */ (function () {
             return false;
         });
     };
-    return Core;
+    return Wt;
 }());
 // @ts-ignore
 $(function () {
-    window['core'] = new Core();
+    window['wt'] = new Wt();
 });
-//# sourceMappingURL=main.js.map

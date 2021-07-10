@@ -1,6 +1,5 @@
 <?php
 	/** @var Core $core */
-
 	/** @var SmartyBC $smarty */
 
 	use core\model\Core;
@@ -34,9 +33,9 @@
 		}
 	} else {
 		if ($core->user) {
-			$smarty->display(WT_CORE_PATH . 'pages/profile.tpl');
+			header('Location: /profile');
 		} else {
-			$smarty->display(WT_CORE_PATH . 'pages/login.tpl');
+			header('Location: /login');
 			die();
 		}
 	}
