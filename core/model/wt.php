@@ -29,8 +29,7 @@
 				}
 		}
 	}
-
-
+	
 	function note($t)
 	{
 		echo '-' . $t . "\n";

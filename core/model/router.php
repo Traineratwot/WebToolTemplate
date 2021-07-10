@@ -20,9 +20,9 @@
 
 	}
 	if ($alias) {
-		$page = WT_PAGES_PATH . $alias . '.tpl';
+		$page = WT_PAGES_PATH . $alias . '/' . $alias . '.tpl';
 		if (file_exists($page)) {
-			$view = WT_VIEW_PATH . $alias . '.php';
+			$view = WT_PAGES_PATH . $alias . '/' . $alias . '.php';
 			if (file_exists($view)) {
 				include_once $view;
 			}
