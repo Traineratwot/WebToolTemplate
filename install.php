@@ -74,8 +74,9 @@ TXT;
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
 		exec('chmod 744 -R -f ' . WT_AJAX_PATH);
 		$log[] = 'Permissions set';
-		exec('alias make="php ' . WT_MODEL_PATH . 'make.php"');
-		$log[] = 'command "wt" installed';
+		$c= 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
+		exec($c);
+		$log[] = 'command to install wt "'.$c.'"';
 	}
 
 	function installWindows()
