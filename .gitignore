@@ -2,7 +2,7 @@ composer.phar
 composer.lock
 /core/cache/
 config.json
-/vendor/
+/core/vendor/
 .idea
 .vscode
 /node_modules/

@@ -1,9 +1,6 @@
 <?php
 
 	use core\model\Core;
-	if (WT_TYPE_DB == 'sqlite') {
-		error_reporting(E_ALL ^ E_WARNING);
-	}
 	require_once realpath(WT_MODEL_PATH . 'core.php');
 	require_once realpath(WT_MODEL_PATH . 'errors.php');
 	require_once realpath(WT_VENDOR_PATH . 'autoload.php');

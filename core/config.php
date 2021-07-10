@@ -2,6 +2,7 @@
 
 	namespace core\model;
 	//определяем основные пути
+	error_reporting(E_ERROR);
 	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . '/');
 	define('WT_CORE_PATH', realpath(__DIR__) . '/');
 	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache/');
@@ -29,3 +30,17 @@
 	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');
 	define('WT_SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config');
 	define('WT_SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache');
+	if (!function_exists('getSystem')) {
+		function getSystem()
+		{
+			$sys = php_uname('s');
+			if (strpos($sys, 'windows') !== FALSE) {
+				return 'win';
+			}
+			if (strpos($sys, 'linux') !== FALSE) {
+				return 'nix';
+			}
+			return 'nix';
+		}
+	}
+	define('WT_TYPE_SYSTEM', getSystem());
