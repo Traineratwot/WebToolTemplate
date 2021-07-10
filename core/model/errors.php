@@ -61,7 +61,7 @@
 				'line' => $line ?: NULL,
 			]));
 			throw new Exception(Err::pretty([
-				'lvl' => 'fatal',
+				'lvl' => 'error',
 				'datetime' => date(DATE_ATOM),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,

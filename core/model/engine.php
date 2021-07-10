@@ -1,6 +1,7 @@
 <?php
 
 	use core\model\Core;
+	use core\model\Err;
 	require_once realpath(WT_MODEL_PATH . 'core.php');
 	require_once realpath(WT_MODEL_PATH . 'errors.php');
 	require_once realpath(WT_VENDOR_PATH . 'autoload.php');
