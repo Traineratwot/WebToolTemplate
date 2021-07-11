@@ -35,3 +35,8 @@ Simple FrameWork for tiny web application
       - ajax => directory with php files available to users. the filename must be the same as the method name in the action field on your form. calling /index.php?a=[filename without extension]
   
       - config.php => main configuration file
+   
+#### console tool
+  - `wt error` - display error logs
+  - `wt make ajax {name}` - create ajax method class. eg: `wt make ajax "logput"`
+  - `wt make table {name}` - create table object class. eg: `wt make table "users"`

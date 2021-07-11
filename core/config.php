@@ -3,20 +3,20 @@
 	namespace core\model;
 	//определяем основные пути
 	error_reporting(E_ERROR);
-	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . '/');
-	define('WT_CORE_PATH', realpath(__DIR__) . '/');
-	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache/');
-	define('WT_MODEL_PATH', WT_CORE_PATH . 'model/');
-	define('WT_VENDOR_PATH', WT_CORE_PATH . 'vendor/');
-	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages/');
-	define('WT_VIEW_PATH', WT_CORE_PATH . 'view/');
-	define('WT_CLASSES_PATH', WT_CORE_PATH . 'classes/');
-	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax/');
-	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets/');
-	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images/');
+	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR);
+	define('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
+	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache' . DIRECTORY_SEPARATOR);
+	define('WT_MODEL_PATH', WT_CORE_PATH . 'model' . DIRECTORY_SEPARATOR);
+	define('WT_VENDOR_PATH', WT_CORE_PATH . 'vendor' . DIRECTORY_SEPARATOR);
+	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages' . DIRECTORY_SEPARATOR);
+	define('WT_VIEW_PATH', WT_CORE_PATH . 'view' . DIRECTORY_SEPARATOR);
+	define('WT_CLASSES_PATH', WT_CORE_PATH . 'classes' . DIRECTORY_SEPARATOR);
+	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax' . DIRECTORY_SEPARATOR);
+	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
+	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
 	//ВНЕШНИЙ URL
 	define('WT_DOMAIN_URL', $_SERVER['SERVER_NAME'] ?: $_SERVER['HTTP_HOST']);
-	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules/');
+	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/');
 	//определяем подключение к своей базе
 	define('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db');
 	define('WT_PORT_DB', '');
@@ -33,7 +33,7 @@
 	if (!function_exists('getSystem')) {
 		function getSystem()
 		{
-			$sys = php_uname('s');
+			$sys = mb_strtolower(php_uname('s'));
 			if (strpos($sys, 'windows') !== FALSE) {
 				return 'win';
 			}

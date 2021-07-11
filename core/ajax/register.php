@@ -2,43 +2,53 @@
 
 	namespace core\ajax;
 
-	use core\model\Err;
-	use core\model\util;
+	use core\model\Ajax;
 
-	/** @var Core $core */
-
-	$email = $_REQUEST['email'] ?? NULL;
-	$password = $_REQUEST['password'] ?? NULL;
-	try {
-		if ($email and $password) {
-			$newUser = $core->getUser(['email' => $email]);
-			if ($newUser->isNew()) {
-				if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-					Err::fatal('Please enter a valid email', __FILE__, __FILE__);
-				}
-				if (strlen($password) < 6) {
-					Err::fatal('Please enter a password length > 5 characters', __FILE__, __FILE__);
-				}
-				$salt = rand(1000000, 9999999);
-				$authKey = md5($password . $email . $salt);
-				/** @var Core $newUser */
-				$newUser->set('email', $email);
-				$newUser->set('password', md5($password));
-				$newUser->set('salt', $salt);
-				$newUser->set('authKey', $authKey);
-				$newUser->save();
-				if ($newUser->isNew()) {
-					Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
-				} else {
-					util::setCookie('authKey', $authKey);
-					die(util::success('Ok'));
-				}
+	class register extends Ajax
+	{
+		public function initialize()
+		{
+			$this->email = strip_tags($_REQUEST['email']);
+			$this->password = strip_tags($_REQUEST['password']);
+			if ($this->email and $this->password) {
+				return TRUE;
 			} else {
-				Err::fatal('User already exists', __FILE__, __FILE__);
+				return 'empty email or password';
 			}
-		} else {
-			die(util::failure('empty login or password'));
 		}
-	} catch (\Exception $e) {
-		die(util::failure($e->getMessage()));
+
+		public function process()
+		{
+			try {
+				$newUser = $this->core->getUser(['email' => $this->email]);
+				if ($newUser->isNew()) {
+					if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+						Err::fatal('Please enter a valid email', __FILE__, __FILE__);
+					}
+					if (strlen($this->password) < 6) {
+						Err::fatal('Please enter a password length > 5 characters', __FILE__, __FILE__);
+					}
+					$salt = rand(1000000, 9999999);
+					$authKey = md5($this->password . $this->email . $salt);
+					/** @var Core $newUser */
+					$newUser->set('email', $this->email);
+					$newUser->set('password', md5($this->password));
+					$newUser->set('salt', $salt);
+					$newUser->set('authKey', $authKey);
+					$newUser->save();
+					if ($newUser->isNew()) {
+						$this->fatal('Failed write to DataBase', __FILE__, __FILE__);
+					} else {
+						util::setCookie('authKey', $authKey);
+						return $this->success('Ok');
+					}
+				} else {
+					return $this->failure('User already exists');
+				}
+			} catch (\Exception $e) {
+				return $this->failure($e->getMessage());
+			}
+		}
 	}
+
+	return 'register';

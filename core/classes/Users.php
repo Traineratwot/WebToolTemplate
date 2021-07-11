@@ -5,10 +5,9 @@
 
 	/**
 	 * Класс для работы с таблицей `users`
-	 *
-	 * вызывается core::getUser()
+	 * вызывается core::getObject('Users')
 	 */
-	class User extends bdObject
+	class Users extends bdObject
 	{
 		public $table = 'users';
 		public $primaryKey = 'id';

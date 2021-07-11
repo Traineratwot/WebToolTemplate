@@ -1,20 +1,31 @@
 <?php
+
+	namespace core\model;
 	/** @var Core $core */
 	/** @var SmartyBC $smarty */
 
-	use core\model\Core;
-
+	/** @var Core $core */
 	$alias = $_GET['q'] ?? NULL;
 	$ajax = $_GET['a'] ?? NULL;
 	if ($ajax) {
 		$ajax = WT_AJAX_PATH . $ajax . '.php';
 		if (file_exists($ajax)) {
 			$result = include $ajax;
-			if (is_array($result)) {
-				header('Content-Type: application/json');
-				$result = json_encode($result, 256);
+			$class = 'core\ajax\\' . $result;
+			if (!class_exists($class)) {
+				$class = 'core\ajax\\' . $ajax;
 			}
-			die($result);
+			if (!class_exists($class)) {
+				Err::fatal("class '$class' is not define");
+			}
+			/** @var Ajax $result */
+			$result = new $class($core);
+			try {
+				$response = $result->run();
+			} catch (Exception $e) {
+				$response = json_encode($result, 256);
+			}
+			die($response);
 		}
 
 	}

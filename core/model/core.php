@@ -2,7 +2,7 @@
 
 	namespace core\model;
 
-	use core\classes\user;
+	use core\classes\users;
 	use Exception;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
@@ -35,7 +35,7 @@
 
 		public function getUser($where = [])
 		{
-			return new User($this, $where);
+			return new Users($this, $where);
 		}
 
 		/**
@@ -405,6 +405,186 @@ SQL;
 		}
 	}
 
+	abstract class  Ajax extends CoreObject
+	{
+		/**
+		 * @var array
+		 */
+		public $headers = [];
+		/**
+		 * @var array
+		 */
+		public $LanguageTopics = [];
+		/**
+		 * @var array
+		 */
+		public $GET;
+		/**
+		 * @var array
+		 */
+		public $POST;
+		/**
+		 * @var array
+		 */
+		public $PUT;
+		/**
+		 * @var array
+		 */
+		public $REQUEST;
+		/**
+		 * query
+		 * @var string
+		 */
+		public $url;
+		/**
+		 * query
+		 * @var integer
+		 */
+		public $httpResponseCode = 0;
+
+		public function __construct(Core &$core)
+		{
+			parent::__construct($core);
+			$this->GET = $_GET;
+			$this->httpResponseCode = 200;
+			$this->POST = $_POST;
+			$this->PUT = file_get_contents('php://input');
+			$this->HEADERS = util::getRequestHeaders();
+			$this->REQUEST = array_merge($_GET, $_POST);
+			try {
+				if ($put = util::jsonValidate($this->PUT)) {
+					$this->PUT = $put;
+				}
+			} catch (Exception $e) {
+
+			}
+			$this->REQUEST['PUT'] = $this->PUT;
+			$this->FILES = [];
+			if (!empty($_FILES)) {
+				try {
+					$this->FILES = $this->util->files();
+					if (get_class($this->FILES) == 'PostFiles') {
+						$this->FILES = $this->FILES->FILES;
+					}
+				} catch (Exception $e) {
+					Err::error($e->getMessage(), __LINE__, __FILE__);
+				}
+			}
+		}
+
+		final public function run()
+		{
+			$initialized = $this->initialize();
+
+			foreach ($this->headers as $key => $value) {
+				header("$key: $value");
+			}
+			foreach ($this->LanguageTopics as $topic) {
+				$this->core->lexicon->load($topic);
+			}
+
+			if ($initialized !== TRUE) {
+				$o = $this->failure($initialized);
+			} else {
+				$o = $this->process();
+				if ($this->httpResponseCode) {
+					http_response_code($this->httpResponseCode);
+				}
+			}
+			if (is_array($o) or is_object($o)) {
+				util::headerJson();
+				$o = json_encode($o, 256);
+			}
+			return (string)$o;
+		}
+
+		public function process()
+		{
+			switch ($_SERVER['REQUEST_METHOD']) {
+				case 'GET':
+					return $this->GET();
+				case 'POST':
+					return $this->POST();
+				case 'PUT':
+					return $this->PUT();
+				case 'DELETE':
+					return $this->DELETE();
+				case 'PATH':
+					return $this->PATH();
+				case 'CONNECT':
+					return $this->CONNECT();
+				case 'HEAD':
+					return $this->HEAD();
+				case 'OPTIONS':
+					return $this->OPTIONS();
+				case 'TRACE':
+					return $this->TRACE();
+			}
+		}
+
+		public function GET()
+		{
+		}
+
+		public function POST()
+		{
+		}
+
+		public function PUT()
+		{
+		}
+
+		public function DELETE()
+		{
+		}
+
+		public function PATH()
+		{
+		}
+
+		public function CONNECT()
+		{
+		}
+
+		public function HEAD()
+		{
+		}
+
+		public function OPTIONS()
+		{
+		}
+
+		public function TRACE()
+		{
+		}
+
+		public function success($msg = '', $object = NULL)
+		{
+			return [
+				'success' => TRUE,
+				'message' => $msg,
+				'object' => $object,
+				'code' => $this->httpResponseCode,
+			];
+		}
+
+		public function failure($msg = '', $object = NULL, $error = [])
+		{
+			return [
+				'success' => FALSE,
+				'message' => $msg,
+				'object' => $object,
+				'errors' => $error,
+				'code' => $this->httpResponseCode,
+			];
+		}
+
+		public function initialize()
+		{
+			return TRUE;
+		}
+	}
+
 	/**
 	 * класс с утилитами
 	 */
@@ -591,5 +771,132 @@ SQL;
 				return 'nix';
 			}
 			return 'nix';
+		}
+
+		public static function baseExt($file = '')
+		{
+			$_tmp = explode('.', basename($file));
+			return end($_tmp);
+		}
+
+		/**
+		 * @param string $file
+		 * @return string
+		 */
+		public static function baseName($file = '')
+		{
+			$_tmp = explode('.', basename($file));
+			array_pop($_tmp);
+			return implode('', $_tmp);
+		}
+
+		public static function getRequestHeaders()
+		{
+			if (function_exists('getallheaders')) {
+				return getallheaders();
+			} else {
+				if (!is_array($_SERVER)) {
+					return [];
+				}
+				$headers = [];
+				foreach ($_SERVER as $name => $value) {
+					if (substr($name, 0, 5) == 'HTTP_') {
+						$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+						$headers[$key] = $value;
+					}
+				}
+				return $headers;
+			}
+			return [];
+		}
+
+		public static function headerJson()
+		{
+			@header("Content-type: application/json; charset=utf-8");
+		}
+	}
+
+	class make
+	{
+		public static function makeAjax($name, $type = 'any')
+		{
+			$method = '';
+			switch ($type) {
+				case 'post':
+					$method = <<<PHP
+	function POST(){
+		//TODO YOU CODE
+	}
+PHP;
+					break;
+				case 'get':
+					$method = <<<PHP
+	function GET(){
+		//TODO YOU CODE
+	}
+PHP;
+					break;
+				default:
+					$method = <<<PHP
+	function process(){
+		//TODO YOU CODE
+	}
+PHP;
+					break;
+			}
+
+			$code = <<<PHP
+<?php
+	namespace core\ajax;
+	use core\model\Ajax;
+	class {$name} extends Ajax
+	{
+		{$method}
+	}
+	return '{$name}';
+PHP;
+			return $code;
+		}
+
+		public static function makePage($name, $template = 'base')
+		{
+		}
+
+		public static function makeTemplate($name, $template = 'base')
+		{
+		}
+
+		public static function table2class($name)
+		{
+			$n = explode("_", $name);
+			$n2 = [];
+			foreach ($n as $key => $value) {
+				$n2[] = ucfirst(mb_strtolower($value));
+			}
+			$class = implode('', $n2);
+			return $class;
+		}
+
+		public static function makeTable($name, $primaryKey = 'id')
+		{
+			$primaryKey = $primaryKey ?: 'id';
+			$class = make::table2class($name);
+			$code = <<<PHP
+<?php
+
+	namespace core\\classes;
+	use core\\model\\bdObject;
+
+	/**
+	 * Класс для работы с таблицей `$name`
+	 * вызывается core::getObject('$class')
+	 */
+	class $class extends bdObject
+	{
+		public \$table = '$name';
+		public \$primaryKey = '$primaryKey';
+	}
+PHP;
+			return $code;
 		}
 	}
