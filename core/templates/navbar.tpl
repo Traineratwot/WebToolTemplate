@@ -27,7 +27,7 @@
                 {/if}
             </ul>
             {if $isAuthenticated}
-                <form class="d-flex" action="/ajax/logout.php" id="Logout">
+                <form class="d-flex" action="logout" id="Logout">
                     <button class="btn btn-outline-info" type="submit">Logout</button>
                 </form>
             {/if}

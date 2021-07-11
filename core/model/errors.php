@@ -33,7 +33,7 @@
 		{
 			Err::save(Err::pretty([
 				'lvl' => 'error',
-				'datetime' => date(DATE_ATOM),
+				'datetime' => date('Y-m-d H:i:s'),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,
@@ -44,7 +44,7 @@
 		{
 			Err::save(Err::pretty([
 				'lvl' => 'warning',
-				'datetime' => date(DATE_ATOM),
+				'datetime' => date('Y-m-d H:i:s'),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,
@@ -55,14 +55,14 @@
 		{
 			Err::save(Err::pretty([
 				'lvl' => 'error',
-				'datetime' => date(DATE_ATOM),
+				'datetime' => date('Y-m-d H:i:s'),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,
 			]));
 			throw new Exception(Err::pretty([
 				'lvl' => 'error',
-				'datetime' => date(DATE_ATOM),
+				'datetime' => date('Y-m-d H:i:s'),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,
@@ -73,7 +73,7 @@
 		{
 			Err::save(Err::pretty([
 				'lvl' => 'info',
-				'datetime' => date(DATE_ATOM),
+				'datetime' => date('Y-m-d H:i:s'),
 				'message' => $msg,
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,

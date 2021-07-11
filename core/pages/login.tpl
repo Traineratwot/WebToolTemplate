@@ -8,7 +8,7 @@
                    placeholder="name@example.com">
         </div>
         <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+            <label for="exampleFormControlTextarea1" class="form-label">Password</label>
             <input name="password" type="password" class="form-control" id="exampleFormControlTextarea1"
                    rows="3">
         </div>

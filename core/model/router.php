@@ -2,11 +2,8 @@
 
 	namespace core\model;
 	/** @var Core $core */
-	/** @var SmartyBC $smarty */
-
-	/** @var Core $core */
-	$alias = $_GET['q'] ?? NULL;
-	$ajax = $_GET['a'] ?? NULL;
+	$alias = mb_strtolower($_GET['q']) ?? NULL;
+	$ajax = mb_strtolower($_GET['a']) ?? NULL;
 	if ($ajax) {
 		$ajax = WT_AJAX_PATH . $ajax . '.php';
 		if (file_exists($ajax)) {
@@ -21,8 +18,13 @@
 			/** @var Ajax $result */
 			$result = new $class($core);
 			try {
-				$response = $result->run();
+				if ($result instanceof Ajax) {
+					$response = $result->run();
+				} else {
+					Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+				}
 			} catch (Exception $e) {
+				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 				$response = json_encode($result, 256);
 			}
 			die($response);
@@ -30,15 +32,40 @@
 
 	}
 	if ($alias) {
-		$page = WT_PAGES_PATH . $alias . '/' . $alias . '.tpl';
+		$page = WT_VIEWS_PATH . $alias . '.php';
 		if (file_exists($page)) {
-			$view = WT_PAGES_PATH . $alias . '/' . $alias . '.php';
-			if (file_exists($view)) {
-				include_once $view;
+			$result = include $page;
+			$class = 'core\page\\' . $result;
+			if (!class_exists($class)) {
+				$class = 'core\ajax\\' . $ajax;
 			}
-			$smarty->display($page);
+			if (!class_exists($class)) {
+				Err::fatal("class '$class' is not define", __LINE__, __FILE__);
+			}
+			/** @var Page $result */
+			$result = new $class($core);
+			if ($result instanceof Page) {
+				$result->render();
+			} else {
+				Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
+			}
 			die();
 		} else {
+			$page = WT_PAGES_PATH . $alias . '.tpl';
+			if (file_exists($page)) {
+				class tmpPage extends Page
+				{
+					public function __construct(Core $core, $alias)
+					{
+						$this->alias = $alias;
+						parent::__construct($core);
+					}
+				}
+
+				$result = new tmpPage($core, $alias);
+				$result->render();
+				die();
+			}
 			header('HTTP/1.1 404 Not Found');
 			readfile(WT_PAGES_PATH . '404.html');
 		}

@@ -7,14 +7,19 @@
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
+	use SmartyBC;
 
 	/**
 	 * Основной класс
 	 */
-	class Core
+	final class Core
 	{
 		public $db = NULL;
 		public $user = NULL;
+		/**
+		 * @var SmartyBC
+		 */
+		public $smarty;
 
 		public function __construct()
 		{
@@ -31,6 +36,12 @@
 					util::setCookie('authKey', NULL);
 				}
 			}
+			if ($this->user == NULL) {
+				$this->isAuthenticated = FALSE;
+			} else {
+				$this->isAuthenticated = TRUE;
+			}
+
 		}
 
 		public function getUser($where = [])
@@ -108,7 +119,6 @@
 	 */
 	abstract class CoreObject
 	{
-
 		public $core;
 
 		public function __construct(Core $core)
@@ -405,7 +415,7 @@ SQL;
 		}
 	}
 
-	abstract class  Ajax extends CoreObject
+	abstract class Ajax extends CoreObject
 	{
 		/**
 		 * @var array
@@ -582,6 +592,43 @@ SQL;
 		public function initialize()
 		{
 			return TRUE;
+		}
+	}
+
+	abstract class Page extends CoreObject
+	{
+
+		public $alias;
+
+		public function __construct(Core $core)
+		{
+			parent::__construct($core);
+			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
+		}
+		public function afterRender(){
+
+		}
+		public function beforeRender(){
+
+		}
+		final public function render()
+		{
+			$this->smarty = new SmartyBC();
+			$alias = $_GET['q'] ?? NULL;
+			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH);
+			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH);
+			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH);
+			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH);
+			$this->smarty->assign('page', $alias);
+			$this->smarty->assign('title', $alias);
+			$this->smarty->assign('page', $this);
+			$this->smarty->assign('core', $this->core);
+			$this->smarty->assign('user', $this->core->user);
+			$this->smarty->assign('isAuthenticated', $this->core->isAuthenticated);
+			$this->beforeRender();
+			$this->smarty->display($this->source);
+			$this->afterRender();
+
 		}
 	}
 
@@ -844,12 +891,12 @@ PHP;
 PHP;
 					break;
 			}
-
+			$class = make::name2class($name);
 			$code = <<<PHP
 <?php
 	namespace core\ajax;
 	use core\model\Ajax;
-	class {$name} extends Ajax
+	class {$class} extends Ajax
 	{
 		{$method}
 	}
@@ -858,15 +905,22 @@ PHP;
 			return $code;
 		}
 
-		public static function makePage($name, $template = 'base')
+		public static function makePageTpl($name, $template = 'base')
 		{
+
 		}
+
+		public static function makePageClass($name, $template = 'base')
+		{
+
+		}
+
 
 		public static function makeTemplate($name, $template = 'base')
 		{
 		}
 
-		public static function table2class($name)
+		public static function name2class($name)
 		{
 			$n = explode("_", $name);
 			$n2 = [];

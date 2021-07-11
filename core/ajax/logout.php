@@ -3,8 +3,9 @@
 	namespace core\ajax;
 
 	use core\model\Ajax;
+	use core\model\util;
 
-	class logput extends Ajax
+	class logout extends Ajax
 	{
 		function process()
 		{
@@ -13,4 +14,4 @@
 		}
 	}
 
-	return 'logput';
+	return 'logout';
