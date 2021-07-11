@@ -599,36 +599,39 @@ SQL;
 	{
 
 		public $alias;
+		public $title;
 
 		public function __construct(Core $core)
 		{
 			parent::__construct($core);
 			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
+			if (!$this->alias) {
+				$this->alias = $_GET['q'];
+			}
+			if (!$this->title) {
+				$this->title = util::basename($this->alias) ?: $this->alias;
+			}
 		}
-		public function afterRender(){
+
+		public function beforeRender()
+		{
 
 		}
-		public function beforeRender(){
 
-		}
 		final public function render()
 		{
 			$this->smarty = new SmartyBC();
-			$alias = $_GET['q'] ?? NULL;
+			$this->beforeRender();
 			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH);
 			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH);
 			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH);
 			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH);
-			$this->smarty->assign('page', $alias);
-			$this->smarty->assign('title', $alias);
+			$this->smarty->assign('title', $this->title);
 			$this->smarty->assign('page', $this);
 			$this->smarty->assign('core', $this->core);
 			$this->smarty->assign('user', $this->core->user);
 			$this->smarty->assign('isAuthenticated', $this->core->isAuthenticated);
-			$this->beforeRender();
 			$this->smarty->display($this->source);
-			$this->afterRender();
-
 		}
 	}
 
