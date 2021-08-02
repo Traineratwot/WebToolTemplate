@@ -26,7 +26,7 @@
 						Err::fatal('Please enter a valid email', __FILE__, __FILE__);
 					}
 					if (strlen($this->password) < 6) {
-						Err::fatal('Please enter a password length > 5 characters', __FILE__, __FILE__);
+						Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
 					}
 					$salt = rand(1000000, 9999999);
 					$authKey = md5($this->password . $this->email . $salt);
