@@ -26,6 +26,69 @@
 			$t = ucfirst($t);
 			echo "-\033[0;32m" . $t . " \033[0m \n";
 		}
+
+		function make($a, $b, $c)
+		{
+			switch (mb_strtolower($a)) {
+				case 'ajax':
+					$class = mb_strtolower(make::name2class($b));
+					$p = WT_AJAX_PATH . $class . '.php';
+					if (!file_exists($p)) {
+						writeFile($p, make::makeAjax($b, $c));
+						success('ok: ' . $p);
+					} else {
+						failure('Already exists');
+					}
+					break;
+				case 'table':
+					$class = mb_strtolower(make::name2class($b));
+					$p = WT_CLASSES_PATH . $class . '.php';
+					if (!file_exists($p)) {
+						writeFile($p, make::makeTable($b, $c));
+						success('ok: ' . $p);
+					} else {
+						failure('Already exists');
+					}
+					break;
+				case 'page':
+					$url = mb_strtolower($b);
+					$p = strtr(WT_VIEWS_PATH . $url . '.php', [
+						'/' => DIRECTORY_SEPARATOR,
+						'\\' => DIRECTORY_SEPARATOR,
+					]);
+					$p2 = strtr(WT_PAGES_PATH . $url . '.tpl', [
+						'/' => DIRECTORY_SEPARATOR,
+						'\\' => DIRECTORY_SEPARATOR,
+					]);
+					if (!file_exists($p)) {
+						writeFile($p, make::makePageClass($url, $c));
+						success('ok: ' . $p);
+					} else {
+						failure('Already exists: ' . $p);
+					}
+					if (!file_exists($p2)) {
+						writeFile($p2, make::makePageTpl($url, $c));
+						success('ok: ' . $p2);
+					} else {
+						failure('Already exists: ' . $p2);
+					}
+					break;
+				default:
+					failure('Unknown action');
+					break;
+			}
+		}
+
+		function writeFile($path, $content)
+		{
+			if (!is_dir(dirname($path))) {
+				if (!mkdir($concurrentDirectory = dirname($path), 0777, 1) && !is_dir($concurrentDirectory)) {
+				} else {
+					file_put_contents($path, $content);
+				}
+			}
+		}
+
 		try {
 
 
@@ -67,65 +130,13 @@
 								success('empty logs');
 							}
 						}
+						break;
 					case 'help':
 						note('make {ajax|table|page} {...args}');
 						note('error {null|clear}');
 						break;
 				}
 			}
-
-			function make($a, $b, $c)
-			{
-				switch (mb_strtolower($a)) {
-					case 'ajax':
-						$class = mb_strtolower(make::name2class($b));
-						$p = WT_AJAX_PATH . $class . '.php';
-						if (!file_exists($p)) {
-							writeFile($p, make::makeAjax($b, $c));
-							success('ok: ' . $p);
-						} else {
-							failure('Already exists');
-						}
-						break;
-					case 'table':
-						$class = mb_strtolower(make::name2class($b));
-						$p = WT_CLASSES_PATH . $class . '.php';
-						if (!file_exists($p)) {
-							writeFile($p, make::makeTable($b, $c));
-							success('ok: ' . $p);
-						} else {
-							failure('Already exists');
-						}
-						break;
-					case 'page':
-						$url = mb_strtolower($b);
-						$p = WT_PAGES_PATH . $url . '.php';
-						$p2 = WT_PAGES_PATH . $url . '.tpl';
-						if (!file_exists($p)) {
-							writeFile($p, make::makePageTpl($url, $c));
-							writeFile($p2, make::makePageClass($url, $c));
-							success('ok: ' . $p);
-						} else {
-							failure('Already exists');
-						}
-						break;
-					default:
-						failure('Unknown action');
-						break;
-				}
-			}
-
-			function writeFile($path, $content)
-			{
-				if (!is_dir(dirname($path))) {
-					if (!mkdir($concurrentDirectory = dirname($path), 0777, 1) && !is_dir($concurrentDirectory)) {
-					} else {
-						file_put_contents($path, $content);
-					}
-				}
-			}
-
-
 		} catch (Exception $e) {
 			echo '<pre>';
 			print_r($e->getMessage());

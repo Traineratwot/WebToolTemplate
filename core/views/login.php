@@ -10,7 +10,7 @@
 		public $alias = 'login';
 
 		public function beforeRender(){
-
+			Err::warning('test');
 		}
 	}
 

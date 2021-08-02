@@ -910,12 +910,44 @@ PHP;
 
 		public static function makePageTpl($name, $template = 'base')
 		{
-
+			if (!$template) {
+				$template = WT_TEMPLATES_PATH . 'base.tpl';
+			} else {
+				$template = WT_TEMPLATES_PATH . $template . '.tpl';
+			}
+			$code = <<<TPL
+{extends file='{$template}'}
+{block name='content'}
+	
+{/block}
+TPL;
+			return $code;
 		}
 
 		public static function makePageClass($name, $template = 'base')
 		{
+			$class = make::name2class($name);
+			$code = <<<PHP
+<?php
 
+	namespace core\page;
+
+	use core\model\Err;
+	use core\model\Page;
+
+	class {$class} extends Page
+	{
+		public \$alias = '$name';
+		public \$title = '$name';
+
+		public function beforeRender(){
+
+		}
+	}
+
+	return '$class';
+PHP;
+			return $code;
 		}
 
 
@@ -925,6 +957,8 @@ PHP;
 
 		public static function name2class($name)
 		{
+			$name = strtr($name,['\\'=>'_',
+				'/'=>'_']);
 			$n = explode("_", $name);
 			$n2 = [];
 			foreach ($n as $key => $value) {
