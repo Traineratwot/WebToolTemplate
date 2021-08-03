@@ -138,9 +138,28 @@
 							}
 						}
 						break;
+					case 'cache':
+						 try {
+						 	if(WT_TYPE_SYSTEM == 'win') {
+							    system('RD /s/q "' . WT_CACHE_PATH . '"');
+						    }else{
+							    system('rm -rf "' . WT_CACHE_PATH . '"');
+						    }
+
+							 if(!file_exists(WT_CACHE_PATH)){
+							 	success('cache cleaned');
+							 }else{
+							 	failure('error');
+							 }
+
+						 } catch (\Exception $e) {
+						    failure($e->getMessage());
+						 }
+						break;
 					case 'help':
 						note('make {ajax|table|page} {...args}');
-						note('error {null|clear}');
+						note('error {?clear}');
+						note('cache {clear}');
 						break;
 				}
 			}

@@ -27,7 +27,7 @@
 				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 				$response = json_encode($result, 256);
 			}
-			die($response);
+			exit($response);
 		}
 
 	}
@@ -51,7 +51,7 @@
 		} else {
 			Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
 		}
-		die();
+		exit();
 	} else {
 		$page = WT_PAGES_PATH . $alias . '.tpl';
 		if (file_exists($page)) {
@@ -63,11 +63,11 @@
 					parent::__construct($core);
 				}
 			}
-
 			$result = new tmpPage($core, $alias);
 			$result->render();
-			die();
+		}else {
+			header('HTTP/1.1 404 Not Found');
+			readfile(WT_PAGES_PATH . '404.html');
 		}
-		header('HTTP/1.1 404 Not Found');
-		readfile(WT_PAGES_PATH . '404.html');
+		exit();
 	}
