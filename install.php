@@ -1,7 +1,27 @@
 <?php
 	error_reporting(0);
 	require_once realpath(__DIR__ . '/core/config.php');
+	$log = [];
+	function installLinux()
+	{
+		global $log;
+		exec('chmod 755 -R -f ' . WT_MODEL_PATH);
+		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.php');
+		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
+		exec('chmod 744 -R -f ' . WT_AJAX_PATH);
+		$log[] = 'Permissions set';
+		$c= 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
+		exec($c);
+		$log[] = 'command to install wt "'.$c.'"';
+	}
+
+	function installWindows()
+	{
+//		global $log;
+	}
+
 	$config = get_defined_constants();
+	$myConfig = [];
 	foreach ($config as $v => $i) {
 		if (stripos($v, 'WT_') === 0) {
 			$a = explode('_', $v);
@@ -11,9 +31,9 @@
 				'name' => $v,
 			];
 			if (stripos($v, '_PATH') !== FALSE) {
-				if (!file_exists($i) or !is_dir($i)) {
+				if (!file_exists($i) || !is_dir($i)) {
 					if (!mkdir($i, 0777, 1) && !is_dir($i)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $v));
+						throw new RuntimeException(sprintf('Directory "%s" was not created', $v));
 					}
 				}
 			}
@@ -39,9 +59,9 @@
 		require_once realpath(WT_MODEL_PATH . 'engine.php');
 	}
 	//----------------------------------------------
-	$system = php_uname('s');
+	$system = PHP_OS;
 
-	if (WT_TYPE_SYSTEM == 'nix') {
+	if (WT_TYPE_SYSTEM === 'nix') {
 		installLinux();
 		exec('clear');
 	} else {
@@ -52,34 +72,17 @@
 	foreach($log as $key => $value){
 		$log[$key] = ucfirst(trim($value));
 	}
-	$log = implode("\n| ", $log);
+	$log_ = implode("\n| ", $log);
 	$txt = <<<TXT
 -----------------------------------------------------------
 | System: $system
 |
-| $log
+| $log_
 -----------------------------------------------------------
 
 TXT;
 	echo $txt;
-	if (empty($argv) or $argv[1] != 'dev') {
+	if (empty($argv) || $argv[1] !== 'dev') {
 		rename(__FILE__, __FILE__ . '.txt');
 	}
 	//-----------------------------------------------------
-	function installLinux()
-	{
-		global $log;
-		exec('chmod 755 -R -f ' . WT_MODEL_PATH);
-		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.php');
-		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
-		exec('chmod 744 -R -f ' . WT_AJAX_PATH);
-		$log[] = 'Permissions set';
-		$c= 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
-		exec($c);
-		$log[] = 'command to install wt "'.$c.'"';
-	}
-
-	function installWindows()
-	{
-		global $log;
-	}

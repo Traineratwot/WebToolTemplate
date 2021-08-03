@@ -61,14 +61,20 @@
 						'\\' => DIRECTORY_SEPARATOR,
 					]);
 					if (!file_exists($p)) {
-						writeFile($p, make::makePageClass($url, $c));
-						success('ok: ' . $p);
+						if (writeFile($p, make::makePageClass($url, $c))) {
+							success('ok: ' . $p);
+						} else {
+							failure('can`t write file: ' . $p);
+						}
 					} else {
 						failure('Already exists: ' . $p);
 					}
 					if (!file_exists($p2)) {
-						writeFile($p2, make::makePageTpl($url, $c));
-						success('ok: ' . $p2);
+						if (writeFile($p2, make::makePageTpl($url, $c))) {
+							success('ok: ' . $p2);
+						} else {
+							failure('can`t write file: ' . $p);
+						}
 					} else {
 						failure('Already exists: ' . $p2);
 					}
@@ -82,20 +88,21 @@
 		function writeFile($path, $content)
 		{
 			if (!is_dir(dirname($path))) {
-				if (!mkdir($concurrentDirectory = dirname($path), 0777, 1) && !is_dir($concurrentDirectory)) {
-				} else {
-					file_put_contents($path, $content);
+				$concurrentDirectory = dirname($path);
+				if (!file_exists($concurrentDirectory) or !is_dir($concurrentDirectory)) {
+					if (!mkdir($concurrentDirectory, 0777, 1) && !is_dir($concurrentDirectory)) {
+						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+					}
 				}
+
 			}
+			file_put_contents($path, $content);
+			return file_exists($path);
 		}
 
 		try {
-
-
 			require_once realpath(dirname(__DIR__) . '/config.php');
 			require_once realpath(WT_MODEL_PATH . 'engine.php');
-
-
 			if (empty($argv[1])) {
 				failure('empty arguments');
 			} else {
@@ -146,5 +153,4 @@
 		echo '<pre>';
 		print_r('Use console');
 		die;
-
 	}

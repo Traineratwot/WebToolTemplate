@@ -31,49 +31,43 @@
 		}
 
 	}
-	if ($alias) {
-		$page = WT_VIEWS_PATH . $alias . '.php';
-		if (file_exists($page)) {
-			$result = include $page;
-			$class = 'core\page\\' . $result;
-			if (!class_exists($class)) {
-				$class = 'core\ajax\\' . $ajax;
-			}
-			if (!class_exists($class)) {
-				Err::fatal("class '$class' is not define", __LINE__, __FILE__);
-			}
-			/** @var Page $result */
-			$result = new $class($core);
-			if ($result instanceof Page) {
-				$result->render();
-			} else {
-				Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
-			}
-			die();
-		} else {
-			$page = WT_PAGES_PATH . $alias . '.tpl';
-			if (file_exists($page)) {
-				class tmpPage extends Page
-				{
-					public function __construct(Core $core, $alias)
-					{
-						$this->alias = $alias;
-						parent::__construct($core);
-					}
-				}
-
-				$result = new tmpPage($core, $alias);
-				$result->render();
-				die();
-			}
-			header('HTTP/1.1 404 Not Found');
-			readfile(WT_PAGES_PATH . '404.html');
+	if (!$alias) {
+		$alias = 'index';
+	}
+	$page = WT_VIEWS_PATH . $alias . '.php';
+	if (file_exists($page)) {
+		$result = include $page;
+		$class = 'core\page\\' . $result;
+		if (!class_exists($class)) {
+			$class = 'core\ajax\\' . $ajax;
 		}
+		if (!class_exists($class)) {
+			Err::fatal("class '$class' is not define", __LINE__, __FILE__);
+		}
+		/** @var Page $result */
+		$result = new $class($core);
+		if ($result instanceof Page) {
+			$result->render();
+		} else {
+			Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
+		}
+		die();
 	} else {
-		if ($core->user) {
-			header('Location: /profile');
-		} else {
-			header('Location: /login');
+		$page = WT_PAGES_PATH . $alias . '.tpl';
+		if (file_exists($page)) {
+			class tmpPage extends Page
+			{
+				public function __construct(Core $core, $alias)
+				{
+					$this->alias = $alias;
+					parent::__construct($core);
+				}
+			}
+
+			$result = new tmpPage($core, $alias);
+			$result->render();
 			die();
 		}
+		header('HTTP/1.1 404 Not Found');
+		readfile(WT_PAGES_PATH . '404.html');
 	}
