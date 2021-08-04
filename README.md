@@ -32,3 +32,6 @@ Simple FrameWork for tiny web application
   - `wt make ajax {name} {type? 'get'|'post'}` - create ajax method class. eg: `wt make ajax "logout"`
   - `wt make table {name} {primaryKey? 'id'}` - create table object class. eg: `wt make table "users"`
   - `wt make page {url} {template? 'base'}` - create table object class. eg: `wt make page "catalog/page1 base"`
+#### user
+  - login: admin@example.com
+  - password: admin123

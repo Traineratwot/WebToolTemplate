@@ -7,6 +7,7 @@
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
+	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
 
 	/**
@@ -264,37 +265,77 @@ SQL;
 
 		private function getColumnNames($table)
 		{
-			$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table";
-			try {
-				$stmt = $this->core->db->prepare($sql);
+			if (WT_TYPE_DB == 'sqlite') {
+				$parser = new PHPSQLParser();
+				$sql = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' and type ='table'";
+				$stmt = $this->core->db->query($sql);
 				if ($stmt) {
-					$stmt->bindValue(':table', $table, PDO::PARAM_STR);
-					$stmt->execute();
 					$output = [];
-					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-						if ($row['TABLE_SCHEMA'] != 'performance_schema') {
-							$output[$row['ORDINAL_POSITION']] = [
-								'name' => $row['COLUMN_NAME'],
-								'key' => $row['COLUMN_KEY'] ?: NULL,
-								'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
-								'comment' => $row['COLUMN_COMMENT'] ?? '',
-								'type' => $row['DATA_TYPE'] ?? '',
-								'maxLength' => $row['COLUMN_MAXIMUM_LENGTH'] ?? 0,
-								'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+					$row = $stmt->fetch(PDO::FETCH_ASSOC);
+					$parsed = $parser->parse($row['sql']);
+					if (isset($parsed['TABLE'])) {
+						foreach ($parsed['TABLE']['create-def']['sub_tree'] as $key => $column) {
+							$name = $column['sub_tree'][0]['base_expr'];
+							$data = $column['sub_tree'][1];
+							foreach ($data['sub_tree'] as $param){
+								if(is_array($param)) {
+									if ($param['expr_type'] == 'data-type') {
+										$data['data-type'] = $param;
+									}
+								}
+							}
+							$default = (!isset($data['default']) or strtolower($data['default']) === 'null') ? NULL : trim($data['default'],'()');
+							if(is_numeric($default)){
+								$default = (float)$default;
+							}
+							$output[$key] = [
+								'name' => $name,
+								'default' => $default,
+								'comment' => '',
+								'type' => $data['data-type']['base_expr'] ?: '',
+								'maxLength' => (int)($data['data-type']['length']) ?: NULL,
+								'null' => $data['nullable'] ? TRUE : FALSE,
+								'primary' => (isset($data['unique']) and $data['unique']) ? TRUE : FALSE,
+								'unique' => (isset($data['default']) and $data['default']) ? TRUE : FALSE,
 							];
 						}
 					}
 					return $output;
 				}
-			} catch (PDOException $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+			} else {
+				$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table";
+				try {
+					$stmt = $this->core->db->prepare($sql);
+					if ($stmt) {
+						$stmt->bindValue(':table', $table, PDO::PARAM_STR);
+						$stmt->execute();
+						$output = [];
+						while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+							if ($row['TABLE_SCHEMA'] != 'performance_schema') {
+								$output[$row['ORDINAL_POSITION']] = [
+									'name' => $row['COLUMN_NAME'],
+									'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
+									'comment' => $row['COLUMN_COMMENT'] ?: '',
+									'type' => $row['DATA_TYPE'] ?: '',
+									'maxLength' => (int)$row['COLUMN_MAXIMUM_LENGTH'] ?: NULL,
+									'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+									'primary' => strtolower($row['COLUMN_KEY']) == "pri" ? TRUE : FALSE,
+									'unique' => strtolower($row['COLUMN_KEY']) == "uni" ? TRUE : FALSE,
+								];
+							}
+						}
+						return $output;
+					}
+				} catch (PDOException $e) {
+					Err::error($e->getMessage(), __LINE__, __FILE__);
+				}
 			}
 		}
 
 		public static function prepareBinds($values)
 		{
 			foreach ($values as $k => $v) {
-				if (!is_null($v) and $v != 'NULL' and $v != 'null' and $v != NULL and !is_numeric($v)) {
+				if (!is_null($v) and mb_strtolower($v) != 'null' and !empty($v) and !is_numeric($v)) {
 					$values[$k] = json_encode($v, 256);
 				}
 			}
@@ -957,8 +998,8 @@ PHP;
 
 		public static function name2class($name)
 		{
-			$name = strtr($name,['\\'=>'_',
-				'/'=>'_']);
+			$name = strtr($name, ['\\' => '_',
+				'/' => '_']);
 			$n = explode("_", $name);
 			$n2 = [];
 			foreach ($n as $key => $value) {
