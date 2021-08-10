@@ -1012,7 +1012,7 @@ PHP;
 		public static function makeTable($name, $primaryKey = 'id')
 		{
 			$primaryKey = $primaryKey ?: 'id';
-			$class = make::table2class($name);
+			$class = make::name2class($name);
 			$code = <<<PHP
 <?php
 
