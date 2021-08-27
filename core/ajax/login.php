@@ -32,7 +32,7 @@
 						return $this->success('Ok');
 					}
 				} else {
-					return $this->failure('User not exists');
+					return $this->failure('User not exists: '.$this->email);
 				}
 			} catch (\Exception $e) {
 				return $this->failure($e->getMessage());

@@ -1,6 +1,7 @@
 <?php
 
 	namespace core\classes;
+
 	use core\model\bdObject;
 
 	/**
@@ -11,4 +12,9 @@
 	{
 		public $table = 'users';
 		public $primaryKey = 'id';
+
+		public function sendMail($subject, $body='', $file = [])
+		{
+			return $this->core->mail($this, $subject, $body, $file);
+		}
 	}

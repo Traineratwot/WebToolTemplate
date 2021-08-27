@@ -26,32 +26,46 @@ var Wt = /** @class */ (function () {
                     var method = form.attr('method') || 'POST';
                     var action = form.attr('action');
                     var dataType = form.data('type') || 'json';
+                    var before = form.data('before') || false;
+                    var settings = {
+                        type: method,
+                        url: '/index.php?a=' + action,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formData,
+                        dataType: dataType,
+                        success: function (msg) {
+                            msg.formId = id;
+                            if (msg.success == true) {
+                                form.trigger('success', msg);
+                            }
+                            else {
+                                form.trigger('failure', msg);
+                            }
+                        },
+                        error: function (e) {
+                            // @ts-ignore
+                            e.success = false;
+                            form.trigger('failure', e);
+                        }
+                    };
+                    if (before !== false && window[before] instanceof Function) {
+                        // @ts-ignore
+                        var r = window[before].call(this, formData, settings);
+                        if (r !== false) {
+                            if (r instanceof Object) {
+                                settings = r;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    }
                     var id = form.attr('id') || Core.id();
                     if (method && action) {
                         e.preventDefault();
-                        $.ajax({
-                            type: method,
-                            url: '/index.php?a=' + action,
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            data: formData,
-                            dataType: dataType,
-                            success: function (msg) {
-                                msg.formId = id;
-                                if (msg.success == true) {
-                                    form.trigger('success', msg);
-                                }
-                                else {
-                                    form.trigger('failure', msg);
-                                }
-                            },
-                            error: function (e) {
-                                // @ts-ignore
-                                e.success = false;
-                                form.trigger('failure', e);
-                            }
-                        }).done(function (e) {
+                        $.ajax(settings).done(function (e) {
                             e.success = false;
                             form.trigger('afterSubmit', e);
                         });
@@ -67,3 +81,4 @@ var Wt = /** @class */ (function () {
 $(function () {
     window['wt'] = new Wt();
 });
+//# sourceMappingURL=main.js.map

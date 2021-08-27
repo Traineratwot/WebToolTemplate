@@ -3,6 +3,8 @@
 	namespace core\ajax;
 
 	use core\model\Ajax;
+	use core\model\Err;
+	use core\model\util;
 
 	class register extends Ajax
 	{
@@ -28,7 +30,7 @@
 					if (strlen($this->password) < 6) {
 						Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
 					}
-					$salt = rand(1000000, 9999999);
+					$salt = random_int(1000000, 9999999);
 					$authKey = md5($this->password . $this->email . $salt);
 					/** @var Core $newUser */
 					$newUser->set('email', $this->email);
@@ -37,7 +39,7 @@
 					$newUser->set('authKey', $authKey);
 					$newUser->save();
 					if ($newUser->isNew()) {
-						$this->fatal('Failed write to DataBase', __FILE__, __FILE__);
+						Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
 					} else {
 						util::setCookie('authKey', $authKey);
 						return $this->success('Ok');

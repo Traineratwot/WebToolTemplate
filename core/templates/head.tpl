@@ -15,3 +15,4 @@
 	}
 </script>
 <script type="text/javascript" src="/assets/js/main.js"></script>
+<link href="/assets/css/style.css" rel="stylesheet" type="text/css"/>

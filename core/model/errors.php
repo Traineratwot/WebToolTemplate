@@ -60,13 +60,7 @@
 				'file' => basename($file) ?: NULL,
 				'line' => $line ?: NULL,
 			]));
-			throw new Exception(Err::pretty([
-				'lvl' => 'error',
-				'datetime' => date('Y-m-d H:i:s'),
-				'message' => $msg,
-				'file' => basename($file) ?: NULL,
-				'line' => $line ?: NULL,
-			]));
+			throw new Exception($msg);
 		}
 
 		public static function info($msg, $line = __LINE__, $file = __FILE__)

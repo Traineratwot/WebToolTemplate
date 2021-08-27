@@ -1,4 +1,4 @@
-{extends file='C:\OSPanel\domains2\WebToolTemplate\core\templates\base.tpl'}
+{extends file='base.tpl'}
 {block name='content'}
-	
+
 {/block}

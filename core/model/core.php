@@ -7,6 +7,7 @@
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
+	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
 
@@ -21,14 +22,20 @@
 		 * @var SmartyBC
 		 */
 		public $smarty;
+		public $isAuthenticated = FALSE;
 
 		public function __construct()
 		{
 			try {
 				$this->db = new PDO(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
 			} catch (PDOException $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 			}
+			$this->auth();
+		}
+
+		public function auth()
+		{
 			if (isset($_COOKIE['authKey']) and $_COOKIE['authKey']) {
 				$u = $this->getUser(['authKey' => $_COOKIE['authKey']]);
 				if (!$u->isNew) {
@@ -42,12 +49,66 @@
 			} else {
 				$this->isAuthenticated = TRUE;
 			}
-
 		}
 
-		public function getUser($where = [])
+		public function getUser($where = []): users
 		{
 			return new Users($this, $where);
+		}
+
+		/**
+		 * @param array<string|users>|string|users $to
+		 * @param string                           $subject
+		 * @param string                           $body
+		 * @param array                            $file
+		 * @return bool|string
+		 */
+		public function mail($to, $subject, $body, $file = [])
+		{
+			try {
+				$mail = new PHPMailer(TRUE);
+				$mail->isHTML(TRUE);
+				$mail->setLanguage('ru');
+				$mail->CharSet = PHPMailer::CHARSET_UTF8;
+				$mail->setFrom('admin@itilium.massive.ru', 'Admin');
+
+//			$this->mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+//			$this->mail->isSMTP();                                            //Send using SMTP
+//			$this->mail->Host       = 'smtp.example.com';                     //Set the SMTP server to send through
+//			$this->mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+//			$this->mail->Username   = 'user@example.com';                     //SMTP username
+//			$this->mail->Password   = 'secret';                               //SMTP password
+//			$this->mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+//			$this->mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+				if (!is_array($to)) {
+					$to = [$to];
+				}
+				foreach ($to as $too) {
+					if ($too instanceof Users) {
+						$email = $too->get('email');
+						$name = $too->get('full_name');
+					} else {
+						$a = explode('::', $too);
+						$email = $a[0];
+						$name = $a[1];
+					}
+					$mail->addAddress($email, $name);
+				}
+				if (!is_array($file)) {
+					$file = [$file];
+				}
+				foreach ($file as $f) {
+					$mail->addAttachment($f);
+				}
+				$mail->Subject = $subject;
+				$mail->Body = $body;
+				$mail->AltBody = strip_tags($body);
+				$mail->send();
+				return TRUE;
+			} catch (Exception $e) {
+				return $mail->ErrorInfo;
+			}
 		}
 
 		/**
@@ -172,75 +233,6 @@
 			}
 		}
 
-		private function repair()
-		{
-			foreach ($this->data as $key => $value) {
-				if (is_numeric($value)) {
-					$this->data[$key] = (float)$value;
-				}
-				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
-					$this->data[$key] = NULL;
-				}
-			}
-			foreach ($this->update as $key => $value) {
-				if (is_numeric($value)) {
-					$this->update[$key] = (float)$value;
-				}
-				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
-					$this->update[$key] = NULL;
-				}
-			}
-		}
-
-		private function validate()
-		{
-			foreach ($this->data as $key => $value) {
-				if (!array_key_exists($key, $this->_fields)) {
-					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
-				}
-			}
-			foreach ($this->update as $key => $value) {
-				if (!array_key_exists($key, $this->_fields)) {
-					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
-				}
-			}
-			return $this;
-		}
-
-		private function update($where, $type = 0)
-		{
-			if (!$type) {
-				$builder = new GenericBuilder();
-				$query = $builder->select()
-					->setTable($this->table)
-					->where();
-				foreach ($where as $key => $value) {
-					$query->equals($key, $value);
-				}
-				$query = $query->end();
-				$sql = $builder->write($query);
-				$values = $builder->getValues();
-				$values = $this->prepareBinds($values);
-				$sql = $this->prepareSql($sql, $this->table);
-				$sql = strtr($sql, $values);
-			} else {
-				$sql = <<<SQL
-SELECT * FROM `{$this->table}` WHERE $where
-SQL;
-			}
-			$q = $this->core->db->query($sql);
-			if ($q) {
-				$data = $q->fetch(PDO::FETCH_ASSOC);
-				if ($data and !empty($data)) {
-					foreach ($data as $k => $v) {
-						$this->data[$k] = $v;
-					}
-					$this->isNew = FALSE;
-				}
-			}
-			return $this;
-		}
-
 		private function getSchema($catch = TRUE)
 		{
 			if ($catch) {
@@ -277,15 +269,15 @@ SQL;
 						foreach ($parsed['TABLE']['create-def']['sub_tree'] as $key => $column) {
 							$name = $column['sub_tree'][0]['base_expr'];
 							$data = $column['sub_tree'][1];
-							foreach ($data['sub_tree'] as $param){
-								if(is_array($param)) {
+							foreach ($data['sub_tree'] as $param) {
+								if (is_array($param)) {
 									if ($param['expr_type'] == 'data-type') {
 										$data['data-type'] = $param;
 									}
 								}
 							}
-							$default = (!isset($data['default']) or strtolower($data['default']) === 'null') ? NULL : trim($data['default'],'()');
-							if(is_numeric($default)){
+							$default = (!isset($data['default']) or strtolower($data['default']) === 'null') ? NULL : trim($data['default'], '()');
+							if (is_numeric($default)) {
 								$default = (float)$default;
 							}
 							$output[$key] = [
@@ -332,6 +324,42 @@ SQL;
 			}
 		}
 
+		private function update($where, $type = 0)
+		{
+			if (!$type) {
+				$builder = new GenericBuilder();
+				$query = $builder->select()
+					->setTable($this->table)
+					->where();
+				foreach ($where as $key => $value) {
+					$query->equals($key, $value);
+				}
+				$query = $query->end();
+				$sql = $builder->write($query);
+				$values = $builder->getValues();
+				$values = $this->prepareBinds($values);
+				$sql = $this->prepareSql($sql, $this->table);
+				$sql = strtr($sql, $values);
+			} else {
+				$sql = <<<SQL
+SELECT * FROM `{$this->table}` WHERE $where
+SQL;
+			}
+			$q = $this->core->db->query($sql);
+			if ($q) {
+				$data = $q->fetch(PDO::FETCH_ASSOC);
+				if ($data and !empty($data)) {
+					foreach ($data as $k => $v) {
+						$this->data[$k] = $v;
+					}
+					$this->isNew = FALSE;
+				}
+			} else {
+//				Err::warning("invalid sql string: ".$sql);
+			}
+			return $this;
+		}
+
 		public static function prepareBinds($values)
 		{
 			foreach ($values as $k => $v) {
@@ -352,8 +380,6 @@ SQL;
 			]);
 		}
 
-		//--------------------------------------------------------
-
 		public function toArray()
 		{
 			return $this->data;
@@ -365,6 +391,8 @@ SQL;
 			array_merge($this->update, $data);
 			return $this;
 		}
+
+		//--------------------------------------------------------
 
 		public function set($key, $value = NULL)
 		{
@@ -380,18 +408,39 @@ SQL;
 			return $this;
 		}
 
-		public function get($key, $default = NULL)
+		private function repair()
 		{
-			$this->repair();
-			if (is_null($default) and isset($this->schema[$key])) {
-				$default = $this->schema[$key]['default'];
+			foreach ($this->data as $key => $value) {
+				if (is_numeric($value)) {
+					$this->data[$key] = (float)$value;
+				}
+				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+					$this->data[$key] = NULL;
+				}
 			}
-			return $this->data[$key] ?: $default;
+			foreach ($this->update as $key => $value) {
+				if (is_numeric($value)) {
+					$this->update[$key] = (float)$value;
+				}
+				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+					$this->update[$key] = NULL;
+				}
+			}
 		}
 
-		public function isNew()
+		private function validate()
 		{
-			return $this->isNew;
+			foreach ($this->data as $key => $value) {
+				if (!array_key_exists($key, $this->_fields)) {
+					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
+				}
+			}
+			foreach ($this->update as $key => $value) {
+				if (!array_key_exists($key, $this->_fields)) {
+					Err::warning('undefined field: "' . $key . '" in "' . $this->table . '"', __FILE__, __FILE__);
+				}
+			}
+			return $this;
 		}
 
 		public function save()
@@ -439,6 +488,11 @@ SQL;
 			return $this;
 		}
 
+		public function isNew()
+		{
+			return $this->isNew;
+		}
+
 		public function remove()
 		{
 			try {
@@ -453,6 +507,15 @@ SQL;
 				Err::error($e->getMessage(), __LINE__, __FILE__);
 			}
 			return $this;
+		}
+
+		public function get($key, $default = NULL)
+		{
+			$this->repair();
+			if (is_null($default) and isset($this->schema[$key])) {
+				$default = $this->schema[$key]['default'];
+			}
+			return $this->data[$key] ?: $default;
 		}
 	}
 
@@ -549,6 +612,22 @@ SQL;
 			return (string)$o;
 		}
 
+		public function initialize()
+		{
+			return TRUE;
+		}
+
+		public function failure($msg = '', $object = NULL, $error = [])
+		{
+			return [
+				'success' => FALSE,
+				'message' => $msg,
+				'object' => $object,
+				'errors' => $error,
+				'code' => $this->httpResponseCode,
+			];
+		}
+
 		public function process()
 		{
 			switch ($_SERVER['REQUEST_METHOD']) {
@@ -618,22 +697,6 @@ SQL;
 				'code' => $this->httpResponseCode,
 			];
 		}
-
-		public function failure($msg = '', $object = NULL, $error = [])
-		{
-			return [
-				'success' => FALSE,
-				'message' => $msg,
-				'object' => $object,
-				'errors' => $error,
-				'code' => $this->httpResponseCode,
-			];
-		}
-
-		public function initialize()
-		{
-			return TRUE;
-		}
 	}
 
 	abstract class Page extends CoreObject
@@ -654,25 +717,53 @@ SQL;
 			}
 		}
 
-		public function beforeRender()
+		public function forward($alias)
 		{
+			$this->source = WT_PAGES_PATH . $alias . '.tpl';
+		}
 
+		public function redirect($alias)
+		{
+			header("Location: $alias");
 		}
 
 		final public function render()
 		{
 			$this->smarty = new SmartyBC();
 			$this->beforeRender();
-			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH);
-			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH);
-			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH);
-			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH);
+			if (!file_exists($this->source)) {
+				header('HTTP/1.1 404 Not Found');
+				readfile(WT_PAGES_PATH . '404.html');
+				die;
+			}
+			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
+			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
+			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
+			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
 			$this->smarty->assign('title', $this->title);
 			$this->smarty->assign('page', $this);
 			$this->smarty->assign('core', $this->core);
 			$this->smarty->assign('user', $this->core->user);
+			$this->smarty->assign('_GET', $_GET);
+			$this->smarty->assign('_POST', $_POST);
 			$this->smarty->assign('isAuthenticated', $this->core->isAuthenticated);
 			$this->smarty->display($this->source);
+		}
+
+		public function errorPage($code = 404)
+		{
+			header("HTTP/1.1 $code Not Found");
+			if (file_exists(WT_PAGES_PATH . $code . '.html')) {
+				readfile(WT_PAGES_PATH . $code . '.html');
+			} else {
+				readfile(WT_PAGES_PATH . '404.html');
+			}
+			die;
+		}
+
+		public function beforeRender()
+		{
+
 		}
 	}
 
@@ -732,8 +823,6 @@ SQL;
 						$error = 'Unknown JSON error occurred.';
 						break;
 				}
-
-
 				if (!$error) {
 					return $result;
 				}
@@ -847,11 +936,6 @@ SQL;
 			return filter_var($ip, FILTER_VALIDATE_IP) ? (string)$ip : FALSE;
 		}
 
-		public static function rawText($a = '')
-		{
-			return mb_strtolower(preg_replace('@[^A-zА-я0-9]|[\/_\\\.\,]@u', '', (string)$a));
-		}
-
 		public static function getSystem()
 		{
 			$sys = util::rawText(php_uname('s'));
@@ -862,6 +946,11 @@ SQL;
 				return 'nix';
 			}
 			return 'nix';
+		}
+
+		public static function rawText($a = '')
+		{
+			return mb_strtolower(preg_replace('@[^A-zА-я0-9]|[\/_\\\.\,]@u', '', (string)$a));
 		}
 
 		public static function baseExt($file = '')
@@ -949,12 +1038,25 @@ PHP;
 			return $code;
 		}
 
+		public static function name2class($name)
+		{
+			$name = strtr($name, ['\\' => '_',
+				'/' => '_']);
+			$n = explode("_", $name);
+			$n2 = [];
+			foreach ($n as $key => $value) {
+				$n2[] = ucfirst(mb_strtolower($value));
+			}
+			$class = implode('', $n2);
+			return $class;
+		}
+
 		public static function makePageTpl($name, $template = 'base')
 		{
 			if (!$template) {
-				$template = WT_TEMPLATES_PATH . 'base.tpl';
+				$template = 'base.tpl';
 			} else {
-				$template = WT_TEMPLATES_PATH . $template . '.tpl';
+				$template = $template . '.tpl';
 			}
 			$code = <<<TPL
 {extends file='{$template}'}
@@ -991,22 +1093,8 @@ PHP;
 			return $code;
 		}
 
-
 		public static function makeTemplate($name, $template = 'base')
 		{
-		}
-
-		public static function name2class($name)
-		{
-			$name = strtr($name, ['\\' => '_',
-				'/' => '_']);
-			$n = explode("_", $name);
-			$n2 = [];
-			foreach ($n as $key => $value) {
-				$n2[] = ucfirst(mb_strtolower($value));
-			}
-			$class = implode('', $n2);
-			return $class;
 		}
 
 		public static function makeTable($name, $primaryKey = 'id')

@@ -2,7 +2,6 @@
 
 	namespace core\page;
 
-	use core\model\Err;
 	use core\model\Page;
 
 	class Index extends Page
@@ -11,7 +10,11 @@
 		public $title = 'index';
 
 		public function beforeRender(){
-
+			if($this->core->user == null){
+				$this->redirect('login');
+			}else{
+				$this->forward('profile');
+			}
 		}
 	}
 
