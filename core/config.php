@@ -31,6 +31,17 @@
 	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');
 	define('WT_SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config');
 	define('WT_SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache');
+	//настройка Почты
+	define('WT_FROM_EMAIL_MAIL', 'admin@example.com');
+	define('WT_FROM_NAME_MAIL', 'admin');
+	define('WT_SMTP_MAIL', FALSE); //включить SMTP
+	define('WT_HOST_MAIL', 'smtp.example.com');
+	define('WT_AUTH_MAIL', FALSE);//включить Авторизацию
+	define('WT_USERNAME_MAIL', 'admin');
+	define('WT_PASSWORD_MAIL', 'admin');
+	define('WT_SECURE_MAIL', 'ssl');//тип шифрования
+	define('WT_PORT_MAIL', '465');
+
 	if (!function_exists('getSystem')) {
 		function getSystem()
 		{

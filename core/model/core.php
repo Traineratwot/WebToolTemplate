@@ -70,16 +70,19 @@
 				$mail->isHTML(TRUE);
 				$mail->setLanguage('ru');
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
-				$mail->setFrom('admin@itilium.massive.ru', 'Admin');
-
-//			$this->mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-//			$this->mail->isSMTP();                                            //Send using SMTP
-//			$this->mail->Host       = 'smtp.example.com';                     //Set the SMTP server to send through
-//			$this->mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-//			$this->mail->Username   = 'user@example.com';                     //SMTP username
-//			$this->mail->Password   = 'secret';                               //SMTP password
-//			$this->mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-//			$this->mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+				$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
+				if (WT_SMTP_MAIL) {
+					$this->mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+					$this->mail->isSMTP();                                            //Send using SMTP
+					$this->mail->Host = WT_HOST_MAIL;                     //Set the SMTP server to send through
+					if(WT_AUTH_MAIL) {
+						$this->mail->SMTPAuth = TRUE;                                   //Enable SMTP authentication
+						$this->mail->Username = WT_USERNAME_MAIL;                     //SMTP username
+						$this->mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
+					}
+					$this->mail->SMTPSecure = WT_SECURE_MAIL;            //Enable implicit TLS encryption
+					$this->mail->Port = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+				}
 
 				if (!is_array($to)) {
 					$to = [$to];
