@@ -8,6 +8,7 @@
 	use PDO;
 	use PDOException;
 	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\SMTP;
 	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
 
@@ -72,16 +73,16 @@
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
 				$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
 				if (WT_SMTP_MAIL) {
-					$this->mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-					$this->mail->isSMTP();                                            //Send using SMTP
-					$this->mail->Host = WT_HOST_MAIL;                     //Set the SMTP server to send through
+					$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+					$mail->isSMTP();                                            //Send using SMTP
+					$mail->Host = WT_HOST_MAIL;                     //Set the SMTP server to send through
 					if(WT_AUTH_MAIL) {
-						$this->mail->SMTPAuth = TRUE;                                   //Enable SMTP authentication
-						$this->mail->Username = WT_USERNAME_MAIL;                     //SMTP username
-						$this->mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
+						$mail->SMTPAuth = TRUE;                                   //Enable SMTP authentication
+						$mail->Username = WT_USERNAME_MAIL;                     //SMTP username
+						$mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
 					}
-					$this->mail->SMTPSecure = WT_SECURE_MAIL;            //Enable implicit TLS encryption
-					$this->mail->Port = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+					$mail->SMTPSecure = WT_SECURE_MAIL;            //Enable implicit TLS encryption
+					$mail->Port = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 				}
 
 				if (!is_array($to)) {
@@ -109,7 +110,7 @@
 				$mail->AltBody = strip_tags($body);
 				$mail->send();
 				return TRUE;
-			} catch (Exception $e) {
+			} catch (\PHPMailer\PHPMailer\Exception $e) {
 				return $mail->ErrorInfo;
 			}
 		}
