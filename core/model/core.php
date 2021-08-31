@@ -24,6 +24,10 @@
 		 */
 		public $smarty;
 		public $isAuthenticated = FALSE;
+		/**
+		 * @var Cache
+		 */
+		public $cache;
 
 		public function __construct()
 		{
@@ -33,6 +37,7 @@
 				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 			}
 			$this->auth();
+			$this->cache = new Cache;
 		}
 
 		public function auth()
@@ -76,7 +81,7 @@
 					$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
 					$mail->isSMTP();                                            //Send using SMTP
 					$mail->Host = WT_HOST_MAIL;                     //Set the SMTP server to send through
-					if(WT_AUTH_MAIL) {
+					if (WT_AUTH_MAIL) {
 						$mail->SMTPAuth = TRUE;                                   //Enable SMTP authentication
 						$mail->Username = WT_USERNAME_MAIL;                     //SMTP username
 						$mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
@@ -768,6 +773,54 @@ SQL;
 		public function beforeRender()
 		{
 
+		}
+	}
+
+	class Cache
+	{
+
+		private function getKey($a)
+		{
+			return md5(serialize($a));
+		}
+
+		public function setCache($key, $value, $expire = 0)
+		{
+			$name = $this->getKey($key) . '.cache.php';
+			$v = var_export($value, 1);
+			$expire = $expire ? $expire + time() : 0;
+			$body = <<<PHP
+<?php
+	if($expire){
+		if(time() > $expire){
+			unlink(__FILE__);
+			return null;
+		}
+	}
+
+	return $v
+?>
+PHP;
+			file_put_contents(WT_CACHE_PATH . $name, $body);
+			return $value;
+		}
+
+		public function getCache($key)
+		{
+			$name = $this->getKey($key) . '.cache.php';
+			if (file_exists(WT_CACHE_PATH . $name)) {
+				return require WT_CACHE_PATH . $name;
+			}
+			return NULL;
+		}
+
+		public function clearCache($key)
+		{
+			$name = $this->getKey($key) . '.cache.php';
+			if (file_exists(WT_CACHE_PATH . $name)) {
+				unlink(WT_CACHE_PATH . $name);
+			}
+			return !file_exists(WT_CACHE_PATH . $name);
 		}
 	}
 
