@@ -1,5 +1,6 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+<script type="text/javascript" src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
 <link href="/node_modules/@pnotify/core/dist/PNotify.css" rel="stylesheet" type="text/css"/>
 <link href="/node_modules/@pnotify/mobile/dist/PNotifyMobile.css" rel="stylesheet" type="text/css"/>
 <link href="/node_modules/@pnotify/core/dist/BrightTheme.css" rel="stylesheet" type="text/css"/>

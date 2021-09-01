@@ -528,6 +528,9 @@ SQL;
 		}
 	}
 
+	/**
+	 * Класс для работы ajax запросами
+	 */
 	abstract class Ajax extends CoreObject
 	{
 		/**
@@ -708,6 +711,9 @@ SQL;
 		}
 	}
 
+	/**
+	 * Класс для Страницы
+	 */
 	abstract class Page extends CoreObject
 	{
 
@@ -724,6 +730,38 @@ SQL;
 			if (!$this->title) {
 				$this->title = util::basename($this->alias) ?: $this->alias;
 			}
+			$this->smarty = new SmartyBC();
+			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
+			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
+			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
+			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
+			$this->smarty->assignGlobal('title', $this->title);
+			$this->smarty->assignGlobal('page', $this);
+			$this->smarty->assignGlobal('core', $this->core);
+			$this->smarty->assignGlobal('user', $this->core->user);
+			$this->smarty->assignGlobal('_GET', $_GET);
+			$this->smarty->assignGlobal('_POST', $_POST);
+			$this->smarty->assignGlobal('_REQUEST', $_REQUEST);
+			$this->smarty->assignGlobal('_SERVER', $_SERVER);
+			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
+			$this->addModifier('user', '\core\model\Page::modifier_user');
+		}
+
+		public function addModifier($name, $function){
+			$this->smarty->registerPlugin("modifier",$name, $function);
+		}
+
+		/**
+		 * @return mixed
+		 */
+		public static function modifier_user($value)
+		{
+			global $core;
+			$value = (int)$value;
+			if($value){
+				return $core->getUser($value);
+			}
+			return $value;
 		}
 
 		public function forward($alias)
@@ -738,25 +776,23 @@ SQL;
 
 		final public function render()
 		{
-			$this->smarty = new SmartyBC();
 			$this->beforeRender();
 			if (!file_exists($this->source)) {
 				header('HTTP/1.1 404 Not Found');
 				readfile(WT_PAGES_PATH . '404.html');
 				die;
 			}
-			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
-			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
-			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
-			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
-			$this->smarty->assign('title', $this->title);
-			$this->smarty->assign('page', $this);
-			$this->smarty->assign('core', $this->core);
-			$this->smarty->assign('user', $this->core->user);
-			$this->smarty->assign('_GET', $_GET);
-			$this->smarty->assign('_POST', $_POST);
-			$this->smarty->assign('isAuthenticated', $this->core->isAuthenticated);
 			$this->smarty->display($this->source);
+		}
+
+		public function setVar($name, $var, $nocache = FALSE)
+		{
+			$this->smarty->assign($name, $var, $nocache);
+		}
+
+		public function chunk($path)
+		{
+
 		}
 
 		public function errorPage($code = 404)
