@@ -483,7 +483,10 @@ SQL;
 					//Err::info($sql, __LINE__, __FILE__);
 					$q = $this->core->db->exec($sql);
 					if ($q !== FALSE and $this->isNew()) {
-						$this->data[$this->primaryKey] = $this->core->db->lastInsertId();
+						$lastID = $this->core->db->lastInsertId();
+						if($lastID) {
+							$this->data[$this->primaryKey] = $this->core->db->lastInsertId();
+						}
 						$this->isNew = FALSE;
 					} else {
 						Err::error($sql, __LINE__, __FILE__);
