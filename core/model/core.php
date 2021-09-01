@@ -839,6 +839,23 @@ SQL;
 				$this->setVar($key, $value);
 			}
 		}
+
+		public function init()
+		{
+			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
+			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
+			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
+			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
+			$this->smarty->assignGlobal('title', $this->title);
+			$this->smarty->assignGlobal('page', $this);
+			$this->smarty->assignGlobal('core', $this->core);
+			$this->smarty->assignGlobal('_GET', $_GET);
+			$this->smarty->assignGlobal('_POST', $_POST);
+			$this->smarty->assignGlobal('_REQUEST', $_REQUEST);
+			$this->smarty->assignGlobal('_SERVER', $_SERVER);
+			$this->addModifier('user', '\core\model\Page::modifier_user');
+			$this->addModifier('chunk', '\core\model\Page::modifier_chunk');
+		}
 	}
 
 	class Cache
