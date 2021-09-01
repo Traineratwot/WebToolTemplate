@@ -731,6 +731,11 @@ SQL;
 				$this->title = util::basename($this->alias) ?: $this->alias;
 			}
 			$this->smarty = new SmartyBC();
+			$this->init();
+		}
+
+		public function init()
+		{
 			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
 			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
 			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
@@ -745,10 +750,12 @@ SQL;
 			$this->smarty->assignGlobal('_SERVER', $_SERVER);
 			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
 			$this->addModifier('user', '\core\model\Page::modifier_user');
+			$this->addModifier('chunk', '\core\model\Page::modifier_chunk');
 		}
 
-		public function addModifier($name, $function){
-			$this->smarty->registerPlugin("modifier",$name, $function);
+		public function addModifier($name, $function)
+		{
+			$this->smarty->registerPlugin("modifier", $name, $function);
 		}
 
 		/**
@@ -758,7 +765,7 @@ SQL;
 		{
 			global $core;
 			$value = (int)$value;
-			if($value){
+			if ($value) {
 				return $core->getUser($value);
 			}
 			return $value;
@@ -790,9 +797,17 @@ SQL;
 			$this->smarty->assign($name, $var, $nocache);
 		}
 
-		public function chunk($path)
+		public function chunk($alias, $values = [])
 		{
+			$a = new Chunk($this->core, $alias, $values);
+			return $a->render();
+		}
 
+		public static function modifier_chunk($alias, $values = [])
+		{
+			global $core;
+			$a = new Chunk($core, $alias, $values);
+			return $a->render();
 		}
 
 		public function errorPage($code = 404)
@@ -809,6 +824,20 @@ SQL;
 		public function beforeRender()
 		{
 
+		}
+	}
+	/**
+	 * Класс для Чанка
+	 */
+	class Chunk extends Page
+	{
+		public function __construct(Core $core, $alias, $values)
+		{
+			parent::__construct($core);
+			$this->source = WT_TEMPLATES_PATH . $alias . '.tpl';
+			foreach ($values as $key => $value) {
+				$this->setVar($key, $value);
+			}
 		}
 	}
 
@@ -850,7 +879,7 @@ PHP;
 			return NULL;
 		}
 
-		public function clearCache($key)
+		public function removeCache($key)
 		{
 			$name = $this->getKey($key) . '.cache.php';
 			if (file_exists(WT_CACHE_PATH . $name)) {
