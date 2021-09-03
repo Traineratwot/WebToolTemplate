@@ -25,7 +25,7 @@
 					$this->core->user->set('salt', $salt);
 					$this->core->user->set('authKey', $authKey);
 					$this->core->user->save();
-					util::setCookie('authKey', NULL);
+					session_unset();
 					return $this->success('Ok');
 				} else {
 					return $this->failure('empty password');

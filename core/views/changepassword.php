@@ -16,17 +16,18 @@
 				$authKey = $_GET['authKey'];
 				$User = $this->core->getUser(['authKey' => $authKey]);
 				if (!$User->isNew()) {
-					if ($User->get('password') !== md5($this->password)) {
-					} else {
-						util::setCookie('authKey', $User->get('authKey'));
-					}
 					$this->core->auth();
 					$salt = random_int(1000000, 9999999);
 					$authKey = md5($authKey . $salt);
 					$User->set('salt', $salt);
 					$User->set('authKey', $authKey);
 					$User->save();
-					util::setCookie('authKey', $authKey);
+					$_SESSION['authKey'] = $authKey;
+					$_SESSION['ip'] = util::getIp();
+				} else {
+					echo '<pre>';
+					echo("<h3>Страница больше недоступна. Запросите восстановление еще раз</h3>");
+					die;
 				}
 			} else {
 				if (!$this->core->isAuthenticated) {
