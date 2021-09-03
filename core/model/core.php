@@ -42,7 +42,7 @@
 
 		public function auth()
 		{
-			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['id'] == util::getIp()) {
+			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['ip'] == util::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
