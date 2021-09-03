@@ -41,7 +41,8 @@
 					if ($newUser->isNew()) {
 						Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
 					} else {
-						util::setCookie('authKey', $authKey);
+						$_SESSION['authKey']= $authKey;
+						$_SESSION['ip']= util::getIp();
 						return $this->success('Ok');
 					}
 				} else {

@@ -9,7 +9,7 @@
 	{
 		function process()
 		{
-			util::setCookie('authKey', NULL);
+			session_unset();
 			return $this->success('Ok');
 		}
 	}

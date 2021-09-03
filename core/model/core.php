@@ -42,12 +42,12 @@
 
 		public function auth()
 		{
-			if (isset($_COOKIE['authKey']) and $_COOKIE['authKey']) {
-				$u = $this->getUser(['authKey' => $_COOKIE['authKey']]);
+			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['id'] == util::getIp()) {
+				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
 				} else {
-					util::setCookie('authKey', NULL);
+					session_unset();
 				}
 			}
 			if ($this->user == NULL) {
@@ -484,8 +484,8 @@ SQL;
 					$q = $this->core->db->exec($sql);
 					if ($q !== FALSE and $this->isNew()) {
 						$lastID = $this->core->db->lastInsertId();
-						if($lastID) {
-							$this->data[$this->primaryKey] = $this->core->db->lastInsertId();
+						if ($lastID) {
+							$this->data[$this->primaryKey] = $lastID;
 						}
 						$this->isNew = FALSE;
 					} else {
@@ -829,6 +829,7 @@ SQL;
 
 		}
 	}
+
 	/**
 	 * Класс для Чанка
 	 */

@@ -15,7 +15,7 @@
 			if ($this->email and $this->password) {
 				return TRUE;
 			} else {
-				return 'empty email or password';
+				return 'пустой адрес электронной почты или пароль';
 			}
 		}
 
@@ -26,17 +26,20 @@
 				$User = $this->core->getUser(['email' => $this->email]);
 				if (!$User->isNew()) {
 					if ($User->get('password') !== md5($this->password)) {
-						Err::fatal('Wrong password', __FILE__, __FILE__);
+						Err::fatal('Неправильный пароль', __FILE__, __FILE__);
 					} else {
-						util::setCookie('authKey', $User->get('authKey'));
+						$_SESSION['authKey'] = $User->get('authKey');
+						$_SESSION['ip'] = util::getIp();
+						session_write_close();
 						return $this->success('Ok');
 					}
 				} else {
-					return $this->failure('User not exists: '.$this->email);
+					return $this->failure('Пользователь не существует: ' . $this->email);
 				}
 			} catch (\Exception $e) {
 				return $this->failure($e->getMessage());
 			}
 		}
 	}
+
 	return 'Login';

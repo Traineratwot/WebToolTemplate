@@ -1,6 +1,7 @@
 var Wt = /** @class */ (function () {
     function Wt() {
         this.events();
+        this.render = new WtRender(this);
     }
     Wt.prototype.id = function (length) {
         if (length === void 0) { length = 6; }
@@ -77,8 +78,56 @@ var Wt = /** @class */ (function () {
     };
     return Wt;
 }());
+var WtRender = /** @class */ (function () {
+    function WtRender(wt) {
+        this.wt = wt;
+    }
+    WtRender.prototype.getData = function (alias, data, callback) {
+        if (data === void 0) { data = []; }
+        var settings = {
+            "url": "/?a=render",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "alias": alias,
+                "data": data
+            }),
+        };
+        $.ajax(settings).done(function (response) {
+            callback(response);
+        });
+    };
+    WtRender.prototype.render = function (elem, alias, data) {
+        if (data === void 0) { data = []; }
+        $(elem).html("");
+        var self = this;
+        this.getData(alias, data, function (data) {
+            self.elem = $(data);
+            self.elem.appendTo(elem);
+        });
+    };
+    WtRender.prototype.append = function (elem, alias, data) {
+        if (data === void 0) { data = []; }
+        var self = this;
+        this.getData(alias, data, function (data) {
+            self.elem = $(data);
+            self.elem.appendTo(elem);
+        });
+    };
+    WtRender.prototype.prepend = function (elem, alias, data) {
+        if (data === void 0) { data = []; }
+        var self = this;
+        this.getData(alias, data, function (data) {
+            self.elem = $(data);
+            self.elem.prependTo(elem);
+        });
+    };
+    return WtRender;
+}());
 // @ts-ignore
 $(function () {
     window['wt'] = new Wt();
 });
-//# sourceMappingURL=main.js.map

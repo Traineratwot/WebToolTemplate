@@ -1,6 +1,9 @@
 class Wt {
+	public render: WtRender;
+
 	constructor() {
 		this.events()
+		this.render = new WtRender(this)
 	}
 
 	id(length = 6) {
@@ -52,12 +55,12 @@ class Wt {
 					}
 					if (before !== false && window[before] instanceof Function) {
 						// @ts-ignore
-						var r: JQuery.AjaxSettings | false = window[before].call(this,formData, settings)
+						var r: JQuery.AjaxSettings | false = window[before].call(this, formData, settings)
 						if (r !== false) {
 							if (r instanceof Object) {
 								settings = r;
 							}
-						}else{
+						} else {
 							return false;
 						}
 					}
@@ -74,6 +77,61 @@ class Wt {
 			return false;
 		})
 	}
+}
+
+class WtRender {
+	public wt: Wt;
+	public elem: any;
+
+	constructor(wt) {
+		this.wt = wt
+	}
+
+	private getData(alias, data = [], callback) {
+		var settings = {
+			"url": "/?a=render",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data": JSON.stringify({
+				"alias": alias,
+				"data": data
+			}),
+		};
+
+		$.ajax(settings).done(function (response) {
+			callback(response)
+		});
+	}
+
+	render(elem, alias, data = []) {
+		$(elem).html("")
+		var self = this
+		this.getData(alias, data, (data) => {
+			self.elem = $(data);
+			self.elem.appendTo(elem);
+		})
+
+	}
+
+	append(elem, alias, data = []) {
+		var self = this
+		this.getData(alias, data, (data) => {
+			self.elem = $(data);
+			self.elem.appendTo(elem);
+		})
+	}
+
+	prepend(elem, alias, data = []) {
+		var self = this
+		this.getData(alias, data, (data) => {
+			self.elem = $(data);
+			self.elem.prependTo(elem);
+		})
+	}
+
 }
 
 // @ts-ignore
