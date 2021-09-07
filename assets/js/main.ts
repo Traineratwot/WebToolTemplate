@@ -1,6 +1,5 @@
 class Wt {
 	public render: WtRender;
-	public block_show = {}
 
 	constructor() {
 		this.events()
@@ -21,37 +20,35 @@ class Wt {
 
 	canSee(elem: string, async = false) {
 
-		if (!this.block_show.hasOwnProperty(elem)) {
-			this.block_show[elem] = null
-		}
+		var block_show = null
 		var displays = []
 		$(elem).parents().each(function () {
 			displays.push($(this).css('display'));
 		})
 		if (displays.indexOf('none') > 0) {
 			console.log('Блок ' + elem + ' скрыт');
-			this.block_show[elem] = false;
+			block_show = false;
 		} else {
 			var wt = $(window).scrollTop();
 			var wh = $(window).height();
 			var et = $(elem).offset().top;
 			var eh = $(elem).outerHeight();
 			if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
-				if (this.block_show[elem] == null || this.block_show[elem] == false) {
+				if (block_show == null || block_show == false) {
 					console.log('Блок ' + elem + ' в области видимости');
 				}
-				this.block_show[elem] = true;
+				block_show = true;
 			} else {
-				if (this.block_show[elem] == null || this.block_show[elem] == true) {
+				if (block_show == null || block_show == true) {
 					console.log('Блок ' + elem + ' скрыт');
 				}
-				this.block_show[elem] = false;
+				block_show = false;
 			}
 		}
 		if (async) {
-			return Promise.resolve(this.block_show[elem])
+			return Promise.resolve([elem, block_show])
 		} else {
-			return this.block_show[elem]
+			return block_show
 		}
 	}
 
