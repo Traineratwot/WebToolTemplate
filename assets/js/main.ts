@@ -1,5 +1,6 @@
 class Wt {
 	public render: WtRender;
+	public block_show = {}
 
 	constructor() {
 		this.events()
@@ -16,6 +17,42 @@ class Wt {
 				charactersLength));
 		}
 		return result;
+	}
+
+	canSee(elem: string, async = false) {
+
+		if (!this.block_show.hasOwnProperty(elem)) {
+			this.block_show[elem] = null
+		}
+		var displays = []
+		$(elem).parents().each(function () {
+			displays.push($(this).css('display'));
+		})
+		if (displays.indexOf('none') > 0) {
+			console.log('Блок ' + elem + ' скрыт');
+			this.block_show[elem] = false;
+		} else {
+			var wt = $(window).scrollTop();
+			var wh = $(window).height();
+			var et = $(elem).offset().top;
+			var eh = $(elem).outerHeight();
+			if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+				if (this.block_show[elem] == null || this.block_show[elem] == false) {
+					console.log('Блок ' + elem + ' в области видимости');
+				}
+				this.block_show[elem] = true;
+			} else {
+				if (this.block_show[elem] == null || this.block_show[elem] == true) {
+					console.log('Блок ' + elem + ' скрыт');
+				}
+				this.block_show[elem] = false;
+			}
+		}
+		if (async) {
+			return Promise.resolve(this.block_show[elem])
+		} else {
+			return this.block_show[elem]
+		}
 	}
 
 	events() {

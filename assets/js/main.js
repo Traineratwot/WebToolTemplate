@@ -1,10 +1,11 @@
-var Wt = /** @class */ (function () {
-    function Wt() {
+class Wt {
+    render;
+    block_show = {};
+    constructor() {
         this.events();
         this.render = new WtRender(this);
     }
-    Wt.prototype.id = function (length) {
-        if (length === void 0) { length = 6; }
+    id(length = 6) {
         length = length - 1;
         var result = 'a';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -14,8 +15,45 @@ var Wt = /** @class */ (function () {
                 charactersLength));
         }
         return result;
-    };
-    Wt.prototype.events = function () {
+    }
+    canSee(elem, async = false) {
+        if (!this.block_show.hasOwnProperty(elem)) {
+            this.block_show[elem] = null;
+        }
+        var displays = [];
+        $(elem).parents().each(function () {
+            displays.push($(this).css('display'));
+        });
+        if (displays.indexOf('none') > 0) {
+            console.log('Блок ' + elem + ' скрыт');
+            this.block_show[elem] = false;
+        }
+        else {
+            var wt = $(window).scrollTop();
+            var wh = $(window).height();
+            var et = $(elem).offset().top;
+            var eh = $(elem).outerHeight();
+            if (wt + wh >= et && wt + wh - eh * 2 <= et + (wh - eh)) {
+                if (this.block_show[elem] == null || this.block_show[elem] == false) {
+                    console.log('Блок ' + elem + ' в области видимости');
+                }
+                this.block_show[elem] = true;
+            }
+            else {
+                if (this.block_show[elem] == null || this.block_show[elem] == true) {
+                    console.log('Блок ' + elem + ' скрыт');
+                }
+                this.block_show[elem] = false;
+            }
+        }
+        if (async) {
+            return Promise.resolve(this.block_show[elem]);
+        }
+        else {
+            return this.block_show[elem];
+        }
+    }
+    events() {
         var Core = this;
         $(document).on('submit', 'form', function (e) {
             e.preventDefault();
@@ -75,15 +113,15 @@ var Wt = /** @class */ (function () {
             }
             return false;
         });
-    };
-    return Wt;
-}());
-var WtRender = /** @class */ (function () {
-    function WtRender(wt) {
+    }
+}
+class WtRender {
+    wt;
+    elem;
+    constructor(wt) {
         this.wt = wt;
     }
-    WtRender.prototype.getData = function (alias, data, callback) {
-        if (data === void 0) { data = []; }
+    getData(alias, data = [], callback) {
         var settings = {
             "url": "/?a=render",
             "method": "POST",
@@ -99,35 +137,31 @@ var WtRender = /** @class */ (function () {
         $.ajax(settings).done(function (response) {
             callback(response);
         });
-    };
-    WtRender.prototype.render = function (elem, alias, data) {
-        if (data === void 0) { data = []; }
+    }
+    render(elem, alias, data = []) {
         $(elem).html("");
         var self = this;
-        this.getData(alias, data, function (data) {
+        this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.appendTo(elem);
         });
-    };
-    WtRender.prototype.append = function (elem, alias, data) {
-        if (data === void 0) { data = []; }
+    }
+    append(elem, alias, data = []) {
         var self = this;
-        this.getData(alias, data, function (data) {
+        this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.appendTo(elem);
         });
-    };
-    WtRender.prototype.prepend = function (elem, alias, data) {
-        if (data === void 0) { data = []; }
+    }
+    prepend(elem, alias, data = []) {
         var self = this;
-        this.getData(alias, data, function (data) {
+        this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.prependTo(elem);
         });
-    };
-    return WtRender;
-}());
+    }
+}
 // @ts-ignore
-$(function () {
+$(() => {
     window['wt'] = new Wt();
 });
