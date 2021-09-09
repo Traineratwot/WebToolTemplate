@@ -749,6 +749,7 @@ SQL;
 			$this->smarty->assignGlobal('user', $this->core->user);
 			$this->smarty->assignGlobal('_GET', $_GET);
 			$this->smarty->assignGlobal('_POST', $_POST);
+			$this->smarty->assignGlobal('_COOKIE', $_COOKIE);
 			$this->smarty->assignGlobal('_REQUEST', $_REQUEST);
 			$this->smarty->assignGlobal('_SERVER', $_SERVER);
 			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
