@@ -67,16 +67,29 @@
 		 * @param string                           $subject
 		 * @param string                           $body
 		 * @param array                            $file
+		 * @param array                            $options
 		 * @return bool|string
 		 */
-		public function mail($to, $subject, $body, $file = [])
+		public function mail($to, $subject, $body, $file = [], $options = [])
 		{
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
 				$mail->setLanguage('ru');
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
-				$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
+				if (!empty($options['from'])) {
+					if ($options['from'] instanceof Users) {
+						$email = $options['from']->get('email');
+						$name = $options['from']->get('full_name');
+					} else {
+						$a = explode('::', $options['from']);
+						$email = $a[0];
+						$name = $a[1];
+					}
+					$mail->setFrom($email, $name);
+				}else{
+					$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
+				}
 				if (WT_SMTP_MAIL) {
 					$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
 					$mail->isSMTP();                                            //Send using SMTP

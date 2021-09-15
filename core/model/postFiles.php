@@ -1,5 +1,8 @@
 <?php
+
 	namespace core\model;
+
+	use Exception;
 
 	class PostFile
 	{
@@ -18,13 +21,13 @@
 		public $size;
 		public $content;
 		/**
-		 * @var bool
-		 */
-		private $saved = FALSE;
-		/**
 		 * @var bool|Csv
 		 */
 		public $csv;
+		/**
+		 * @var bool
+		 */
+		private $saved = FALSE;
 		/**
 		 * @var mixed
 		 */
@@ -54,15 +57,6 @@
 				$this->type = isset($data['type']) ? $data['type'] : NULL;
 				$this->size = isset($data['size']) ? $data['size'] : NULL;
 			}
-		}
-
-		/**
-		 * @return bool|string
-		 */
-		public function getContent()
-		{
-			$this->content = @file_get_contents($this->path);
-			return $this->content;
 		}
 
 		/**
@@ -106,6 +100,11 @@
 			}
 		}
 
+		public function __toString()
+		{
+			return json_encode($this->toArray());
+		}
+
 		public function toArray()
 		{
 			return [
@@ -116,11 +115,6 @@
 				'type' => $this->type,
 				'size' => $this->size,
 			];
-		}
-
-		public function __toString()
-		{
-			return json_encode($this->toArray());
 		}
 
 		public function __invoke()
@@ -134,6 +128,15 @@
 				return json_decode($this->getContent(), $flag);
 			}
 			return FALSE;
+		}
+
+		/**
+		 * @return bool|string
+		 */
+		public function getContent()
+		{
+			$this->content = @file_get_contents($this->path);
+			return $this->content;
 		}
 
 		public function __debugInfo()
@@ -165,15 +168,6 @@
 			}
 		}
 
-		public function default_files($files)
-		{
-			$filesByInput = [];
-			foreach ($files as $input => $value) {
-				$filesByInput[$input][0] = $value;
-			}
-			return $filesByInput;
-		}
-
 		public function multiply_files($files)
 		{
 			$filesByInput = [];
@@ -189,6 +183,15 @@
 					}
 				}
 
+			}
+			return $filesByInput;
+		}
+
+		public function default_files($files)
+		{
+			$filesByInput = [];
+			foreach ($files as $input => $value) {
+				$filesByInput[$input][0] = $value;
 			}
 			return $filesByInput;
 		}
