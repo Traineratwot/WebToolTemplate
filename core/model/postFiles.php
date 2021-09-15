@@ -46,7 +46,7 @@
 			$this->data = $data;
 			if (!isset($data['name']) or !isset($data['tmp_name'])) {
 				throw new Exception('name or path not found');
-			} elseif ($data['error'] != 'UPLOAD_ERR_OK') {
+			} elseif ($data['error'] != UPLOAD_ERR_OK) {
 				$this->error = $data['error'];
 				throw new Exception('upload error: "' . $data['error'] . '"');
 			} else {
@@ -145,9 +145,15 @@
 		}
 	}
 
-	class PostFiles extends CoreObject
+	class PostFiles extends CoreObject implements \Iterator, \Countable
 	{
 		public $FILES = [];
+		public $containers;
+		/**
+		 * @var int
+		 */
+		public $index;
+		public $indexes;
 
 		function __construct($core)
 		{
@@ -161,11 +167,16 @@
 					$this->_FILES = $this->default_files($this->_FILES);
 				}
 			}
+			$this->index = 0;
 			foreach ($this->_FILES as $input => $file) {
 				foreach ($file as $value) {
-					$this->FILES[$input][] = new PostFile($core, $value);
+					$this->indexes[$this->index] = $input;
+					$this->containers[$this->index] = new PostFile($core, $value);
+					$this->FILES[$input][] = $this->containers[$this->index];
+					$this->index++;
 				}
 			}
+			$this->index = 0;
 		}
 
 		public function multiply_files($files)
@@ -194,5 +205,38 @@
 				$filesByInput[$input][0] = $value;
 			}
 			return $filesByInput;
+		}
+
+		public function current()
+		{
+			return $this->containers[$this->index];
+		}
+
+		public function next()
+		{
+			$this->index++;
+		}
+
+		/**
+		 * @return [input,id]
+		 */
+		public function key()
+		{
+			return ['input'=>$this->indexes[$this->index], 'id'=>$this->index];
+		}
+
+		public function valid()
+		{
+			return isset($this->containers[$this->index]);
+		}
+
+		public function rewind()
+		{
+			$this->index = 0;
+		}
+
+		public function count()
+		{
+			return count($this->containers);
 		}
 	}
