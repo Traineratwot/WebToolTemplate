@@ -17,7 +17,7 @@
 	 */
 	final class Core
 	{
-		public $db = NULL;
+		public $db   = NULL;
 		public $user = NULL;
 		/**
 		 * @var SmartyBC
@@ -37,7 +37,7 @@
 				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 			}
 			$this->auth();
-			$this->cache = new Cache;
+			$this->cache = new Cache();
 		}
 
 		public function auth()
@@ -57,7 +57,8 @@
 			}
 		}
 
-		public function getUser($where = []): users
+		public function getUser($where = [])
+		: users
 		{
 			return new Users($this, $where);
 		}
@@ -80,27 +81,27 @@
 				if (!empty($options['from'])) {
 					if ($options['from'] instanceof Users) {
 						$email = $options['from']->get('email');
-						$name = $options['from']->get('full_name');
+						$name  = $options['from']->get('full_name');
 					} else {
-						$a = explode('::', $options['from']);
+						$a     = explode('::', $options['from']);
 						$email = $a[0];
-						$name = $a[1];
+						$name  = $a[1];
 					}
 					$mail->setFrom($email, $name);
-				}else{
+				} else {
 					$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
 				}
 				if (WT_SMTP_MAIL) {
 					$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
 					$mail->isSMTP();                                            //Send using SMTP
-					$mail->Host = WT_HOST_MAIL;                     //Set the SMTP server to send through
+					$mail->Host = WT_HOST_MAIL;                                 //Set the SMTP server to send through
 					if (WT_AUTH_MAIL) {
-						$mail->SMTPAuth = TRUE;                                   //Enable SMTP authentication
-						$mail->Username = WT_USERNAME_MAIL;                     //SMTP username
+						$mail->SMTPAuth = TRUE;                                           //Enable SMTP authentication
+						$mail->Username = WT_USERNAME_MAIL;                               //SMTP username
 						$mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
 					}
-					$mail->SMTPSecure = WT_SECURE_MAIL;            //Enable implicit TLS encryption
-					$mail->Port = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+					$mail->SMTPSecure = WT_SECURE_MAIL;                                  //Enable implicit TLS encryption
+					$mail->Port       = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 				}
 
 				if (!is_array($to)) {
@@ -109,11 +110,11 @@
 				foreach ($to as $too) {
 					if ($too instanceof Users) {
 						$email = $too->get('email');
-						$name = $too->get('full_name');
+						$name  = $too->get('full_name');
 					} else {
-						$a = explode('::', $too);
+						$a     = explode('::', $too);
 						$email = $a[0];
-						$name = $a[1];
+						$name  = $a[1];
 					}
 					$mail->addAddress($email, $name);
 				}
@@ -124,7 +125,7 @@
 					$mail->addAttachment($f);
 				}
 				$mail->Subject = $subject;
-				$mail->Body = $body;
+				$mail->Body    = $body;
 				$mail->AltBody = strip_tags($body);
 				$mail->send();
 				return TRUE;
@@ -159,34 +160,36 @@
 		 * @return [bdObject]
 		 * @throws Exception
 		 */
-		public function getCollection($class, $where = [])
+		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
 		{
-			$data = [];
+			$data  = [];
 			$class = "core\classes\\$class";
 			if (class_exists($class)) {
-				$cls = new $class($this);
+				$cls      = new $class($this);
+				$order_by = $order_by ?: $cls->primaryKey;
 				if (empty($where)) {
-					$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}`";
+					$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
 				} else {
 					$builder = new GenericBuilder();
-					$query = $builder->select()
-						->setTable($cls->table)
-						->where();
+					$query   = $builder->select()
+									   ->setTable($cls->table)
+									   ->orderBy($order_by, $order_dir)
+									   ->where();
 					foreach ($where as $key => $value) {
 						$query->equals($key, $value);
 					}
-					$query = $query->end();
-					$sql = $builder->write($query);
+					$query  = $query->end();
+					$sql    = $builder->write($query);
 					$values = $builder->getValues();
 					$values = bdObject::prepareBinds($values);
-					$sql = bdObject::prepareSql($sql, $cls->table);
-					$sql = strtr($sql, $values);
+					$sql    = bdObject::prepareSql($sql, $cls->table);
+					$sql    = strtr($sql, $values);
 				}
 				$q = $this->db->query($sql);
 				if ($q) {
 					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
-						$id = $row[$cls->primaryKey];
-						$key = $cls->primaryKey;
+						$id     = $row[$cls->primaryKey];
+						$key    = $cls->primaryKey;
 						$data[] = new $class($this, [$key => $id]);
 					}
 				}
@@ -218,13 +221,13 @@
 	 */
 	abstract class bdObject extends CoreObject
 	{
-		public $table = '';
+		public $table      = '';
 		public $primaryKey = '';
-		public $isNew = TRUE;
-		public $schema = [];
-		public $update = [];
-		public $data = [];
-		public $_fields = [];
+		public $isNew      = TRUE;
+		public $schema     = [];
+		public $update     = [];
+		public $data       = [];
+		public $_fields    = [];
 
 		//--------------------------------------------------------
 		public function __construct(Core &$core, $where = [])
@@ -271,8 +274,8 @@
 			if (!empty($data)) {
 				foreach ($data as $k => $v) {
 					$this->_fields[$v['name']] = $k;
-					$this->data[$v['name']] = $v['default'];
-					$this->schema[$v['name']] = $v;
+					$this->data[$v['name']]    = $v['default'];
+					$this->schema[$v['name']]  = $v;
 				}
 			}
 		}
@@ -281,11 +284,11 @@
 		{
 			if (WT_TYPE_DB == 'sqlite') {
 				$parser = new PHPSQLParser();
-				$sql = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' and type ='table'";
-				$stmt = $this->core->db->query($sql);
+				$sql    = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' and type ='table'";
+				$stmt   = $this->core->db->query($sql);
 				if ($stmt) {
 					$output = [];
-					$row = $stmt->fetch(PDO::FETCH_ASSOC);
+					$row    = $stmt->fetch(PDO::FETCH_ASSOC);
 					$parsed = $parser->parse($row['sql']);
 					if (isset($parsed['TABLE'])) {
 						foreach ($parsed['TABLE']['create-def']['sub_tree'] as $key => $column) {
@@ -303,14 +306,14 @@
 								$default = (float)$default;
 							}
 							$output[$key] = [
-								'name' => $name,
-								'default' => $default,
-								'comment' => '',
-								'type' => $data['data-type']['base_expr'] ?: '',
+								'name'      => $name,
+								'default'   => $default,
+								'comment'   => '',
+								'type'      => $data['data-type']['base_expr'] ?: '',
 								'maxLength' => (int)($data['data-type']['length']) ?: NULL,
-								'null' => $data['nullable'] ? TRUE : FALSE,
-								'primary' => (isset($data['unique']) and $data['unique']) ? TRUE : FALSE,
-								'unique' => (isset($data['default']) and $data['default']) ? TRUE : FALSE,
+								'null'      => $data['nullable'] ? TRUE : FALSE,
+								'primary'   => (isset($data['unique']) and $data['unique']) ? TRUE : FALSE,
+								'unique'    => (isset($data['default']) and $data['default']) ? TRUE : FALSE,
 							];
 						}
 					}
@@ -327,14 +330,14 @@
 						while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 							if ($row['TABLE_SCHEMA'] != 'performance_schema') {
 								$output[$row['ORDINAL_POSITION']] = [
-									'name' => $row['COLUMN_NAME'],
-									'default' => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
-									'comment' => $row['COLUMN_COMMENT'] ?: '',
-									'type' => $row['DATA_TYPE'] ?: '',
+									'name'      => $row['COLUMN_NAME'],
+									'default'   => $row['COLUMN_DEFAULT'] == 'null' ? NULL : $row['COLUMN_DEFAULT'],
+									'comment'   => $row['COLUMN_COMMENT'] ?: '',
+									'type'      => $row['DATA_TYPE'] ?: '',
 									'maxLength' => (int)$row['COLUMN_MAXIMUM_LENGTH'] ?: NULL,
-									'null' => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
-									'primary' => strtolower($row['COLUMN_KEY']) == "pri" ? TRUE : FALSE,
-									'unique' => strtolower($row['COLUMN_KEY']) == "uni" ? TRUE : FALSE,
+									'null'      => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+									'primary'   => strtolower($row['COLUMN_KEY']) == "pri" ? TRUE : FALSE,
+									'unique'    => strtolower($row['COLUMN_KEY']) == "uni" ? TRUE : FALSE,
 								];
 							}
 						}
@@ -350,18 +353,18 @@
 		{
 			if (!$type) {
 				$builder = new GenericBuilder();
-				$query = $builder->select()
-					->setTable($this->table)
-					->where();
+				$query   = $builder->select()
+								   ->setTable($this->table)
+								   ->where();
 				foreach ($where as $key => $value) {
 					$query->equals($key, $value);
 				}
-				$query = $query->end();
-				$sql = $builder->write($query);
+				$query  = $query->end();
+				$sql    = $builder->write($query);
 				$values = $builder->getValues();
 				$values = $this->prepareBinds($values);
-				$sql = $this->prepareSql($sql, $this->table);
-				$sql = strtr($sql, $values);
+				$sql    = $this->prepareSql($sql, $this->table);
+				$sql    = strtr($sql, $values);
 			} else {
 				$sql = <<<SQL
 SELECT * FROM `{$this->table}` WHERE $where
@@ -473,26 +476,26 @@ SQL;
 				$builder = new GenericBuilder();
 				if ($this->isNew()) {
 					$query = $builder->insert()
-						->setTable($this->table)
-						->setValues($this->data);
+									 ->setTable($this->table)
+									 ->setValues($this->data);
 
-					$sql = $builder->write($query);
+					$sql    = $builder->write($query);
 					$values = $builder->getValues();
 				} elseif (count($this->update) > 0) {
 					$query = $builder->update()
-						->setTable($this->table)
-						->setValues($this->update)
-						->where()
-						->equals($this->primaryKey, $this->data[$this->primaryKey])
-						->end();
+									 ->setTable($this->table)
+									 ->setValues($this->update)
+									 ->where()
+									 ->equals($this->primaryKey, $this->data[$this->primaryKey])
+									 ->end();
 
-					$sql = $builder->write($query);
+					$sql    = $builder->write($query);
 					$values = $builder->getValues();
 				}
 				if ($sql) {
 					$values = $this->prepareBinds($values);
-					$sql = $this->prepareSql($sql, $this->table);
-					$sql = strtr($sql, $values);
+					$sql    = $this->prepareSql($sql, $this->table);
+					$sql    = strtr($sql, $values);
 					//Err::info($sql, __LINE__, __FILE__);
 					$q = $this->core->db->exec($sql);
 					if ($q !== FALSE and $this->isNew()) {
@@ -522,11 +525,11 @@ SQL;
 		{
 			try {
 				if (!$this->isNew()) {
-					$id = $this->get($this->primaryKey);
+					$id  = $this->get($this->primaryKey);
 					$sql = <<<SQL
 DELETE FROM `{$this->table}` where `{$this->primaryKey}` = {$id}
 SQL;
-					$q = $this->core->db->exec($sql);
+					$q   = $this->core->db->exec($sql);
 				}
 			} catch (PDOException $e) {
 				Err::error($e->getMessage(), __LINE__, __FILE__);
@@ -587,12 +590,12 @@ SQL;
 		public function __construct(Core &$core)
 		{
 			parent::__construct($core);
-			$this->GET = $_GET;
+			$this->GET              = $_GET;
 			$this->httpResponseCode = 200;
-			$this->POST = $_POST;
-			$this->PUT = file_get_contents('php://input');
-			$this->HEADERS = util::getRequestHeaders();
-			$this->REQUEST = array_merge($_GET, $_POST);
+			$this->POST             = $_POST;
+			$this->PUT              = file_get_contents('php://input');
+			$this->HEADERS          = util::getRequestHeaders();
+			$this->REQUEST          = array_merge($_GET, $_POST);
 			try {
 				if ($put = util::jsonValidate($this->PUT)) {
 					$this->PUT = $put;
@@ -601,7 +604,7 @@ SQL;
 
 			}
 			$this->REQUEST['PUT'] = $this->PUT;
-			$this->FILES = [];
+			$this->FILES          = [];
 			if (!empty($_FILES)) {
 				try {
 					$this->FILES = $this->util->files();
@@ -650,9 +653,9 @@ SQL;
 			return [
 				'success' => FALSE,
 				'message' => $msg,
-				'object' => $object,
-				'errors' => $error,
-				'code' => $this->httpResponseCode,
+				'object'  => $object,
+				'errors'  => $error,
+				'code'    => $this->httpResponseCode,
 			];
 		}
 
@@ -721,8 +724,8 @@ SQL;
 			return [
 				'success' => TRUE,
 				'message' => $msg,
-				'object' => $object,
-				'code' => $this->httpResponseCode,
+				'object'  => $object,
+				'code'    => $this->httpResponseCode,
 			];
 		}
 	}
@@ -886,10 +889,10 @@ SQL;
 
 		public function setCache($key, $value, $expire = 0)
 		{
-			$name = $this->getKey($key) . '.cache.php';
-			$v = var_export($value, 1);
+			$name   = $this->getKey($key) . '.cache.php';
+			$v      = var_export($value, 1);
 			$expire = $expire ? $expire + time() : 0;
-			$body = <<<PHP
+			$body   = <<<PHP
 <?php
 	if($expire){
 		if(time() > $expire){
@@ -1005,14 +1008,14 @@ PHP;
 				if (!$sock) {
 					if (!$useSocket or $errStr == 'Unable to find the socket transport "https" - did you forget to enable it when you configured PHP?') {
 						$opts = [
-							'http' => [
+							'http'  => [
 								'timeout' => $timeout,
-								'header' => "User - Agent: Mozilla / 5.0\r\n",
+								'header'  => "User - Agent: Mozilla / 5.0\r\n",
 
 							],
 							'https' => [
 								'timeout' => $timeout,
-								'header' => "User - Agent: Mozilla / 5.0\r\n",
+								'header'  => "User - Agent: Mozilla / 5.0\r\n",
 							],
 						];
 						if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
@@ -1039,20 +1042,20 @@ PHP;
 		public static function success($msg, $object = [])
 		{
 			return json_encode([
-				'success' => TRUE,
-				'message' => $msg,
-				'object' => $object,
-			], 256);
+								   'success' => TRUE,
+								   'message' => $msg,
+								   'object'  => $object,
+							   ], 256);
 
 		}
 
 		public static function failure($msg, $object = [])
 		{
 			return json_encode([
-				'success' => FALSE,
-				'message' => $msg,
-				'object' => $object,
-			], 256);
+								   'success' => FALSE,
+								   'message' => $msg,
+								   'object'  => $object,
+							   ], 256);
 
 		}
 
@@ -1066,7 +1069,7 @@ PHP;
 		{
 			$length--;
 			$password = 'a';
-			$arr = [
+			$arr      = [
 				'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 				'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -1138,7 +1141,7 @@ PHP;
 				$headers = [];
 				foreach ($_SERVER as $name => $value) {
 					if (substr($name, 0, 5) == 'HTTP_') {
-						$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+						$key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
 						$headers[$key] = $value;
 					}
 				}
@@ -1182,7 +1185,7 @@ PHP;
 					break;
 			}
 			$class = make::name2class($name);
-			$code = <<<PHP
+			$code  = <<<PHP
 <?php
 	namespace core\ajax;
 	use core\model\Ajax;
@@ -1197,10 +1200,12 @@ PHP;
 
 		public static function name2class($name)
 		{
-			$name = strtr($name, ['\\' => '_',
-				'/' => '_']);
-			$n = explode("_", $name);
-			$n2 = [];
+			$name = strtr($name, [
+				'\\' => '_',
+				'/'  => '_',
+			]);
+			$n    = explode("_", $name);
+			$n2   = [];
 			foreach ($n as $key => $value) {
 				$n2[] = ucfirst(mb_strtolower($value));
 			}
@@ -1227,7 +1232,7 @@ TPL;
 		public static function makePageClass($name, $template = 'base')
 		{
 			$class = make::name2class($name);
-			$code = <<<PHP
+			$code  = <<<PHP
 <?php
 
 	namespace core\page;
@@ -1257,8 +1262,8 @@ PHP;
 		public static function makeTable($name, $primaryKey = 'id')
 		{
 			$primaryKey = $primaryKey ?: 'id';
-			$class = make::name2class($name);
-			$code = <<<PHP
+			$class      = make::name2class($name);
+			$code       = <<<PHP
 <?php
 
 	namespace core\\classes;
