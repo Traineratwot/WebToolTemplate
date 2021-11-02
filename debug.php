@@ -1,11 +1,11 @@
 <?php
 	include_once 'core/engine.php';
-    /** @var Core $core */
+	/** @var Core $core */
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Debug</title>
+	<title>Debug</title>
 	<?= file_get_contents('core/templates/head.tpl') ?>
 </head>
 <body>

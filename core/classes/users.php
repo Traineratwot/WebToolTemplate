@@ -10,7 +10,7 @@
 	 */
 	class Users extends bdObject
 	{
-		public $table = 'users';
+		public $table      = 'users';
 		public $primaryKey = 'id';
 
 		public function sendMail($subject, $body = '', $file = [])

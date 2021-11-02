@@ -9,10 +9,11 @@
 		public $alias = 'index';
 		public $title = 'index';
 
-		public function beforeRender(){
-			if($this->core->user == null){
+		public function beforeRender()
+		{
+			if ($this->core->user == NULL) {
 				$this->redirect('login');
-			}else{
+			} else {
 				$this->forward('profile');
 			}
 		}

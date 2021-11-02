@@ -12,7 +12,7 @@
 <script type="text/javascript">
 	if(window.hasOwnProperty('PNotify')) {
 		PNotify.defaults.styling = 'material'
-		PNotify.defaults.icons = 'brighttheme';
+		PNotify.defaults.icons = 'brighttheme'
 	}
 </script>
 <script type="text/javascript" src="/assets/js/main.js"></script>

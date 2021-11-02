@@ -1,19 +1,21 @@
 {extends file='base.tpl'}
 {block name='content'}
-    <form class="" id="login" method="POST" action="changepassword" data-before="validate">
-        <h2>Изменить пароль</h2>
-        <div class="mb-3">
-            <label for="password1" class="form-label">Пароль</label>
-            <input name="password" type="password" class="form-control" id="password1"
-            >
-        </div>
-        <div class="mb-3">
-            <label for="password2" class="form-label">Повторите пароль</label>
-            <input type="password" class="form-control" id="password2"
-            >
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <script>
+	<form class="" id="login" method="POST" action="changepassword" data-before="validate">
+		<h2>Изменить пароль</h2>
+		<div class="mb-3">
+			<label for="password1" class="form-label">Пароль</label>
+			<input
+					name="password" type="password" class="form-control" id="password1"
+			>
+		</div>
+		<div class="mb-3">
+			<label for="password2" class="form-label">Повторите пароль</label>
+			<input
+					type="password" class="form-control" id="password2"
+			>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<script>
 			$('#login').on('success', function() {
 				console.log(arguments)
 				PNotify.success({
@@ -52,6 +54,6 @@
 				}
 				return true
 			}
-        </script>
-    </form>
+		</script>
+	</form>
 {/block}

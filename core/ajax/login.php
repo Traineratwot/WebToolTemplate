@@ -10,7 +10,7 @@
 	{
 		public function initialize()
 		{
-			$this->email = strip_tags($_REQUEST['email']);
+			$this->email    = strip_tags($_REQUEST['email']);
 			$this->password = strip_tags($_REQUEST['password']);
 			if ($this->email and $this->password) {
 				return TRUE;
@@ -29,7 +29,7 @@
 						Err::fatal('Неправильный пароль', __FILE__, __FILE__);
 					} else {
 						$_SESSION['authKey'] = $User->get('authKey');
-						$_SESSION['ip'] = util::getIp();
+						$_SESSION['ip']      = util::getIp();
 						session_write_close();
 						return $this->success('Ok');
 					}

@@ -3,12 +3,12 @@
 	namespace core\model;
 	/** @var Core $core */
 	$alias = mb_strtolower($_GET['q']) ?? NULL;
-	$ajax = mb_strtolower($_GET['a']) ?? NULL;
+	$ajax  = mb_strtolower($_GET['a']) ?? NULL;
 	if ($ajax) {
 		$ajax = WT_AJAX_PATH . $ajax . '.php';
 		if (file_exists($ajax)) {
 			$result = include $ajax;
-			$class = 'core\ajax\\' . $result;
+			$class  = 'core\ajax\\' . $result;
 			if (!class_exists($class)) {
 				$class = 'core\ajax\\' . $ajax;
 			}
@@ -37,7 +37,7 @@
 	$page = WT_VIEWS_PATH . $alias . '.php';
 	if (file_exists($page)) {
 		$result = include $page;
-		$class = 'core\page\\' . $result;
+		$class  = 'core\page\\' . $result;
 		if (!class_exists($class)) {
 			$class = 'core\ajax\\' . $ajax;
 		}
@@ -63,9 +63,10 @@
 					parent::__construct($core);
 				}
 			}
+
 			$result = new tmpPage($core, $alias);
 			$result->render();
-		}else {
+		} else {
 			header('HTTP/1.1 404 Not Found');
 			readfile(WT_PAGES_PATH . '404.html');
 		}

@@ -32,7 +32,7 @@
 			switch (mb_strtolower($a)) {
 				case 'ajax':
 					$class = mb_strtolower(make::name2class($b));
-					$p = WT_AJAX_PATH . $class . '.php';
+					$p     = WT_AJAX_PATH . $class . '.php';
 					if (!file_exists($p)) {
 						writeFile($p, make::makeAjax($b, $c));
 						success('ok: ' . $p);
@@ -42,7 +42,7 @@
 					break;
 				case 'table':
 					$class = mb_strtolower(make::name2class($b));
-					$p = WT_CLASSES_PATH . $class . '.php';
+					$p     = WT_CLASSES_PATH . $class . '.php';
 					if (!file_exists($p)) {
 						writeFile($p, make::makeTable($b, $c));
 						success('ok: ' . $p);
@@ -52,12 +52,12 @@
 					break;
 				case 'page':
 					$url = mb_strtolower($b);
-					$p = strtr(WT_VIEWS_PATH . $url . '.php', [
-						'/' => DIRECTORY_SEPARATOR,
+					$p   = strtr(WT_VIEWS_PATH . $url . '.php', [
+						'/'  => DIRECTORY_SEPARATOR,
 						'\\' => DIRECTORY_SEPARATOR,
 					]);
-					$p2 = strtr(WT_PAGES_PATH . $url . '.tpl', [
-						'/' => DIRECTORY_SEPARATOR,
+					$p2  = strtr(WT_PAGES_PATH . $url . '.tpl', [
+						'/'  => DIRECTORY_SEPARATOR,
 						'\\' => DIRECTORY_SEPARATOR,
 					]);
 					if (!file_exists($p)) {
@@ -139,22 +139,22 @@
 						}
 						break;
 					case 'cache':
-						 try {
-						 	if(WT_TYPE_SYSTEM == 'win') {
-							    system('RD /s/q "' . WT_CACHE_PATH . '"');
-						    }else{
-							    system('rm -rf "' . WT_CACHE_PATH . '"');
-						    }
+						try {
+							if (WT_TYPE_SYSTEM == 'win') {
+								system('RD /s/q "' . WT_CACHE_PATH . '"');
+							} else {
+								system('rm -rf "' . WT_CACHE_PATH . '"');
+							}
 
-							 if(!file_exists(WT_CACHE_PATH)){
-							 	success('cache cleaned');
-							 }else{
-							 	failure('error');
-							 }
+							if (!file_exists(WT_CACHE_PATH)) {
+								success('cache cleaned');
+							} else {
+								failure('error');
+							}
 
-						 } catch (\Exception $e) {
-						    failure($e->getMessage());
-						 }
+						} catch (\Exception $e) {
+							failure($e->getMessage());
+						}
 						break;
 					case 'help':
 						note('make {ajax|table|page} {...args}');

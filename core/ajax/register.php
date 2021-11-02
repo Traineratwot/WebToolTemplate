@@ -10,7 +10,7 @@
 	{
 		public function initialize()
 		{
-			$this->email = strip_tags($_REQUEST['email']);
+			$this->email    = strip_tags($_REQUEST['email']);
 			$this->password = strip_tags($_REQUEST['password']);
 			if ($this->email and $this->password) {
 				return TRUE;
@@ -30,7 +30,7 @@
 					if (strlen($this->password) < 6) {
 						Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
 					}
-					$salt = random_int(1000000, 9999999);
+					$salt    = random_int(1000000, 9999999);
 					$authKey = md5($this->password . $this->email . $salt);
 					/** @var Core $newUser */
 					$newUser->set('email', $this->email);
@@ -41,8 +41,8 @@
 					if ($newUser->isNew()) {
 						Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
 					} else {
-						$_SESSION['authKey']= $authKey;
-						$_SESSION['ip']= util::getIp();
+						$_SESSION['authKey'] = $authKey;
+						$_SESSION['ip']      = util::getIp();
 						return $this->success('Ok');
 					}
 				} else {

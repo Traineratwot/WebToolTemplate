@@ -3,7 +3,6 @@
 	namespace core\ajax;
 
 	use core\model\Ajax;
-	use core\model\util;
 
 	class Changepassword extends Ajax
 	{
@@ -19,9 +18,9 @@
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
 					$this->core->user->set('password', md5($this->password));
-					$salt = random_int(1000000, 9999999);
+					$salt        = random_int(1000000, 9999999);
 					$this->email = $this->core->user->get('email');
-					$authKey = md5($this->password . $this->email . $salt);
+					$authKey     = md5($this->password . $this->email . $salt);
 					$this->core->user->set('salt', $salt);
 					$this->core->user->set('authKey', $authKey);
 					$this->core->user->save();

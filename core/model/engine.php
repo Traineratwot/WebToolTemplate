@@ -1,4 +1,5 @@
 <?php
+
 	namespace core\model;
 	class Colors
 	{
@@ -67,6 +68,7 @@
 			return array_keys($this->background_colors);
 		}
 	}
+
 	require_once realpath(WT_MODEL_PATH . 'core.php');
 	require_once realpath(WT_MODEL_PATH . 'postFiles.php');
 	require_once realpath(WT_MODEL_PATH . 'errors.php');

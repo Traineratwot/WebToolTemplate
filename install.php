@@ -10,9 +10,9 @@
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
 		exec('chmod 744 -R -f ' . WT_AJAX_PATH);
 		$log[] = 'Permissions set';
-		$c= 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
+		$c     = 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
 		exec($c);
-		$log[] = 'command to install wt "'.$c.'"';
+		$log[] = 'command to install wt "' . $c . '"';
 	}
 
 	function installWindows()
@@ -20,15 +20,15 @@
 //		global $log;
 	}
 
-	$config = get_defined_constants();
+	$config   = get_defined_constants();
 	$myConfig = [];
 	foreach ($config as $v => $i) {
 		if (stripos($v, 'WT_') === 0) {
-			$a = explode('_', $v);
+			$a                               = explode('_', $v);
 			$myConfig[$a[count($a) - 1]][$v] = [
-				'type' => $a[count($a) - 1],
+				'type'  => $a[count($a) - 1],
 				'value' => $i,
-				'name' => $v,
+				'name'  => $v,
 			];
 			if (stripos($v, '_PATH') !== FALSE) {
 				if (!file_exists($i) || !is_dir($i)) {
@@ -46,7 +46,7 @@
 	}
 	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
 		$log[] = "Failed to install npm\n";
-	}else{
+	} else {
 		$log[] = 'npm updated';
 	}
 	if (!file_exists(WT_VENDOR_PATH . 'autoload.php')) {
@@ -69,11 +69,11 @@
 		exec('cls');
 	}
 
-	foreach($log as $key => $value){
+	foreach ($log as $key => $value) {
 		$log[$key] = ucfirst(trim($value));
 	}
 	$log_ = implode("\n| ", $log);
-	$txt = <<<TXT
+	$txt  = <<<TXT
 -----------------------------------------------------------
 | System: $system
 |

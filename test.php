@@ -1,6 +1,7 @@
 <?php
 
 	namespace index;
+
 	use core\model\Core;
 
 	require_once realpath(__DIR__ . '/core/config.php');
@@ -8,8 +9,9 @@
 
 	/** @var Core $core */
 //	$core->cache->setCache('dffsdfsd',$_SERVER,5);
-	$a = $core->cache->getCache('dffsdfsd',$_SERVER,5);
-		echo '<pre>';
-		var_dump($a); die;
+	$a = $core->cache->getCache('dffsdfsd', $_SERVER, 5);
+	echo '<pre>';
+	var_dump($a);
+	die;
 
 	?>

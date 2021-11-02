@@ -791,6 +791,13 @@ SQL;
 			return $value;
 		}
 
+		public static function modifier_chunk($alias, $values = [])
+		{
+			global $core;
+			$a = new Chunk($core, $alias, $values);
+			return $a->render();
+		}
+
 		public function forward($alias)
 		{
 			$this->source = WT_PAGES_PATH . $alias . '.tpl';
@@ -799,17 +806,6 @@ SQL;
 		public function redirect($alias)
 		{
 			header("Location: $alias");
-		}
-
-		final public function render()
-		{
-			$this->beforeRender();
-			if (!file_exists($this->source)) {
-				header('HTTP/1.1 404 Not Found');
-				readfile(WT_PAGES_PATH . '404.html');
-				die;
-			}
-			$this->smarty->display($this->source);
 		}
 
 		public function setVar($name, $var, $nocache = FALSE)
@@ -823,11 +819,20 @@ SQL;
 			return $a->render();
 		}
 
-		public static function modifier_chunk($alias, $values = [])
+		final public function render()
 		{
-			global $core;
-			$a = new Chunk($core, $alias, $values);
-			return $a->render();
+			$this->beforeRender();
+			if (!file_exists($this->source)) {
+				header('HTTP/1.1 404 Not Found');
+				readfile(WT_PAGES_PATH . '404.html');
+				die;
+			}
+			$this->smarty->display($this->source);
+		}
+
+		public function beforeRender()
+		{
+
 		}
 
 		public function errorPage($code = 404)
@@ -839,11 +844,6 @@ SQL;
 				readfile(WT_PAGES_PATH . '404.html');
 			}
 			die;
-		}
-
-		public function beforeRender()
-		{
-
 		}
 	}
 
@@ -882,11 +882,6 @@ SQL;
 	class Cache
 	{
 
-		private function getKey($a)
-		{
-			return md5(serialize($a));
-		}
-
 		public function setCache($key, $value, $expire = 0)
 		{
 			$name   = $this->getKey($key) . '.cache.php';
@@ -906,6 +901,11 @@ SQL;
 PHP;
 			file_put_contents(WT_CACHE_PATH . $name, $body);
 			return $value;
+		}
+
+		private function getKey($a)
+		{
+			return md5(serialize($a));
 		}
 
 		public function getCache($key)

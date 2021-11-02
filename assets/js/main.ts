@@ -121,25 +121,6 @@ class WtRender {
 		this.wt = wt
 	}
 
-	private getData(alias, data = [], callback) {
-		var settings = {
-			"url": "/?a=render",
-			"method": "POST",
-			"timeout": 0,
-			"headers": {
-				"Content-Type": "application/json"
-			},
-			"data": JSON.stringify({
-				"alias": alias,
-				"data": data
-			}),
-		};
-
-		$.ajax(settings).done(function (response) {
-			callback(response)
-		});
-	}
-
 	render(elem, alias, data = []) {
 		$(elem).html("")
 		var self = this
@@ -164,6 +145,25 @@ class WtRender {
 			self.elem = $(data);
 			self.elem.prependTo(elem);
 		})
+	}
+
+	private getData(alias, data = [], callback) {
+		var settings = {
+			"url": "/?a=render",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data": JSON.stringify({
+				"alias": alias,
+				"data": data
+			}),
+		};
+
+		$.ajax(settings).done(function (response) {
+			callback(response)
+		});
 	}
 
 }

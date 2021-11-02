@@ -10,11 +10,11 @@
 		 * @var modX $core
 		 */
 		public $core;
-		public $name = NULL;
-		public $path = NULL;
-		public $ext = NULL;
+		public $name     = NULL;
+		public $path     = NULL;
+		public $ext      = NULL;
 		public $fullName = NULL;
-		public $type = NULL;
+		public $type     = NULL;
 		/**
 		 * @var int
 		 */
@@ -50,12 +50,12 @@
 				$this->error = $data['error'];
 				throw new Exception('upload error: "' . $data['error'] . '"');
 			} else {
-				$this->name = util::baseName($data['name']);
+				$this->name     = util::baseName($data['name']);
 				$this->fullName = $data['name'];
-				$this->ext = mb_strtolower(util::baseExt($data['name']));
-				$this->path = $data['tmp_name'];
-				$this->type = isset($data['type']) ? $data['type'] : NULL;
-				$this->size = isset($data['size']) ? $data['size'] : NULL;
+				$this->ext      = mb_strtolower(util::baseExt($data['name']));
+				$this->path     = $data['tmp_name'];
+				$this->type     = isset($data['type']) ? $data['type'] : NULL;
+				$this->size     = isset($data['size']) ? $data['size'] : NULL;
 			}
 		}
 
@@ -75,20 +75,20 @@
 					}
 				}
 				$converter = [
-					'{name}' => $this->name,
+					'{name}'     => $this->name,
 					'{fullName}' => $this->fullName,
-					'{ext}' => $this->ext,
-					'{size}' => $this->size,
-					'{type}' => $this->type,
+					'{ext}'      => $this->ext,
+					'{size}'     => $this->size,
+					'{type}'     => $this->type,
 				];
-				$path = strtr($path, $converter);
+				$path      = strtr($path, $converter);
 				if (!$overwrite and file_exists($path)) {
 					throw new Exception('file already exist');
 					return 'file already exist';
 				}
 				if (move_uploaded_file($this->path, $path) and file_exists($path) and filesize($path) > 0) {
 					$this->saved = TRUE;
-					$this->path = $path;
+					$this->path  = $path;
 					return TRUE;
 				} else {
 					throw new Exception('can`t save file');
@@ -108,12 +108,12 @@
 		public function toArray()
 		{
 			return [
-				'name' => $this->name,
+				'name'     => $this->name,
 				'fullName' => $this->fullName,
-				'path' => $this->path,
-				'ext' => $this->ext,
-				'type' => $this->type,
-				'size' => $this->size,
+				'path'     => $this->path,
+				'ext'      => $this->ext,
+				'type'     => $this->type,
+				'size'     => $this->size,
 			];
 		}
 
@@ -158,7 +158,7 @@
 		function __construct($core)
 		{
 			parent::__construct($core);
-			$this->_FILES = $_FILES;
+			$this->_FILES  = $_FILES;
 			$this->_fields = array_keys($this->_FILES);
 			if (is_array($this->_FILES[$this->_fields[0]])) {
 				if (array_key_exists('name', $this->_FILES[$this->_fields[0]]) and array_key_exists('tmp_name', $this->_FILES[$this->_fields[0]]) and array_key_exists('type', $this->_FILES[$this->_fields[0]])) {
@@ -170,9 +170,9 @@
 			$this->index = 0;
 			foreach ($this->_FILES as $input => $file) {
 				foreach ($file as $value) {
-					$this->indexes[$this->index] = $input;
+					$this->indexes[$this->index]    = $input;
 					$this->containers[$this->index] = new PostFile($core, $value);
-					$this->FILES[$input][] = $this->containers[$this->index];
+					$this->FILES[$input][]          = $this->containers[$this->index];
 					$this->index++;
 				}
 			}
@@ -222,7 +222,7 @@
 		 */
 		public function key()
 		{
-			return ['input'=>$this->indexes[$this->index], 'id'=>$this->index];
+			return ['input' => $this->indexes[$this->index], 'id' => $this->index];
 		}
 
 		public function valid()

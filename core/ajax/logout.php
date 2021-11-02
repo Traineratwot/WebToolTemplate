@@ -3,7 +3,6 @@
 	namespace core\ajax;
 
 	use core\model\Ajax;
-	use core\model\util;
 
 	class logout extends Ajax
 	{
