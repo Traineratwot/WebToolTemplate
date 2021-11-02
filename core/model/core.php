@@ -798,6 +798,22 @@ SQL;
 			return $a->render();
 		}
 
+		final public function render()
+		{
+			$this->beforeRender();
+			if (!file_exists($this->source)) {
+				header('HTTP/1.1 404 Not Found');
+				readfile(WT_PAGES_PATH . '404.html');
+				die;
+			}
+			$this->smarty->display($this->source);
+		}
+
+		public function beforeRender()
+		{
+
+		}
+
 		public function forward($alias)
 		{
 			$this->source = WT_PAGES_PATH . $alias . '.tpl';
@@ -817,22 +833,6 @@ SQL;
 		{
 			$a = new Chunk($this->core, $alias, $values);
 			return $a->render();
-		}
-
-		final public function render()
-		{
-			$this->beforeRender();
-			if (!file_exists($this->source)) {
-				header('HTTP/1.1 404 Not Found');
-				readfile(WT_PAGES_PATH . '404.html');
-				die;
-			}
-			$this->smarty->display($this->source);
-		}
-
-		public function beforeRender()
-		{
-
 		}
 
 		public function errorPage($code = 404)
