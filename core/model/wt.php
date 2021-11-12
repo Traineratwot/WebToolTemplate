@@ -35,6 +35,7 @@
 						'/'  => DIRECTORY_SEPARATOR,
 						'\\' => DIRECTORY_SEPARATOR,
 					]);
+					$p = mb_strtolower($p);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeAjax($b, $c));
 						success('ok: ' . $p);
@@ -45,6 +46,7 @@
 				case 'table':
 					$class = mb_strtolower(make::name2class($b));
 					$p     = WT_CLASSES_PATH . $class . '.php';
+					$p = mb_strtolower($p);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeTable($b, $c));
 						success('ok: ' . $p);
@@ -62,6 +64,8 @@
 						'/'  => DIRECTORY_SEPARATOR,
 						'\\' => DIRECTORY_SEPARATOR,
 					]);
+					$p = mb_strtolower($p);
+					$p2 = mb_strtolower($p2);
 					if (!file_exists($p)) {
 						if (writeFile($p, make::makePageClass($url, $c))) {
 							success('ok: ' . $p);
