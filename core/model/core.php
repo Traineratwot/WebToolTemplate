@@ -1193,7 +1193,7 @@ PHP;
 	{
 		{$method}
 	}
-	return '{$name}';
+	return '{$class}';
 PHP;
 			return $code;
 		}
@@ -1250,7 +1250,7 @@ TPL;
 		}
 	}
 
-	return '$class';
+	return '{$class}';
 PHP;
 			return $code;
 		}
