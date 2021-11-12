@@ -31,8 +31,10 @@
 		{
 			switch (mb_strtolower($a)) {
 				case 'ajax':
-					$class = mb_strtolower(make::name2class($b));
-					$p     = WT_AJAX_PATH . $class . '.php';
+					$p = strtr(WT_AJAX_PATH . $b . '.php', [
+						'/'  => DIRECTORY_SEPARATOR,
+						'\\' => DIRECTORY_SEPARATOR,
+					]);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeAjax($b, $c));
 						success('ok: ' . $p);

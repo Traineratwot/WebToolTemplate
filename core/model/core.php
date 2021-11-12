@@ -882,7 +882,7 @@ SQL;
 	class Cache
 	{
 
-		public function setCache($key, $value, $expire = 0)
+		public function setCache($key, $value, $expire = 600)
 		{
 			$name   = $this->getKey($key) . '.cache.php';
 			$v      = var_export($value, 1);
