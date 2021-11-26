@@ -11,6 +11,7 @@
 	use PHPMailer\PHPMailer\SMTP;
 	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
+	require_once(WT_MODEL_PATH . 'table.php');
 
 	/**
 	 * Основной класс
@@ -55,6 +56,11 @@
 			} else {
 				$this->isAuthenticated = TRUE;
 			}
+		}
+
+		public function newTable(): table
+		{
+			return new table();
 		}
 
 		public function getUser($where = [])
