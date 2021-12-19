@@ -3,6 +3,7 @@
 	"nilportugues/sql-query-builder":"^1.8",
 	"smarty/smarty"                 :"~3.1",
 	"greenlion/php-sql-parser"      :"^4.4",
-	"phpmailer/phpmailer"           :"^6.5"
+	"phpmailer/phpmailer"           :"^6.5",
+    "bramus/router": "~1.6"
   }
 }

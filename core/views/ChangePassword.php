@@ -5,10 +5,10 @@
 	use core\model\Page;
 	use core\model\util;
 
-	class Changepassword extends Page
+	class ChangePassword extends Page
 	{
-		public $alias = 'changepassword';
-		public $title = 'changepassword';
+		public $alias = 'ChangePassword';
+		public $title = 'ChangePassword';
 
 		public function beforeRender()
 		{
@@ -37,4 +37,4 @@
 		}
 	}
 
-	return 'Changepassword';
+	return 'ChangePassword';

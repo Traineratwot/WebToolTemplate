@@ -11,6 +11,7 @@
 	use PHPMailer\PHPMailer\SMTP;
 	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
+
 	require_once(WT_MODEL_PATH . 'table.php');
 
 	/**
@@ -58,7 +59,12 @@
 			}
 		}
 
-		public function newTable(): table
+		/**
+		 * Simple work with csv table
+		 * @return table
+		 */
+		public function newTable()
+		: table
 		{
 			return new table();
 		}
@@ -744,10 +750,14 @@ SQL;
 
 		public $alias;
 		public $title;
+		public $data = NULL;
 
-		public function __construct(Core $core)
+		public function __construct(Core $core, $data = [])
 		{
 			parent::__construct($core);
+			if (!empty($data)) {
+				$this->data = $data;
+			}
 			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
