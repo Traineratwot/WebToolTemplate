@@ -599,9 +599,12 @@ SQL;
 		 */
 		public $httpResponseCode = 0;
 
-		public function __construct(Core &$core)
+		public function __construct(Core &$core, $data = [])
 		{
 			parent::__construct($core);
+			if (!empty($data)) {
+				$this->data = $data;
+			}
 			$this->GET              = $_GET;
 			$this->httpResponseCode = 200;
 			$this->POST             = $_POST;

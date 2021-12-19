@@ -101,6 +101,31 @@
 					}
 					exit();
 				} else {
+					$ajax = WT_AJAX_PATH . $alias . '.php';
+					if (file_exists($ajax)) {
+						$result = include $ajax;
+						$class  = 'core\ajax\\' . $result;
+						if (!class_exists($class)) {
+							$class = 'core\ajax\\' . $ajax;
+						}
+						if (!class_exists($class)) {
+							Err::fatal("class '$class' is not define");
+						} else {
+							/** @var Ajax $result */
+							$result = new $class($core,$data);
+							try {
+								if ($result instanceof Ajax) {
+									$response = $result->run();
+								} else {
+									Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+								}
+							} catch (Exception $e) {
+								Err::fatal($e->getMessage(), __LINE__, __FILE__);
+								$response = json_encode($result, 256);
+							}
+							exit($response);
+						}
+					}
 					$page = WT_PAGES_PATH . $alias . '.tpl';
 					if (file_exists($page)) {
 						class tmpPage extends Page
@@ -115,8 +140,8 @@
 						$result = new tmpPage($core, $alias);
 						$result->render();
 					}
-					exit();
 				}
+				exit();
 			});
 		}
 		$switcher->run();
