@@ -1,4 +1,9 @@
 <?php
 	return [
-		"/test/{test1}/test/{test2}" => 'test',
+		"ajax" => [
+			"/ajax/{id}" => 'test',
+		],
+		"page" => [
+			"/page/{id}" => 'test',
+		],
 	];

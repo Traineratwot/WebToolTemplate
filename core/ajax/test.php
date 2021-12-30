@@ -9,7 +9,7 @@
 		function process()
 		{
 			//TODO YOU CODE
-			return $this->success('ok', $this->data);
+			return $this->success('I am AJAX' , $this->data);
 		}
 	}
 
