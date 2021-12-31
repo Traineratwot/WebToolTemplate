@@ -15,9 +15,11 @@
 	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax' . DIRECTORY_SEPARATOR);
 	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
 	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
+	define('WT_LOCALE_PATH', WT_CORE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 	//ВНЕШНИЙ URL
 	define('WT_DOMAIN_URL', $_SERVER['SERVER_NAME'] ?: $_SERVER['HTTP_HOST']);
 	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/');
+	define('WT_LOCALE_DOMAIN', 'WT');
 	//определяем подключение к своей базе
 	define('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db');
 	define('WT_PORT_DB', '');

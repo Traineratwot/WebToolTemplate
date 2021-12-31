@@ -41,6 +41,8 @@
 
 		public function route()
 		{
+
+			$this->selectLanguage($this->switchLanguage());
 			try {
 				if ($this->isAjax) {
 					$this->launchAjax();
@@ -63,7 +65,38 @@
 			$this->ErrorPage();
 		}
 
-		public function AdvancedRoute()
+		public function switchLanguage()
+		{
+			preg_match('/^(.{1,3})?\..*$/', $_SERVER['HTTP_HOST'], $math);
+			return isset($math[1]) ? $math[1] : FALSE;
+		}
+
+		private function selectLanguage($lang)
+		{
+			if ($lang) {
+				$newLang = $this->core->cache->getCache('locale_' . $lang, 'locales');
+				if ($newLang) {
+					$this->core->setLocale($newLang, TRUE);
+				} else {
+					$locales = scandir(WT_LOCALE_PATH);
+					$index   = [
+						-1 => $lang,
+					];
+					foreach ($locales as $locale) {
+						if (stripos($locale, $lang) !== FALSE or stripos($lang, $locale) !== FALSE) {
+							$sim         = similar_text($lang, $locale);
+							$index[$sim] = $locale;
+						}
+					}
+					ksort($index, SORT_NUMERIC);
+					$newLang = end($index);
+					$this->core->cache->setCache('locale_' . $lang, $newLang, 600, 'locales');
+					$this->core->setLocale($newLang, TRUE);
+				}
+			}
+		}
+
+		private function AdvancedRoute()
 		{
 			$this->isAdvanced = TRUE;
 			$router           = include WT_CORE_PATH . "router.php";
@@ -91,7 +124,7 @@
 			}
 		}
 
-		public function launchPage($data = [])
+		private function launchPage($data = [])
 		{
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
 			if (file_exists($page)) {
@@ -127,14 +160,14 @@
 			}
 		}
 
-		public function ErrorPage($code = 404, $msg = 'Not Found')
+		private function ErrorPage($code = 404, $msg = 'Not Found')
 		{
 			header("HTTP/1.1 {$code} {$msg}");
 			readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
 			die;
 		}
 
-		public function launchAjax($data = [])
+		private function launchAjax($data = [])
 		{
 			$ajax = WT_AJAX_PATH . $this->alias . '.php';
 			if (file_exists($ajax)) {

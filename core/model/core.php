@@ -4,6 +4,9 @@
 
 	use core\classes\users;
 	use Exception;
+	use Gettext\Generator\MoGenerator;
+	use Gettext\Languages\Category;
+	use Gettext\Loader\PoLoader;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
@@ -210,6 +213,52 @@
 				Err::fatal($class . " not exists", __FILE__, __FILE__);
 			}
 
+		}
+
+		/**
+		 * @param $lang //locale code
+		 * @param $_gt  //use gettext
+		 * @return string|false
+		 */
+		public static function setLocale($lang, $_gt = TRUE)
+		{
+			$lang = setlocale(LC_ALL, "$lang", substr($lang, 0, 2) . '.UTF-8', substr($lang, 0, 5) . '.UTF-8');
+			if ($lang === FALSE) {
+				Err::error("Can't set locale to '{$lang}'");
+			}
+			if ($_gt) {
+				$domain = WT_LOCALE_DOMAIN;
+
+				$mo = WT_LOCALE_PATH . "{$lang}/LC_MESSAGES/{$domain}.mo";
+				if (!file_exists($mo)) {
+					if (!mkdir($concurrentDirectory = dirname($mo), 0777, TRUE) && !is_dir($concurrentDirectory)) {
+						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+					}
+				}
+				if (file_exists(WT_LOCALE_PATH . "{$lang}.po")) {
+					if (!file_exists($mo)) {
+						$loader       = new PoLoader();
+						$translations = $loader->loadFile(WT_LOCALE_PATH . "{$lang}.po");
+						$generator    = new MoGenerator();
+						$generator->generateFile($translations, $mo);
+					}
+				}
+				// Задаем текущий язык проекта
+				putenv("LANGUAGE=$lang");
+				putenv("LANG=$lang");
+				// Задаем текущую локаль (кодировку)
+				// Указываем имя домена
+				// Задаем каталог домена, где содержатся переводы
+				bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
+				// Выбираем домен для работы
+				textdomain(WT_LOCALE_DOMAIN);
+				// Если необходимо, принудительно указываем кодировку
+				// (эта строка не обязательна, она нужна,
+				// если вы хотите выводить текст в отличной
+				// от текущей локали кодировке).
+				bind_textdomain_codeset(WT_LOCALE_DOMAIN, 'UTF-8');
+			}
+			return $lang;
 		}
 	}
 
@@ -900,47 +949,48 @@ SQL;
 
 	class Cache
 	{
-
-		public function setCache($key, $value, $expire = 600)
+		public static function setCache($key, $value, $expire = 600, $category = '')
 		{
-			$name   = $this->getKey($key) . '.cache.php';
-			$v      = var_export($value, 1);
-			$expire = $expire ? $expire + time() : 0;
-			$body   = <<<PHP
+			$name                = Cache::getKey($key) . '.cache.php';
+			$v                   = var_export($value, 1);
+			$expire              = $expire ? $expire + time() : 0;
+			$body                = <<<PHP
 <?php
-	if($expire){
-		if(time() > $expire){
-			unlink(__FILE__);
-			return null;
-		}
-	}
-
+	if($expire){if(time()>$expire){unlink(__FILE__);return null;}}
 	return $v
 ?>
 PHP;
-			file_put_contents(WT_CACHE_PATH . $name, $body);
+			$concurrentDirectory = WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR;
+			if (!file_exists($concurrentDirectory) or !is_dir($concurrentDirectory)) {
+				if (!mkdir($concurrentDirectory, 0777, TRUE) && !is_dir($concurrentDirectory)) {
+					throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+				}
+			}
+			if (is_dir($concurrentDirectory)) {
+				file_put_contents($concurrentDirectory . $name, $body);
+			}
 			return $value;
 		}
 
-		private function getKey($a)
+		public static function getKey($a)
 		{
 			return md5(serialize($a));
 		}
 
-		public function getCache($key)
+		public static function getCache($key, $category = '')
 		{
-			$name = $this->getKey($key) . '.cache.php';
-			if (file_exists(WT_CACHE_PATH . $name)) {
-				return require WT_CACHE_PATH . $name;
+			$name = Cache::getKey($key) . '.cache.php';
+			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
+				return require WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
 			}
 			return NULL;
 		}
 
-		public function removeCache($key)
+		public static function removeCache($key, $category = '')
 		{
-			$name = $this->getKey($key) . '.cache.php';
-			if (file_exists(WT_CACHE_PATH . $name)) {
-				unlink(WT_CACHE_PATH . $name);
+			$name = Cache::getKey($key) . '.cache.php';
+			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
+				unlink(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name);
 			}
 			return !file_exists(WT_CACHE_PATH . $name);
 		}

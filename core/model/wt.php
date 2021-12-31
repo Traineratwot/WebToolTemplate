@@ -1,5 +1,6 @@
+#!/usr/bin/env php
 <?php
-
+	use core\model\Core;
 	use core\model\make;
 
 	if (PHP_SAPI == 'cli') {
@@ -106,6 +107,32 @@
 			return file_exists($path);
 		}
 
+		function prompt($prompt = "Enter Password:") {
+			if (T_TYPE_SYSTEM !== 'nix') {
+				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+				file_put_contents(
+					$vbscript, 'wscript.echo(InputBox("'
+							 . addslashes($prompt)
+							 . '", "", "'.$prompt.'"))');
+				$command = "cscript //nologo " . escapeshellarg($vbscript);
+				$password = rtrim(shell_exec($command));
+				unlink($vbscript);
+				return $password;
+			} else {
+				$command = "/usr/bin/env bash -c 'echo OK'";
+				if (rtrim(shell_exec($command)) !== 'OK') {
+					trigger_error("Can't invoke bash");
+					return;
+				}
+				$command = "/usr/bin/env bash -c 'read -s -p \""
+					. addslashes($prompt)
+					. "\" answer && echo \$answer'";
+				$password = rtrim(shell_exec($command));
+				echo "\n";
+				return $password;
+			}
+		}
+
 		try {
 			require_once realpath(dirname(__DIR__) . '/config.php');
 			require_once realpath(WT_MODEL_PATH . 'engine.php');
@@ -163,9 +190,44 @@
 						}
 						break;
 					case 'help':
-						note('make {ajax|table|page} {...args}');
-						note('error {?clear}');
-						note('cache {clear}');
+						success('make {ajax|table|page} {...args}; generate template for ajax, table class, or page');
+						success('error {?clear}; --- get error log or clear');
+						success('cache {clear}; --- exterminate cache folder' );
+						success('lang {lang code} e.g.: lang ru_RU.UTF-8; --- generate .po and .mo files in locale folder');
+						break;
+					case 'lang':
+					case 'locale':
+							$lang = $argv[2];
+							if($lang == 'all'){
+								if (WT_TYPE_SYSTEM === 'nix') {
+									exec("locale - a", $out);
+									success('Installed locale:');
+									print_r($out);
+								}else{
+									failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
+								}
+							}elseif($lang){
+								$newLang = Core::setLocale($lang,false);
+								if(stripos($lang, 'utf-8') === false) {
+									warning("Recommend add '.UTF-8");
+									if(!(int)prompt('Continue? 1/0')){
+										break;
+									};
+								}
+								if($newLang == false){
+									failure("can't set locale '$lang' ");
+								}elseif($lang == $newLang){
+									success('start generator');
+								}else{
+									warning("can't set locale '$lang' but set '$newLang' ");
+									if(!(int)prompt('Continue? 1/0')){
+										break;
+									};
+									success('start generator');
+								}
+							}else{
+								failure("haven`t 1 argument");
+							}
 						break;
 				}
 			}
