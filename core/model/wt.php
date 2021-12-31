@@ -110,8 +110,8 @@
 
 		function prompt($prompt = "", $hidden = FALSE)
 		{
-			$prompt = strtr($prompt,[
-					'"'=>"'"
+			$prompt = strtr($prompt, [
+					'"' => "'",
 			]);
 			if (WT_TYPE_SYSTEM !== 'nix') {
 				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
@@ -141,6 +141,14 @@
 
 		function localeGenerator($lang)
 		{
+			if ($lang) {
+				$dir = WT_LOCALE_PATH . $lang . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR;
+				if (!is_dir($dir)) {
+					if (!mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
+						throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+					}
+				}
+			}
 			success('ok');
 			exit();
 		}
@@ -188,7 +196,11 @@
 							if (WT_TYPE_SYSTEM == 'win') {
 								system('RD /s/q "' . WT_CACHE_PATH . '"');
 							} else {
-								system('rm -rf "' . WT_CACHE_PATH . '"');
+								if($argv[3] == 'sudo'){
+									system('sudo rm -rf "' . WT_CACHE_PATH . '"');
+								}else {
+									system('rm -rf "' . WT_CACHE_PATH . '"');
+								}
 							}
 
 							if (!file_exists(WT_CACHE_PATH)) {
