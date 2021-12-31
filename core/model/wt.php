@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 	use core\model\Core;
 	use core\model\make;
 
@@ -33,8 +34,8 @@
 			switch (mb_strtolower($a)) {
 				case 'ajax':
 					$p = strtr(WT_AJAX_PATH . $b . '.php', [
-						'/'  => DIRECTORY_SEPARATOR,
-						'\\' => DIRECTORY_SEPARATOR,
+							'/'  => DIRECTORY_SEPARATOR,
+							'\\' => DIRECTORY_SEPARATOR,
 					]);
 					$p = mb_strtolower($p);
 					if (!file_exists($p)) {
@@ -47,7 +48,7 @@
 				case 'table':
 					$class = mb_strtolower(make::name2class($b));
 					$p     = WT_CLASSES_PATH . $class . '.php';
-					$p = mb_strtolower($p);
+					$p     = mb_strtolower($p);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeTable($b, $c));
 						success('ok: ' . $p);
@@ -58,15 +59,15 @@
 				case 'page':
 					$url = mb_strtolower($b);
 					$p   = strtr(WT_VIEWS_PATH . $url . '.php', [
-						'/'  => DIRECTORY_SEPARATOR,
-						'\\' => DIRECTORY_SEPARATOR,
+							'/'  => DIRECTORY_SEPARATOR,
+							'\\' => DIRECTORY_SEPARATOR,
 					]);
 					$p2  = strtr(WT_PAGES_PATH . $url . '.tpl', [
-						'/'  => DIRECTORY_SEPARATOR,
-						'\\' => DIRECTORY_SEPARATOR,
+							'/'  => DIRECTORY_SEPARATOR,
+							'\\' => DIRECTORY_SEPARATOR,
 					]);
-					$p = mb_strtolower($p);
-					$p2 = mb_strtolower($p2);
+					$p   = mb_strtolower($p);
+					$p2  = mb_strtolower($p2);
 					if (!file_exists($p)) {
 						if (writeFile($p, make::makePageClass($url, $c))) {
 							success('ok: ' . $p);
@@ -107,26 +108,28 @@
 			return file_exists($path);
 		}
 
-		function prompt($prompt = "Enter Password:") {
-			if (T_TYPE_SYSTEM !== 'nix') {
+		function prompt($prompt = "", $hidden = FALSE)
+		{
+			if (WT_TYPE_SYSTEM !== 'nix') {
 				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
 				file_put_contents(
-					$vbscript, 'wscript.echo(InputBox("'
-							 . addslashes($prompt)
-							 . '", "", "'.$prompt.'"))');
-				$command = "cscript //nologo " . escapeshellarg($vbscript);
+						$vbscript, 'wscript.echo(InputBox("'
+								 . addslashes($prompt)
+								 . '", "", "' . $prompt . '"))');
+				$command  = "cscript //nologo " . escapeshellarg($vbscript);
 				$password = rtrim(shell_exec($command));
 				unlink($vbscript);
 				return $password;
 			} else {
+				$hidden  = $hidden ? '-s' : '';
 				$command = "/usr/bin/env bash -c 'echo OK'";
 				if (rtrim(shell_exec($command)) !== 'OK') {
 					trigger_error("Can't invoke bash");
 					return;
 				}
-				$command = "/usr/bin/env bash -c 'read -s -p \""
-					. addslashes($prompt)
-					. "\" answer && echo \$answer'";
+				$command  = "/usr/bin/env bash -c {$hidden} 'read  -p \""
+						. addslashes($prompt . ' ')
+						. "\" answer && echo \$answer'";
 				$password = rtrim(shell_exec($command));
 				echo "\n";
 				return $password;
@@ -192,42 +195,42 @@
 					case 'help':
 						success('make {ajax|table|page} {...args}; generate template for ajax, table class, or page');
 						success('error {?clear}; --- get error log or clear');
-						success('cache {clear}; --- exterminate cache folder' );
+						success('cache {clear}; --- exterminate cache folder');
 						success('lang {lang code} e.g.: lang ru_RU.UTF-8; --- generate .po and .mo files in locale folder');
 						break;
 					case 'lang':
 					case 'locale':
-							$lang = $argv[2];
-							if($lang == 'all'){
-								if (WT_TYPE_SYSTEM === 'nix') {
-									exec("locale - a", $out);
-									success('Installed locale:');
-									print_r($out);
-								}else{
-									failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
-								}
-							}elseif($lang){
-								$newLang = Core::setLocale($lang,false);
-								if(stripos($lang, 'utf-8') === false) {
-									warning("Recommend add '.UTF-8");
-									if(!(int)prompt('Continue? 1/0')){
-										break;
-									};
-								}
-								if($newLang == false){
-									failure("can't set locale '$lang' ");
-								}elseif($lang == $newLang){
-									success('start generator');
-								}else{
-									warning("can't set locale '$lang' but set '$newLang' ");
-									if(!(int)prompt('Continue? 1/0')){
-										break;
-									};
-									success('start generator');
-								}
-							}else{
-								failure("haven`t 1 argument");
+						$lang = $argv[2];
+						if ($lang == 'all') {
+							if (WT_TYPE_SYSTEM === 'nix') {
+								exec("locale - a", $out);
+								success('Installed locale:');
+								print_r($out);
+							} else {
+								failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
 							}
+						} elseif ($lang) {
+							$newLang = Core::setLocale($lang, FALSE);
+							if (stripos($lang, 'utf-8') === FALSE) {
+								warning("Recommend add '.UTF-8");
+								if (!(int)prompt('Continue? 1/0')) {
+									break;
+								};
+							}
+							if ($newLang == FALSE) {
+								failure("can't set locale '$lang' ");
+							} elseif ($lang == $newLang) {
+								success('start generator');
+							} else {
+								warning("can't set locale '$lang' but set '$newLang' ");
+								if (!(int)prompt('Continue? 1/0')) {
+									break;
+								};
+								success('start generator');
+							}
+						} else {
+							failure("haven`t 1 argument");
+						}
 						break;
 				}
 			}

@@ -1,7 +1,18 @@
 <?php
 
 	namespace core\model;
-	class Colors
+	require_once realpath(WT_MODEL_PATH . 'core.php');
+	require_once realpath(WT_MODEL_PATH . 'postFiles.php');
+	require_once realpath(WT_MODEL_PATH . 'errors.php');
+	require_once realpath(WT_VENDOR_PATH . 'autoload.php');
+	$classes = scandir(WT_CLASSES_PATH);
+	foreach ($classes as $class) {
+		$p = realpath(WT_CLASSES_PATH . $class);
+		if (file_exists($p) and is_file($p)) {
+			require_once $p;
+		}
+	}
+	class Console
 	{
 		private $foreground_colors = [];
 		private $background_colors = [];
@@ -67,19 +78,36 @@
 		{
 			return array_keys($this->background_colors);
 		}
-	}
 
-	require_once realpath(WT_MODEL_PATH . 'core.php');
-	require_once realpath(WT_MODEL_PATH . 'postFiles.php');
-	require_once realpath(WT_MODEL_PATH . 'errors.php');
-	require_once realpath(WT_VENDOR_PATH . 'autoload.php');
-	$classes = scandir(WT_CLASSES_PATH);
-	foreach ($classes as $class) {
-		$p = realpath(WT_CLASSES_PATH . $class);
-		if (file_exists($p) and is_file($p)) {
-			require_once $p;
+		public function prompt($prompt = "", $hidden = FALSE)
+		{
+			if (WT_TYPE_SYSTEM !== 'nix') {
+				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+				file_put_contents(
+					$vbscript, 'wscript.echo(InputBox("'
+							 . addslashes($prompt)
+							 . '", "", "' . $prompt . '"))');
+				$command  = "cscript //nologo " . escapeshellarg($vbscript);
+				$password = rtrim(shell_exec($command));
+				unlink($vbscript);
+				return $password;
+			} else {
+				$hidden  = $hidden ? '-s' : '';
+				$command = "/usr/bin/env bash -c 'echo OK'";
+				if (rtrim(shell_exec($command)) !== 'OK') {
+					trigger_error("Can't invoke bash");
+					return;
+				}
+				$command  = "/usr/bin/env bash -c {$hidden} 'read  -p \""
+					. addslashes($prompt . ' ')
+					. "\" answer && echo \$answer'";
+				$password = rtrim(shell_exec($command));
+				echo "\n";
+				return $password;
+			}
 		}
 	}
-	$colors = new Colors();
+	/** @var Console $Console */
+	$Console = new Console();
 	/** @var Core $core */
 	$core = new Core();
