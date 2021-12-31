@@ -81,12 +81,15 @@
 
 		public function prompt($prompt = "", $hidden = FALSE)
 		{
+			$prompt = strtr($prompt,[
+				'"'=>"'"
+			]);
 			if (WT_TYPE_SYSTEM !== 'nix') {
 				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
 				file_put_contents(
 					$vbscript, 'wscript.echo(InputBox("'
 							 . addslashes($prompt)
-							 . '", "", "' . $prompt . '"))');
+							 . '", "", ""))');
 				$command  = "cscript //nologo " . escapeshellarg($vbscript);
 				$password = rtrim(shell_exec($command));
 				unlink($vbscript);

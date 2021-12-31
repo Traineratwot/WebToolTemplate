@@ -110,12 +110,15 @@
 
 		function prompt($prompt = "", $hidden = FALSE)
 		{
+			$prompt = strtr($prompt,[
+					'"'=>"'"
+			]);
 			if (WT_TYPE_SYSTEM !== 'nix') {
 				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
 				file_put_contents(
 						$vbscript, 'wscript.echo(InputBox("'
 								 . addslashes($prompt)
-								 . '", "", "' . $prompt . '"))');
+								 . '", "", ""))');
 				$command  = "cscript //nologo " . escapeshellarg($vbscript);
 				$password = rtrim(shell_exec($command));
 				unlink($vbscript);
@@ -134,6 +137,12 @@
 				echo "\n";
 				return $password;
 			}
+		}
+
+		function localeGenerator($lang)
+		{
+			success('ok');
+			exit();
 		}
 
 		try {
@@ -213,7 +222,7 @@
 							$newLang = Core::setLocale($lang, FALSE);
 							if (stripos($lang, 'utf-8') === FALSE) {
 								warning("Recommend add '.UTF-8");
-								if (!(int)prompt('Continue? 1/0')) {
+								if (!(int)prompt('Continue with? "' . $lang . '" 1/0')) {
 									break;
 								};
 							}
@@ -221,12 +230,14 @@
 								failure("can't set locale '$lang' ");
 							} elseif ($lang == $newLang) {
 								success('start generator');
+								localeGenerator($newLang);
 							} else {
 								warning("can't set locale '$lang' but set '$newLang' ");
-								if (!(int)prompt('Continue? 1/0')) {
+								if (!(int)prompt('Continue with "' . $newLang . '" ? 1/0')) {
 									break;
 								};
 								success('start generator');
+								localeGenerator($newLang);
 							}
 						} else {
 							failure("haven`t 1 argument");
