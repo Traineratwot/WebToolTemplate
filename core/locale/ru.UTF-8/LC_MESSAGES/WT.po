@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Language: ru\n"
+"Language-Team: \n"
+"Last-Translator: \n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: \n"
+"Project-Id-Version: \n"
+"X-Domain: WT\n"
+"X-Generator: Poedit 2.0.1\n"
+
+#: core/pages/login.tpl:5
+msgid "login"
+msgstr ""
+
+#: core/pages/login.tpl:15
+msgid "email"
+msgstr ""
+
+#: core/pages/login.tpl:23
+msgid "password"
+msgstr ""
+
+#: core/pages/login.tpl:6
+msgid "one"
+msgstr ""
+
+#: core/pages/login.tpl:6
+msgid "two"
+msgstr ""
+
+#: core/pages/login.tpl:6
+msgid "three"
+msgstr ""
+
+#: core/pages/login.tpl:8
+msgid "sagi"
+msgstr ""
+
+#: core/pages/login.tpl:10
+msgid "http://www.php.net/"
+msgstr ""
+
+#: core/pages/login.tpl:10
+msgid "PHP website"
+msgstr ""
+
+#: core/pages/login.tpl:30
+msgid "submit"
+msgstr ""

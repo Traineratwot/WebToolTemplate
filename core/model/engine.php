@@ -12,79 +12,80 @@
 			require_once $p;
 		}
 	}
+
 	class Console
 	{
-		private $foreground_colors = [];
-		private $background_colors = [];
-
-		public function __construct()
-		{
-			// Set up shell colors
-			$this->foreground_colors['black']        = '0;30';
-			$this->foreground_colors['dark_gray']    = '1;30';
-			$this->foreground_colors['blue']         = '0;34';
-			$this->foreground_colors['light_blue']   = '1;34';
-			$this->foreground_colors['green']        = '0;32';
-			$this->foreground_colors['light_green']  = '1;32';
-			$this->foreground_colors['cyan']         = '0;36';
-			$this->foreground_colors['light_cyan']   = '1;36';
-			$this->foreground_colors['red']          = '0;31';
-			$this->foreground_colors['light_red']    = '1;31';
-			$this->foreground_colors['purple']       = '0;35';
-			$this->foreground_colors['light_purple'] = '1;35';
-			$this->foreground_colors['brown']        = '0;33';
-			$this->foreground_colors['yellow']       = '1;33';
-			$this->foreground_colors['light_gray']   = '0;37';
-			$this->foreground_colors['white']        = '1;37';
-
-			$this->background_colors['black']      = '40';
-			$this->background_colors['red']        = '41';
-			$this->background_colors['green']      = '42';
-			$this->background_colors['yellow']     = '43';
-			$this->background_colors['blue']       = '44';
-			$this->background_colors['magenta']    = '45';
-			$this->background_colors['cyan']       = '46';
-			$this->background_colors['light_gray'] = '47';
-		}
+		public const foreground_colors
+			= [
+				'black'        => '0;30',
+				'dark_gray'    => '1;30',
+				'blue'         => '0;34',
+				'light_blue'   => '1;34',
+				'green'        => '0;32',
+				'light_green'  => '1;32',
+				'cyan'         => '0;36',
+				'light_cyan'   => '1;36',
+				'red'          => '0;31',
+				'light_red'    => '1;31',
+				'purple'       => '0;35',
+				'light_purple' => '1;35',
+				'brown'        => '0;33',
+				'yellow'       => '1;33',
+				'light_gray'   => '0;37',
+				'white'        => '1;37',
+			];
+		public const background_colors
+			= [
+				'black'      => '40',
+				'red'        => '41',
+				'green'      => '42',
+				'yellow'     => '43',
+				'blue'       => '44',
+				'magenta'    => '45',
+				'cyan'       => '46',
+				'light_gray' => '47',
+			];
 
 		// Returns colored string
-		public function getColoredString($string, $foreground_color = NULL, $background_color = NULL)
+		public static function getColoredString($string, $foreground_color = NULL, $background_color = NULL)
 		{
-			$colored_string = "";
-
-			// Check if given foreground color found
-			if (isset($this->foreground_colors[$foreground_color])) {
-				$colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
+			if (PHP_SAPI == 'cli') {
+				$colored_string = "";
+				// Check if given foreground color found
+				if (isset(Console::foreground_colors[$foreground_color])) {
+					$colored_string .= "\033[" . Console::foreground_colors[$foreground_color] . "m";
+				}
+				// Check if given background color found
+				if (isset(Console::background_colors[$background_color])) {
+					$colored_string .= "\033[" . Console::background_colors[$background_color] . "m";
+				}
+				// Add string and end coloring
+				$colored_string .= $string . "\033[0m";
+				return $colored_string;
+			} else {
+				return $string;
 			}
-			// Check if given background color found
-			if (isset($this->background_colors[$background_color])) {
-				$colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
-			}
-
-			// Add string and end coloring
-			$colored_string .= $string . "\033[0m";
-
-			return $colored_string;
 		}
 
 		// Returns all foreground color names
-		public function getForegroundColors()
+		public static function getForegroundColors()
 		{
-			return array_keys($this->foreground_colors);
+			return array_keys(Console::foreground_colors);
 		}
 
 		// Returns all background color names
-		public function getBackgroundColors()
+		public static function getBackgroundColors()
 		{
-			return array_keys($this->background_colors);
+			return array_keys(Console::background_colors);
 		}
 
-		public function prompt($prompt = "", $hidden = FALSE)
+		// Ask user, Return user prompt
+		public static function prompt($prompt = "", $hidden = FALSE)
 		{
-			$prompt = strtr($prompt,[
-				'"'=>"'"
-			]);
 			if (WT_TYPE_SYSTEM !== 'nix') {
+				$prompt   = strtr($prompt, [
+					'"' => "'",
+				]);
 				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
 				file_put_contents(
 					$vbscript, 'wscript.echo(InputBox("'
@@ -95,6 +96,9 @@
 				unlink($vbscript);
 				return $password;
 			} else {
+				$prompt  = strtr($prompt, [
+					"'" => '"',
+				]);
 				$hidden  = $hidden ? '-s' : '';
 				$command = "/usr/bin/env bash -c 'echo OK'";
 				if (rtrim(shell_exec($command)) !== 'OK') {
@@ -109,7 +113,29 @@
 				return $password;
 			}
 		}
+
+		// Returns Red text
+		public static function failure($t)
+		{
+			$t = ucfirst($t);
+			echo Console::getColoredString($t, 'red') . PHP_EOL;
+		}
+
+		// Returns Yellow text
+		public static function warning($t)
+		{
+			$t = ucfirst($t);
+			echo Console::getColoredString($t, 'yellow') . PHP_EOL;
+		}
+
+		// Returns Green text
+		public static function success($t)
+		{
+			$t = ucfirst($t);
+			echo Console::getColoredString($t, 'green') . PHP_EOL;
+		}
 	}
+
 	/** @var Console $Console */
 	$console = new Console();
 	/** @var Core $core */

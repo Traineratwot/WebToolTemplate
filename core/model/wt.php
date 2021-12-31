@@ -1,32 +1,18 @@
 #!/usr/bin/env php
 <?php
 
+	use core\model\Console;
 	use core\model\Core;
 	use core\model\make;
+	use core\model\PoUpdate;
 
+	/** @var Console $console */
+	/** @var Core $core */
 	if (PHP_SAPI == 'cli') {
 		function note($t)
 		{
 			$t = ucfirst($t);
 			echo '-' . $t . "\n";
-		}
-
-		function failure($t)
-		{
-			$t = ucfirst($t);
-			echo "-\033[0;31m" . $t . " \033[0m \n";
-		}
-
-		function warning($t)
-		{
-			$t = ucfirst($t);
-			echo "-\033[1;33m" . $t . " \033[0m \n";
-		}
-
-		function success($t)
-		{
-			$t = ucfirst($t);
-			echo "-\033[0;32m" . $t . " \033[0m \n";
 		}
 
 		function make($a, $b, $c)
@@ -40,9 +26,9 @@
 					$p = mb_strtolower($p);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeAjax($b, $c));
-						success('ok: ' . $p);
+						Console::success('ok: ' . $p);
 					} else {
-						failure('Already exists');
+						Console::failure('Already exists');
 					}
 					break;
 				case 'table':
@@ -51,9 +37,9 @@
 					$p     = mb_strtolower($p);
 					if (!file_exists($p)) {
 						writeFile($p, make::makeTable($b, $c));
-						success('ok: ' . $p);
+						Console::success('ok: ' . $p);
 					} else {
-						failure('Already exists');
+						Console::failure('Already exists');
 					}
 					break;
 				case 'page':
@@ -70,25 +56,25 @@
 					$p2  = mb_strtolower($p2);
 					if (!file_exists($p)) {
 						if (writeFile($p, make::makePageClass($url, $c))) {
-							success('ok: ' . $p);
+							Console::success('ok: ' . $p);
 						} else {
-							failure('can`t write file: ' . $p);
+							Console::failure('can`t write file: ' . $p);
 						}
 					} else {
-						failure('Already exists: ' . $p);
+						Console::failure('Already exists: ' . $p);
 					}
 					if (!file_exists($p2)) {
 						if (writeFile($p2, make::makePageTpl($url, $c))) {
-							success('ok: ' . $p2);
+							Console::success('ok: ' . $p2);
 						} else {
-							failure('can`t write file: ' . $p);
+							Console::failure('can`t write file: ' . $p);
 						}
 					} else {
-						failure('Already exists: ' . $p2);
+						Console::failure('Already exists: ' . $p2);
 					}
 					break;
 				default:
-					failure('Unknown action');
+					Console::failure('Unknown action');
 					break;
 			}
 		}
@@ -108,48 +94,11 @@
 			return file_exists($path);
 		}
 
-		function prompt($prompt = "", $hidden = FALSE)
-		{
-			$prompt = strtr($prompt, [
-					'"' => "'",
-			]);
-			if (WT_TYPE_SYSTEM !== 'nix') {
-				$vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
-				file_put_contents(
-						$vbscript, 'wscript.echo(InputBox("'
-								 . addslashes($prompt)
-								 . '", "", ""))');
-				$command  = "cscript //nologo " . escapeshellarg($vbscript);
-				$password = rtrim(shell_exec($command));
-				unlink($vbscript);
-				return $password;
-			} else {
-				$hidden  = $hidden ? '-s' : '';
-				$command = "/usr/bin/env bash -c 'echo OK'";
-				if (rtrim(shell_exec($command)) !== 'OK') {
-					trigger_error("Can't invoke bash");
-					return;
-				}
-				$command  = "/usr/bin/env bash -c {$hidden} 'read  -p \""
-						. addslashes($prompt . ' ')
-						. "\" answer && echo \$answer'";
-				$password = rtrim(shell_exec($command));
-				echo "\n";
-				return $password;
-			}
-		}
-
 		function localeGenerator($lang)
 		{
-			if ($lang) {
-				$dir = WT_LOCALE_PATH . $lang . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR;
-				if (!is_dir($dir)) {
-					if (!mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-					}
-				}
-			}
-			success('ok');
+			require_once(WT_MODEL_PATH . 'PoUpdate.php');
+			(new PoUpdate())->run($lang);
+			Console::success('ok');
 			exit();
 		}
 
@@ -157,14 +106,14 @@
 			require_once realpath(dirname(__DIR__) . '/config.php');
 			require_once realpath(WT_MODEL_PATH . 'engine.php');
 			if (empty($argv[1])) {
-				failure('empty arguments');
+				Console::failure('empty arguments');
 			} else {
 				switch (mb_strtolower($argv[1])) {
 					case 'make':
 						if (!empty($argv[2])) {
 							make($argv[2], $argv[3], $argv[4]);
 						} else {
-							failure('Empty action, eg:wr make {action} {arg}');
+							Console::failure('Empty action, eg:wr make {action} {arg}');
 						}
 						break;
 					case 'error':
@@ -177,17 +126,17 @@
 								$i++;
 								$buffer = trim($buffer);
 								if (strpos($buffer, '[error]') !== FALSE) {
-									failure($i . '. ' . $buffer);
+									Console::failure($i . '. ' . $buffer);
 								} elseif (strpos($buffer, '[warning]') !== FALSE) {
 									warning($i . '. ' . $buffer);
 								} elseif (strpos($buffer, '[info]') !== FALSE) {
-									success($i . '. ' . $buffer);
+									Console::success($i . '. ' . $buffer);
 								} else {
 									note($i . '. ' . $buffer);
 								}
 							}
 							if (!$i) {
-								success('empty logs');
+								Console::success('empty logs');
 							}
 						}
 						break;
@@ -196,28 +145,28 @@
 							if (WT_TYPE_SYSTEM == 'win') {
 								system('RD /s/q "' . WT_CACHE_PATH . '"');
 							} else {
-								if($argv[3] == 'sudo'){
+								if ($argv[3] == 'sudo') {
 									system('sudo rm -rf "' . WT_CACHE_PATH . '"');
-								}else {
+								} else {
 									system('rm -rf "' . WT_CACHE_PATH . '"');
 								}
 							}
 
 							if (!file_exists(WT_CACHE_PATH)) {
-								success('cache cleaned');
+								Console::success('cache cleaned');
 							} else {
-								failure('error');
+								Console::failure('error');
 							}
 
 						} catch (\Exception $e) {
-							failure($e->getMessage());
+							Console::failure($e->getMessage());
 						}
 						break;
 					case 'help':
-						success('make {ajax|table|page} {...args}; generate template for ajax, table class, or page');
-						success('error {?clear}; --- get error log or clear');
-						success('cache {clear}; --- exterminate cache folder');
-						success('lang {lang code} e.g.: lang ru_RU.UTF-8; --- generate .po and .mo files in locale folder');
+						Console::success('make {ajax|table|page} {...args}; generate template for ajax, table class, or page');
+						Console::success('error {?clear}; --- get error log or clear');
+						Console::success('cache {clear}; --- exterminate cache folder');
+						Console::success('lang {lang code} e.g.: lang ru_RU.UTF-8; --- generate .po and .mo files in locale folder');
 						break;
 					case 'lang':
 					case 'locale':
@@ -225,34 +174,34 @@
 						if ($lang == 'all') {
 							if (WT_TYPE_SYSTEM === 'nix') {
 								exec("locale - a", $out);
-								success('Installed locale:');
+								Console::success('Installed locale:');
 								print_r($out);
 							} else {
-								failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
+								Console::failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
 							}
 						} elseif ($lang) {
 							$newLang = Core::setLocale($lang, FALSE);
 							if (stripos($lang, 'utf-8') === FALSE) {
-								warning("Recommend add '.UTF-8");
-								if (!(int)prompt('Continue with? "' . $lang . '" 1/0')) {
+								Console::warning("Recommend add '.UTF-8");
+								if (!(int)Console::prompt('Continue with? "' . $lang . '" 1/0')) {
 									break;
 								};
 							}
 							if ($newLang == FALSE) {
-								failure("can't set locale '$lang' ");
+								Console::failure("can't set locale '$lang' ");
 							} elseif ($lang == $newLang) {
-								success('start generator');
+								Console::success('start generator');
 								localeGenerator($newLang);
 							} else {
-								warning("can't set locale '$lang' but set '$newLang' ");
-								if (!(int)prompt('Continue with "' . $newLang . '" ? 1/0')) {
+								Console::warning("can't set locale '$lang' but set '$newLang' ");
+								if (!(int)Console::prompt('Continue with "' . $newLang . '" ? 1/0')) {
 									break;
 								};
-								success('start generator');
+								Console::success('start generator');
 								localeGenerator($newLang);
 							}
 						} else {
-							failure("haven`t 1 argument");
+							Console::failure("haven`t 1 argument");
 						}
 						break;
 				}

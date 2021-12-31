@@ -10,7 +10,6 @@
 
 		public function beforeRender()
 		{
-
 		}
 	}
 

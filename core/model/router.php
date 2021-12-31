@@ -15,6 +15,11 @@
 		}
 	}
 
+	class WTRouterException extends Exception
+	{
+
+	}
+
 	class WTRouter
 	{
 		private bool   $isAjax;
@@ -49,7 +54,7 @@
 				} else {
 					$this->launchPage();
 				}
-			} catch (Exception $e) {
+			} catch (WTRouterException $e) {
 				if ($e->getCode() == 404) {
 					if ($this->isAjax) {
 						$this->ErrorPage();
@@ -154,7 +159,7 @@
 					if (!$this->isAdvanced) {
 						$this->launchAjax();
 					} else {
-						throw new Exception('Page not found', 404);
+						throw new WTRouterException('Page not found', 404);
 					}
 				}
 			}
@@ -193,7 +198,7 @@
 				}
 				exit($response);
 			} else {
-				throw new Exception('Ajax: "' . $ajax . '" file not found', 404);
+				throw new WTRouterException('Ajax: "' . $ajax . '" file not found', 404);
 			}
 		}
 
