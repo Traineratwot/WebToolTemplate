@@ -108,6 +108,6 @@
 		}
 	}
 	/** @var Console $Console */
-	$Console = new Console();
+	$console = new Console();
 	/** @var Core $core */
 	$core = new Core();
