@@ -76,7 +76,7 @@
 
 		function phpScan(Translations $old, $file = NULL)
 		{
-			if(extension_loaded('gettext')) {
+			if(WT_USE_GETTEXT) {
 				$phpScanner = new PhpScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
@@ -103,7 +103,7 @@
 
 		function jsScan(Translations $old, $file = NULL)
 		{
-			if(extension_loaded('gettext')) {
+			if(WT_USE_GETTEXT) {
 				$phpScanner = new JsScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');

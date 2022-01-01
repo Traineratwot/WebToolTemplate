@@ -66,20 +66,9 @@
 	$WT_GETTEXT = NULL;
 	function smarty_block_t($params, $text, &$smarty, &$repeat)
 	{
-		if (!extension_loaded('gettext')) {
-			global $WT_GETTEXT;
-			if (is_null($WT_GETTEXT)) {
-				include_once WT_MODEL_PATH . DIRECTORY_SEPARATOR . 'gettext' . DIRECTORY_SEPARATOR . 'gettext.php';
-				include_once WT_MODEL_PATH . DIRECTORY_SEPARATOR . 'gettext' . DIRECTORY_SEPARATOR . 'streams.php';
-				$mo         = getenv('LANG_MO');
-				$WT_GETTEXT = new gettext_reader(new FileReader($mo), FALSE);
-			}
-			return $WT_GETTEXT->translate($text);
-		}
 		if (!isset($text)) {
 			return $text;
 		}
-
 		// set escape mode, default html escape
 		if (isset($params['escape'])) {
 			$escape = $params['escape'];
@@ -120,24 +109,59 @@
 		if (isset($count) && isset($plural)) {
 			// use specified textdomain if available
 			if (isset($domain) && isset($context)) {
-				$text = dnpgettext($domain, $context, $text, $plural, $count);
+
+				if (WT_USE_GETTEXT) {
+					$text = dnpgettext($domain, $context, $text, $plural, $count);
+				} else {
+					$text = dnp__($domain, $context, $text, $plural, $count);
+				}
 			} elseif (isset($domain)) {
-				$text = dngettext($domain, $text, $plural, $count);
+				if (WT_USE_GETTEXT) {
+					$text = dngettext($domain, $text, $plural, $count);
+				} else {
+					$text = np__($domain, $context, $text);
+				}
+
 			} elseif (isset($context)) {
-				$text = npgettext($context, $text, $plural, $count);
+				if (WT_USE_GETTEXT) {
+					$text = npgettext($context, $text, $plural, $count);
+				} else {
+					$text = np__($context, $text, $plural, $count);
+				}
+
 			} else {
-				$text = ngettext($text, $plural, $count);
+				if (WT_USE_GETTEXT) {
+					$text = ngettext($text, $plural, $count);
+				} else {
+					$text = n__($text, $plural, $count);
+				}
 			}
 		} else {
 			// use specified textdomain if available
 			if (isset($domain) && isset($context)) {
-				$text = dpgettext($domain, $context, $text);
+				if (WT_USE_GETTEXT) {
+					$text = dpgettext($domain, $context, $text);
+				} else {
+					$text = dp__($domain, $context, $text);
+				}
 			} elseif (isset($domain)) {
-				$text = dgettext($domain, $text);
+				if (WT_USE_GETTEXT) {
+					$text = dgettext($domain, $text);
+				} else {
+					$text = d__($domain, $text);
+				}
 			} elseif (isset($context)) {
-				$text = pgettext($context, $text);
+				if (WT_USE_GETTEXT) {
+					$text = pgettext($context, $text);
+				} else {
+					$text = p__($context, $text);
+				}
 			} else {
-				$text = gettext($text);
+				if (WT_USE_GETTEXT) {
+					$text = _($text);
+				} else {
+					$text = __($text);
+				}
 			}
 		}
 

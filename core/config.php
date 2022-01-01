@@ -53,6 +53,7 @@
 	//настройка Локализации
 	define('WT_LOCALE_DOMAIN', 'messages');
 	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
+	define('WT_USE_GETTEXT', false); //extension_loaded('gettext')
 
 	if (!function_exists('getSystem')) {
 		function getSystem()

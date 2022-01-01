@@ -4,8 +4,13 @@
 
 	use core\classes\users;
 	use Exception;
+	use Gettext\Generator\ArrayGenerator;
+	use Gettext\Generator\JsonGenerator;
 	use Gettext\Generator\MoGenerator;
+	use Gettext\GettextTranslator;
 	use Gettext\Loader\PoLoader;
+	use Gettext\Translator;
+	use Gettext\TranslatorFunctions;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
@@ -229,48 +234,55 @@
 			}
 			if ($_gt and $lang) {
 				setlocale(LC_MESSAGES, $lang);
-
-
 				$domain = WT_LOCALE_DOMAIN;
 				$mo     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
 				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
-				if ($mo and !file_exists($mo)) {
-					if (!mkdir($concurrentDirectory = dirname($mo), 0777, TRUE) && !is_dir($concurrentDirectory)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-					}
-				}
+				$json   = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
+				$php    = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
 				if (file_exists($po)) {
-					if (!file_exists($mo)) {
-						$loader       = new PoLoader();
-						$translations = $loader->loadFile($po);
-						$generator    = new MoGenerator();
-						$generator->generateFile($translations, $mo);
+					if (!file_exists($mo) or !file_exists($json) or !file_exists($php)) {
+						$translations = (new PoLoader())->loadFile($po);
+						if (!mkdir($concurrentDirectory = dirname($mo), 0777, TRUE) && !is_dir($concurrentDirectory)) {
+							throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+						}
+						if (!file_exists($mo)) {
+							(new MoGenerator())->generateFile($translations, $mo);
+						}
+						if (!file_exists($json)) {
+							(new JsonGenerator())->generateFile($translations, $json);
+						}
+						if (!file_exists($php)) {
+							(new ArrayGenerator())->generateFile($translations, $php);
+						}
 					}
 				}
-				if(file_exists($mo)){
+				if (file_exists($mo)) {
 					putenv("LANG_MO=$mo");
 				}
-				if(file_exists($po)){
+				if (file_exists($po)) {
 					putenv("LANG_PO=$po");
+				}
+				if (file_exists($json)) {
+					putenv("LANG_JSON=$json");
+				}
+				if (file_exists($php)) {
+					putenv("LANG_PHP=$php");
 				}
 				// Задаем текущий язык проекта
 				putenv("LANGUAGE=$lang");
 				putenv("LANG=$lang");
 				putenv("LC_ALL=$lang");
-
-				if (extension_loaded('gettext')) {
-					// Задаем текущую локаль (кодировку)
-					// Указываем имя домена
-					// Задаем каталог домена, где содержатся переводы
-//				bindtextdomain(WT_LOCALE_DOMAIN, './locale/nocache');
+				if (WT_USE_GETTEXT) {
+					$t = new GettextTranslator();
+					$t->setLanguage($lang);
+					$t->loadDomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
 					bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-					// Выбираем домен для работы
 					textdomain(WT_LOCALE_DOMAIN);
-					// Если необходимо, принудительно указываем кодировку
-					// (эта строка не обязательна, она нужна,
-					// если вы хотите выводить текст в отличной
-					// от текущей локали кодировке).
-					bind_textdomain_codeset(WT_LOCALE_DOMAIN, 'utf8');
+				} else {
+					$t = new Translator();
+					$t->defaultDomain(WT_LOCALE_DOMAIN);
+					$t->loadTranslations($php);
+					TranslatorFunctions::register($t);
 				}
 			}
 			return $lang;

@@ -13,3 +13,5 @@ package-lock.json
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 /locale/
+!/pnpm-lock.yaml
+pnpm-lock.yaml
