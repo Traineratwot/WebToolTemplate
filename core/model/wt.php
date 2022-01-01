@@ -145,7 +145,7 @@
 							if (WT_TYPE_SYSTEM == 'win') {
 								system('RD /s/q "' . WT_CACHE_PATH . '"');
 							} else {
-								if ($argv[3] == 'sudo') {
+								if ($argv[3] == 'sudo' or $argv[2] == 'sudo') {
 									system('sudo rm -rf "' . WT_CACHE_PATH . '"');
 								} else {
 									system('rm -rf "' . WT_CACHE_PATH . '"');
@@ -179,6 +179,30 @@
 							} else {
 								Console::failure("windows don`t have command to get locale, use template 'XX.utf8' where XX - lang code");
 							}
+						} elseif ($lang == 'clear') {
+							$dir = WT_CACHE_PATH.'locale'.DIRECTORY_SEPARATOR;
+							if(is_dir($dir)) {
+								if (WT_TYPE_SYSTEM == 'win') {
+									system('RD /s/q "' . $dir . '"');
+								} else {
+									if ($argv[3] == 'sudo' or $argv[2] == 'sudo') {
+										system('sudo rm -rf "' . $dir . '"');
+									} else {
+										system('rm -rf "' . $dir . '"');
+									}
+								}
+							}
+							chdir(WT_LOCALE_PATH);
+							foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.mo', GLOB_BRACE) as $_file) {
+								unlink($_file);
+							}
+							foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.json', GLOB_BRACE) as $_file) {
+								unlink($_file);
+							}
+							foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
+								unlink($_file);
+							}
+							Console::success('ok');
 						} elseif ($lang) {
 							if (WT_TYPE_SYSTEM === 'nix') {
 								exec("locale -a|grep {$lang}", $out);

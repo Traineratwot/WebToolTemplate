@@ -51,10 +51,10 @@
 	define('WT_SECURE_MAIL', 'ssl'); //тип шифрования
 	define('WT_PORT_MAIL', '465');
 	//настройка Локализации
-	define('WT_LOCALE_DOMAIN', 'messages');
+	define('WT_LOCALE_DOMAIN', 'wt');
 	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 	// Если у вас нет или не работает (как у меня) "gettext", отключите его, здесь будет использована альтернатива
-	define('WT_USE_GETTEXT', extension_loaded('gettext')); //extension_loaded('gettext')
+	define('WT_USE_GETTEXT', FALSE); //extension_loaded('gettext')
 
 	if (!function_exists('getSystem')) {
 		function getSystem()
