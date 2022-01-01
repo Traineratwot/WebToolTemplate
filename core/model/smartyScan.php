@@ -149,7 +149,7 @@
 
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
-			$translation = Translation::create(NULL, $name);
+			$translation = Translation::create($this->domain, $name);
 			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {

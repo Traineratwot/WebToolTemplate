@@ -1,7 +1,7 @@
 <?php
 
 	namespace core\model;
-
+	
 	use Gettext\Generator\PoGenerator;
 	use Gettext\Loader\PoLoader;
 	use Gettext\Merge;
@@ -24,7 +24,6 @@
 
 		public function __construct()
 		{
-
 		}
 
 		function run($lang)
@@ -48,7 +47,6 @@
 					$translations = Translations::create(WT_LOCALE_DOMAIN);
 					$locale       = explode('.', $lang);
 					$translations->getHeaders()
-								 ->set('Last-Translator', 'Oscar Otero')
 								 ->set('Language', $locale[0])
 								 ->set('Content-Type:', 'text/plain; charset=UTF-8')
 					;

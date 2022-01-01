@@ -96,7 +96,7 @@
 
 		function localeGenerator($lang)
 		{
-			require_once(WT_MODEL_PATH . 'PoUpdate.php');
+			require_once(WT_MODEL_PATH . 'poUpdate.php');
 			(new PoUpdate())->run($lang);
 			Console::success('ok');
 			exit();
@@ -166,39 +166,64 @@
 						Console::success('make {ajax|table|page} {...args}; generate template for ajax, table class, or page');
 						Console::success('error {?clear}; --- get error log or clear');
 						Console::success('cache {clear}; --- exterminate cache folder');
-						Console::success('lang {lang code} e.g.: lang ru_RU.UTF-8; --- generate .po and .mo files in locale folder');
+						Console::success('lang {lang code} e.g.: lang ru_RU.utf8; --- generate .po and .mo files in locale folder');
 						break;
 					case 'lang':
 					case 'locale':
 						$lang = $argv[2];
 						if ($lang == 'all') {
 							if (WT_TYPE_SYSTEM === 'nix') {
-								exec("locale - a", $out);
+								exec("locale -a", $out);
 								Console::success('Installed locale:');
 								print_r($out);
 							} else {
-								Console::failure("windows don`t have command to get locale, use template 'XX.UTF-8' where XX - lang code");
+								Console::failure("windows don`t have command to get locale, use template 'XX.utf8' where XX - lang code");
 							}
 						} elseif ($lang) {
-							$newLang = Core::setLocale($lang, FALSE);
-							if (stripos($lang, 'utf-8') === FALSE) {
-								Console::warning("Recommend add '.UTF-8");
-								if (!(int)Console::prompt('Continue with? "' . $lang . '" 1/0')) {
+							if (WT_TYPE_SYSTEM === 'nix') {
+								exec("locale -a|grep {$lang}", $out);
+								if(empty($out)){
+									Console::failure("please install locales");
 									break;
-								};
-							}
-							if ($newLang == FALSE) {
-								Console::failure("can't set locale '$lang' ");
-							} elseif ($lang == $newLang) {
-								Console::success('start generator');
-								localeGenerator($newLang);
+								}
+								$t = FALSE;
+								foreach ($out as $locale) {
+									if ($locale == $lang) {
+										$t = TRUE;
+										break;
+									}
+								}
+								if(!$t){
+									print_r($out);
+									Console::failure("Chose lang from that list");
+									break;
+								}else{
+									Console::success('start generator');
+									localeGenerator($lang);
+								}
 							} else {
-								Console::warning("can't set locale '$lang' but set '$newLang' ");
-								if (!(int)Console::prompt('Continue with "' . $newLang . '" ? 1/0')) {
-									break;
-								};
-								Console::success('start generator');
-								localeGenerator($newLang);
+
+
+								$newLang = Core::setLocale($lang, FALSE);
+								if (stripos($lang, 'utf8') === FALSE) {
+									Console::warning("Recommend add '.utf8");
+									if (!(int)Console::prompt('Continue with? "' . $lang . '" 1/0')) {
+										break;
+									};
+								}
+								if ($newLang == FALSE) {
+									Console::failure("can't set locale '$lang' ");
+								} elseif ($lang == $newLang) {
+									Console::success('start generator');
+									localeGenerator($newLang);
+								} else {
+									Console::warning("can't set locale '$lang' but set '$newLang' ");
+									if (!(int)Console::prompt('Continue with "' . $newLang . '" ? 1/0')) {
+										break;
+									};
+									Console::success('start generator');
+									localeGenerator($newLang);
+								}
 							}
 						} else {
 							Console::failure("haven`t 1 argument");

@@ -1,18 +1,9 @@
 {extends file='base.tpl'}
 {block name='content'}
 	<form class="" id="login" method="POST" action="login">
-		<pre>
-		<h2>{_('login')}</h2>
-        {t 1='one' 2='two' 3='three'}The 1st parameter is `%1`, the 2nd is `%2` and the 3rd `%3`.{/t}
-
-            {t name="sagi"}my name is `%`1`{/t} <span class="test"></span>
-
-        {t escape=no url="http://www.php.net/" name="PHP website"}
-			<a href="%1">`%2`</a>
-        {/t}
-			</pre>
+		<h2>{t}login{/t}</h2>
 		<div class="mb-3">
-			<label for="exampleFormControlInput1" class="form-label">{gettext('email')}</label>
+			<label for="exampleFormControlInput1" class="form-label">{t}email{/t}</label>
 			<input
 					name="email" type="email" class="form-control" id="exampleFormControlInput1"
 					placeholder="email@example.com"
@@ -27,9 +18,7 @@
 			>
 		</div>
 		<button type="submit" class="btn btn-primary">
-            {t}
-				submit
-            {/t}</button>
+            {t}submit{/t}</button>
 		<a id="forgot_password" href="/forgot_password">Forgot password?</a>
 		<script>
 			$('#login').on('success', function() {

@@ -15,11 +15,9 @@
 	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax' . DIRECTORY_SEPARATOR);
 	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
 	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
-	define('WT_LOCALE_PATH', WT_CORE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 	//ВНЕШНИЙ URL
 	define('WT_DOMAIN_URL', $_SERVER['SERVER_NAME'] ?: $_SERVER['HTTP_HOST']);
 	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/');
-	define('WT_LOCALE_DOMAIN', 'WT');
 	//определяем подключение к своей базе
 	define('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db');
 	define('WT_PORT_DB', '');
@@ -50,6 +48,9 @@
 	define('WT_PASSWORD_MAIL', 'admin');
 	define('WT_SECURE_MAIL', 'ssl');//тип шифрования
 	define('WT_PORT_MAIL', '465');
+	//настройка Локализации
+	define('WT_LOCALE_DOMAIN', 'messages');
+	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 
 	if (!function_exists('getSystem')) {
 		function getSystem()
@@ -62,6 +63,26 @@
 				return 'nix';
 			}
 			return 'nix';
+		}
+	}
+	/**
+	 * Пользовательская функция возвращяющяя язык для установки локали на основе url
+	 * вы можете ее менять
+	 * @return false|string
+	 */
+	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
+		function WT_LOCALE_SELECT_FUNCTION()
+		{
+			preg_match('/^(.{1,3})?\..*$/', $_SERVER['HTTP_HOST'], $math);
+			if (!isset($math[1])) {
+				if (class_exists('\Locale')) {
+					return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+				} else {
+					return FALSE;
+				}
+			} else {
+				return $math[1];
+			}
 		}
 	}
 	define('WT_TYPE_SYSTEM', getSystem());

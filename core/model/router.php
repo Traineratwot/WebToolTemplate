@@ -44,10 +44,13 @@
 
 		}
 
+
 		public function route()
 		{
-
-			$this->selectLanguage($this->switchLanguage());
+			if (function_exists('core\model\WT_LOCALE_SELECT_FUNCTION')) {
+				$lang = WT_LOCALE_SELECT_FUNCTION();
+				$this->selectLanguage($lang);
+			}
 			try {
 				if ($this->isAjax) {
 					$this->launchAjax();
@@ -68,12 +71,6 @@
 				}
 			}
 			$this->ErrorPage();
-		}
-
-		public function switchLanguage()
-		{
-			preg_match('/^(.{1,3})?\..*$/', $_SERVER['HTTP_HOST'], $math);
-			return isset($math[1]) ? $math[1] : FALSE;
 		}
 
 		private function selectLanguage($lang)

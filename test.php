@@ -5,6 +5,9 @@
 	use core\model\Core;
 	use core\model\PoUpdate;
 
+	phpinfo();
+	die;
+	ini_set('display_errors', 1);
 	require_once realpath(__DIR__ . '/core/config.php');
 	require_once realpath(WT_MODEL_PATH . 'engine.php');
 	/** @var Core $core */
@@ -18,6 +21,7 @@
 //// Print the entire match result
 //	var_dump($matches);
 //	die;
-	require_once(WT_MODEL_PATH . 'PoUpdate.php');
-	new PoUpdate('ru.UTF-8');
+	include_once(WT_MODEL_PATH . 'poUpdate.php');
+
+	(new PoUpdate())->run('ru_RU.utf8');
 	?>

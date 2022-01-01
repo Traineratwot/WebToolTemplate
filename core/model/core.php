@@ -5,7 +5,6 @@
 	use core\classes\users;
 	use Exception;
 	use Gettext\Generator\MoGenerator;
-	use Gettext\Languages\Category;
 	use Gettext\Loader\PoLoader;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
@@ -220,25 +219,31 @@
 		 * @param $_gt  //use gettext
 		 * @return string|false
 		 */
-		public static function setLocale($lang, $_gt = TRUE)
+		public static function setLocale($_lang, $_gt = TRUE)
 		{
-			$lang = setlocale(LC_ALL, "$lang", substr($lang, 0, 2) . '.UTF-8', substr($lang, 0, 5) . '.UTF-8');
+			putenv("LANG_FOLDER=$_lang");
+			$lang = setlocale(LC_ALL, $_lang);
 			if ($lang === FALSE) {
-				Err::error("Can't set locale to '{$lang}'");
+				Err::error("Can't set locale to '{$_lang}'");
+				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
-			if ($_gt) {
-				$domain = WT_LOCALE_DOMAIN;
 
-				$mo = WT_LOCALE_PATH . "{$lang}/LC_MESSAGES/{$domain}.mo";
-				if (!file_exists($mo)) {
+			if ($_gt and $lang) {
+				setlocale(LC_MESSAGES, $lang);
+
+
+				$domain = WT_LOCALE_DOMAIN;
+				$mo     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
+				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
+				if ($mo and !file_exists($mo)) {
 					if (!mkdir($concurrentDirectory = dirname($mo), 0777, TRUE) && !is_dir($concurrentDirectory)) {
 						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 					}
 				}
-				if (file_exists(WT_LOCALE_PATH . "{$lang}.po")) {
+				if (file_exists($po)) {
 					if (!file_exists($mo)) {
 						$loader       = new PoLoader();
-						$translations = $loader->loadFile(WT_LOCALE_PATH . "{$lang}.po");
+						$translations = $loader->loadFile($po);
 						$generator    = new MoGenerator();
 						$generator->generateFile($translations, $mo);
 					}
@@ -246,17 +251,22 @@
 				// Задаем текущий язык проекта
 				putenv("LANGUAGE=$lang");
 				putenv("LANG=$lang");
-				// Задаем текущую локаль (кодировку)
-				// Указываем имя домена
-				// Задаем каталог домена, где содержатся переводы
-				bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-				// Выбираем домен для работы
-				textdomain(WT_LOCALE_DOMAIN);
-				// Если необходимо, принудительно указываем кодировку
-				// (эта строка не обязательна, она нужна,
-				// если вы хотите выводить текст в отличной
-				// от текущей локали кодировке).
-				bind_textdomain_codeset(WT_LOCALE_DOMAIN, 'UTF-8');
+				putenv("LC_ALL=$lang");
+
+				if (extension_loaded('gettext')) {
+					// Задаем текущую локаль (кодировку)
+					// Указываем имя домена
+					// Задаем каталог домена, где содержатся переводы
+//				bindtextdomain(WT_LOCALE_DOMAIN, './locale/nocache');
+					bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
+					// Выбираем домен для работы
+					textdomain(WT_LOCALE_DOMAIN);
+					// Если необходимо, принудительно указываем кодировку
+					// (эта строка не обязательна, она нужна,
+					// если вы хотите выводить текст в отличной
+					// от текущей локали кодировке).
+					bind_textdomain_codeset(WT_LOCALE_DOMAIN, 'utf8');
+				}
 			}
 			return $lang;
 		}
@@ -1035,7 +1045,7 @@ PHP;
 						break;
 					// PHP >= 5.3.3
 					case JSON_ERROR_UTF8:
-						$error = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
+						$error = 'Malformed utf8 characters, possibly incorrectly encoded.';
 						break;
 					// PHP >= 5.5.0
 					case JSON_ERROR_RECURSION:
@@ -1221,7 +1231,7 @@ PHP;
 
 		public static function headerJson()
 		{
-			@header("Content-type: application/json; charset=utf-8");
+			@header("Content-type: application/json; charset=utf8");
 		}
 	}
 
