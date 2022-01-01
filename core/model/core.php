@@ -227,7 +227,6 @@
 				Err::error("Can't set locale to '{$_lang}'");
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
-
 			if ($_gt and $lang) {
 				setlocale(LC_MESSAGES, $lang);
 
@@ -247,6 +246,12 @@
 						$generator    = new MoGenerator();
 						$generator->generateFile($translations, $mo);
 					}
+				}
+				if(file_exists($mo)){
+					putenv("LANG_MO=$mo");
+				}
+				if(file_exists($po)){
+					putenv("LANG_PO=$po");
 				}
 				// Задаем текущий язык проекта
 				putenv("LANGUAGE=$lang");

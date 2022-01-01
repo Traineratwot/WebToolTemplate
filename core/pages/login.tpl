@@ -17,8 +17,7 @@
 					rows="3"
 			>
 		</div>
-		<button type="submit" class="btn btn-primary">
-            {t}submit{/t}</button>
+		<button type="submit" class="btn btn-primary">{t}submit{/t}</button>
 		<a id="forgot_password" href="/forgot_password">Forgot password?</a>
 		<script>
 			$('#login').on('success', function() {

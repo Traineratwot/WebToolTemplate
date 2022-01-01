@@ -182,7 +182,7 @@
 						} elseif ($lang) {
 							if (WT_TYPE_SYSTEM === 'nix') {
 								exec("locale -a|grep {$lang}", $out);
-								if(empty($out)){
+								if (empty($out)) {
 									Console::failure("please install locales");
 									break;
 								}
@@ -193,17 +193,15 @@
 										break;
 									}
 								}
-								if(!$t){
+								if (!$t) {
 									print_r($out);
 									Console::failure("Chose lang from that list");
 									break;
-								}else{
+								} else {
 									Console::success('start generator');
 									localeGenerator($lang);
 								}
 							} else {
-
-
 								$newLang = Core::setLocale($lang, FALSE);
 								if (stripos($lang, 'utf8') === FALSE) {
 									Console::warning("Recommend add '.utf8");

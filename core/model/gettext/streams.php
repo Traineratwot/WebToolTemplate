@@ -49,7 +49,8 @@ class StringReader {
   var $_pos;
   var $_str;
 
-  function StringReader($str='') {
+  function __construct($str = '')
+  {
     $this->_str = $str;
     $this->_pos = 0;
   }
@@ -86,19 +87,20 @@ class FileReader {
   var $_fd;
   var $_length;
 
-  function FileReader($filename) {
+  function __construct($filename)
+  {
     if (file_exists($filename)) {
 
-      $this->_length=filesize($filename);
-      $this->_pos = 0;
-      $this->_fd = fopen($filename,'rb');
+      $this->_length = filesize($filename);
+      $this->_pos    = 0;
+      $this->_fd     = fopen($filename, 'rb');
       if (!$this->_fd) {
         $this->error = 3; // Cannot read file, probably permissions
-        return false;
+        return;
       }
     } else {
       $this->error = 2; // File doesn't exist
-      return false;
+      return;
     }
   }
 
@@ -142,25 +144,28 @@ class FileReader {
 
 // Preloads entire file in memory first, then creates a StringReader
 // over it (it assumes knowledge of StringReader internals)
-class CachedFileReader extends StringReader {
-  function __construct($filename) {
-    if (file_exists($filename)) {
+  class CachedFileReader extends StringReader
+  {
+    public function __construct($filename = '')
+    {
+      parent::__construct($filename);
+      if (file_exists($filename)) {
 
-      $length=filesize($filename);
-      $fd = fopen($filename,'rb');
+        $length = filesize($filename);
+        $fd     = fopen($filename, 'rb');
 
-      if (!$fd) {
-        $this->error = 3; // Cannot read file, probably permissions
+        if (!$fd) {
+          $this->error = 3; // Cannot read file, probably permissions
+          return;
+        }
+        $this->_str = fread($fd, $length);
+        fclose($fd);
+
+      } else {
+        $this->error = 2; // File doesn't exist
         return;
       }
-      $this->_str = fread($fd, $length);
-      fclose($fd);
-
-    } else {
-      $this->error = 2; // File doesn't exist
-      return;
     }
-  }
 };
 
 

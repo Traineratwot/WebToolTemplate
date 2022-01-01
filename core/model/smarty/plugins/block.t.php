@@ -12,8 +12,6 @@
 	 * that were distributed with this source code.
 	 */
 
-	use core\model\Err;
-
 	/**
 	 * Replaces arguments in a string with their values.
 	 * Arguments are represented by % followed by their number.
@@ -65,10 +63,18 @@
 	 * @return string
 	 * @see http://www.smarty.net/docs/en/plugins.block.functions.tpl
 	 */
-	function smarty_block_t($params, $text)
+	$WT_GETTEXT = NULL;
+	function smarty_block_t($params, $text, &$smarty, &$repeat)
 	{
-		if(!extension_loaded('gettext')){
-			return $text;
+		if (!extension_loaded('gettext')) {
+			global $WT_GETTEXT;
+			if (is_null($WT_GETTEXT)) {
+				include_once WT_MODEL_PATH . DIRECTORY_SEPARATOR . 'gettext' . DIRECTORY_SEPARATOR . 'gettext.php';
+				include_once WT_MODEL_PATH . DIRECTORY_SEPARATOR . 'gettext' . DIRECTORY_SEPARATOR . 'streams.php';
+				$mo         = getenv('LANG_MO');
+				$WT_GETTEXT = new gettext_reader(new FileReader($mo), FALSE);
+			}
+			return $WT_GETTEXT->translate($text);
 		}
 		if (!isset($text)) {
 			return $text;

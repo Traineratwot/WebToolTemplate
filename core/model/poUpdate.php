@@ -76,47 +76,55 @@
 
 		function phpScan(Translations $old, $file = NULL)
 		{
-			$phpScanner = new PhpScanner(Translations::create(WT_LOCALE_DOMAIN));
-			$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
-			$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
-			if ($file) {
-				if (stripos($file, '.php') !== FALSE) {
-					$phpScanner->scanFile($file);
-					Console::success($file);
-				}
-			} else {
-				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $file) {
-					if (stripos($file, 'vendor') === FALSE and stripos($file, 'cache') === FALSE) {
+			if(extension_loaded('gettext')) {
+				$phpScanner = new PhpScanner(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
+				if ($file) {
+					if (stripos($file, '.php') !== FALSE) {
 						$phpScanner->scanFile($file);
 						Console::success($file);
 					}
+				} else {
+					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
+						if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+							$phpScanner->scanFile($_file);
+							Console::success($_file);
+						}
+					}
 				}
-			}
-			foreach ($phpScanner->getTranslations() as $translations) {
-				return $translations->mergeWith($old, $this->strategy);
+				foreach ($phpScanner->getTranslations() as $translations) {
+					return $translations->mergeWith($old, $this->strategy);
+				}
+			}else{
+				return $old;
 			}
 		}
 
 		function jsScan(Translations $old, $file = NULL)
 		{
-			$phpScanner = new JsScanner(Translations::create(WT_LOCALE_DOMAIN));
-			$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
-			$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
-			if ($file) {
-				if (stripos($file, '.js') !== FALSE) {
-					$phpScanner->scanFile($file);
-					Console::success($file);
-				}
-			} else {
-				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.js', GLOB_BRACE) as $file) {
-					if (stripos($file, 'node_modules') === FALSE) {
+			if(extension_loaded('gettext')) {
+				$phpScanner = new JsScanner(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
+				if ($file) {
+					if (stripos($file, '.js') !== FALSE) {
 						$phpScanner->scanFile($file);
 						Console::success($file);
 					}
+				} else {
+					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.js', GLOB_BRACE) as $_file) {
+						if (stripos($_file, 'node_modules') === FALSE) {
+							$phpScanner->scanFile($_file);
+							Console::success($_file);
+						}
+					}
 				}
-			}
-			foreach ($phpScanner->getTranslations() as $translations) {
-				return $translations->mergeWith($old, $this->strategy);
+				foreach ($phpScanner->getTranslations() as $translations) {
+					return $translations->mergeWith($old, $this->strategy);
+				}
+			}else{
+				return $old;
 			}
 		}
 
@@ -131,10 +139,10 @@
 					Console::success($file);
 				}
 			} else {
-				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.tpl', GLOB_BRACE) as $file) {
-					if (stripos($file, 'vendor') === FALSE and stripos($file, 'cache') === FALSE) {
-						$phpScanner->scanFile($file);
-						Console::success($file);
+				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.tpl', GLOB_BRACE) as $_file) {
+					if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+						$phpScanner->scanFile($_file);
+						Console::success($_file);
 					}
 				}
 			}
