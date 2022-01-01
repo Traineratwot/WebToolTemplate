@@ -11,7 +11,7 @@
 			>
 		</div>
 		<div class="mb-3">
-			<label for="exampleFormControlTextarea1" class="form-label">{_('password')}</label>
+			<label for="exampleFormControlTextarea1" class="form-label">{t}password{/t}</label>
 			<input
 					name="password" type="password" class="form-control" id="exampleFormControlTextarea1"
 					rows="3"

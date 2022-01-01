@@ -38,6 +38,8 @@
 	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');
 	define('WT_SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config');
 	define('WT_SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache');
+	define('WT_SMARTY_PLUGINS_PATH', WT_MODEL_PATH . 'smarty' . DIRECTORY_SEPARATOR . 'plugins');
+
 	//настройка Почты
 	define('WT_FROM_EMAIL_MAIL', 'admin@example.com');
 	define('WT_FROM_NAME_MAIL', 'admin');
