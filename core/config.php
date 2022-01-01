@@ -15,7 +15,7 @@
 	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax' . DIRECTORY_SEPARATOR);
 	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
 	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
-	//ВНЕШНИЙ URL
+	//Внешний url
 	define('WT_DOMAIN_URL', $_SERVER['SERVER_NAME'] ?: $_SERVER['HTTP_HOST']);
 	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/');
 	//определяем подключение к своей базе
@@ -48,12 +48,13 @@
 	define('WT_AUTH_MAIL', FALSE);//включить Авторизацию
 	define('WT_USERNAME_MAIL', 'admin');
 	define('WT_PASSWORD_MAIL', 'admin');
-	define('WT_SECURE_MAIL', 'ssl');//тип шифрования
+	define('WT_SECURE_MAIL', 'ssl'); //тип шифрования
 	define('WT_PORT_MAIL', '465');
 	//настройка Локализации
 	define('WT_LOCALE_DOMAIN', 'messages');
 	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
-	define('WT_USE_GETTEXT', false); //extension_loaded('gettext')
+	// Если у вас нет или не работает (как у меня) "gettext", отключите его, здесь будет использована альтернатива
+	define('WT_USE_GETTEXT', extension_loaded('gettext')); //extension_loaded('gettext')
 
 	if (!function_exists('getSystem')) {
 		function getSystem()
