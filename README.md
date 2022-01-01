@@ -47,3 +47,40 @@ Simple FrameWork for small web application
 
 - login: admin@example.com
 - password: admin123
+
+#### localization
+
+1. edit `WT_LOCALE_SELECT_FUNCTION` in config
+2. generate locale file .po from source code project
+3. edit .po file. I use poEdit for that
+4. clear lang cache
+5. profit
+6. if doesn't work disable `gettext` in config
+
+## API
+
+#### cache
+
+```php
+/**
+ * @param $key mixed
+ * @param $value mixed
+ * @param $expire int
+ * @param $category string
+ * @return mixed
+ */
+Cache::setCache($key,$value,$expire=600,$category = '');
+
+/**
+ * @param $key mixed
+ * @param $category string
+ * @return mixed|null
+ */
+Cache::getCache($key,$category = '');
+/**
+ * @param $key mixed
+ * @param $category string
+ * @return bool
+ */
+Cache::removeCache($key,$category = '');
+```

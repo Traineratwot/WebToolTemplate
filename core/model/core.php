@@ -977,6 +977,13 @@ SQL;
 
 	class Cache
 	{
+		/**
+		 * @param $key      mixed
+		 * @param $value    mixed
+		 * @param $expire   int
+		 * @param $category string
+		 * @return mixed
+		 */
 		public static function setCache($key, $value, $expire = 600, $category = '')
 		{
 			$name                = Cache::getKey($key) . '.cache.php';
@@ -1000,11 +1007,20 @@ PHP;
 			return $value;
 		}
 
+		/**
+		 * @param $a mixed
+		 * @return string
+		 */
 		public static function getKey($a)
 		{
 			return md5(serialize($a));
 		}
 
+		/**
+		 * @param $key mixed
+		 * @param $category string
+		 * @return mixed|null
+		 */
 		public static function getCache($key, $category = '')
 		{
 			$name = Cache::getKey($key) . '.cache.php';
@@ -1014,6 +1030,11 @@ PHP;
 			return NULL;
 		}
 
+		/**
+		 * @param $key mixed
+		 * @param $category string
+		 * @return bool
+		 */
 		public static function removeCache($key, $category = '')
 		{
 			$name = Cache::getKey($key) . '.cache.php';

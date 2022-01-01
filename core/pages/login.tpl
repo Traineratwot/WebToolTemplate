@@ -18,7 +18,7 @@
 			>
 		</div>
 		<button type="submit" class="btn btn-primary">{t}submit{/t}</button>
-		<a id="forgot_password" href="/forgot_password">Forgot password?</a>
+		<a id="forgot_password" href="/forgot_password">{t}forgot_password{/t}?</a>
 		<script>
 			$('#login').on('success', function() {
 				console.log(arguments)

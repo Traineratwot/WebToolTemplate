@@ -84,13 +84,13 @@
 						$re = '/((\b\w+\b)=((("|\')(.+?)("|\'))|((\b)(.+?)(\b))))/';
 						preg_match_all($re, $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, 0);
 						foreach ($matches as $match) {
-							if ($match[0][1] >= $startEnd) {
-								continue;
-							}
-							if (isset($match[8])) {
-								$currentTBlock->addArg($match[2][0], $match[8][0]);
-							} else {
-								$currentTBlock->addArg($match[2][0], $match[6][0]);
+							if ($match[0][1] >= $start and $match[0][1] <= $startEnd) {
+
+								if (isset($match[8])) {
+									$currentTBlock->addArg($match[2][0], $match[8][0]);
+								} else {
+									$currentTBlock->addArg($match[2][0], $match[6][0]);
+								}
 							}
 						}
 					}
@@ -143,6 +143,7 @@
 						}
 					}
 				}
+				var_dump($bl);
 			}
 		}
 
