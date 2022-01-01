@@ -82,7 +82,7 @@
 				if (class_exists('\Locale')) {
 					return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 				} else {
-					return FALSE;
+					return 'en';
 				}
 			} else {
 				return $math[1];

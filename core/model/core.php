@@ -272,26 +272,25 @@
 				putenv("LANGUAGE=$lang");
 				putenv("LANG=$lang");
 				putenv("LC_ALL=$lang");
-				if (WT_USE_GETTEXT) {
-					$t = new GettextTranslator();
-					if ($lang) {
-						$t->setLanguage($lang);
-					}
-					$t->loadDomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-					bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-					textdomain(WT_LOCALE_DOMAIN);
-				} else {
-					$t = new Translator();
-					$t->defaultDomain(WT_LOCALE_DOMAIN);
-					if (file_exists($php)) {
-						$t->loadTranslations($php);
-					}
-				}
+
 				header('X-locale: '.$lang);
 			}else{
 				header('X-locale: '.$_lang);
 			}
-			if (!WT_USE_GETTEXT) {
+			if (WT_USE_GETTEXT) {
+				$t = new GettextTranslator();
+				if ($lang) {
+					$t->setLanguage($lang);
+				}
+				$t->loadDomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
+				bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
+				textdomain(WT_LOCALE_DOMAIN);
+			} else {
+				$t = new Translator();
+				$t->defaultDomain(WT_LOCALE_DOMAIN);
+				if (file_exists($php)) {
+					$t->loadTranslations($php);
+				}
 				TranslatorFunctions::register($t);
 			}
 			return $lang;
