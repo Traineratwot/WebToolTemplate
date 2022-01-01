@@ -11,11 +11,11 @@
 
 		public function beforeRender()
 		{
-			if ($this->core->user == NULL) {
-				$this->redirect('login');
-			} else {
-				$this->forward('profile');
-			}
+//			if ($this->core->user == NULL) {
+//				$this->redirect('login');
+//			} else {
+//				$this->forward('profile');
+//			}
 		}
 	}
 
