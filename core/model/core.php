@@ -828,10 +828,10 @@ SQL;
 			if (!empty($data)) {
 				$this->data = $data;
 			}
-			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
 			}
+			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 			if (!$this->title) {
 				$this->title = util::basename($this->alias) ?: $this->alias;
 			}
