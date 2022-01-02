@@ -620,7 +620,7 @@ SQL;
 		{
 			$this->repair();
 			if (is_null($default) and isset($this->schema[$key])) {
-				$default = $this->schema[$key]['default'];
+				$default = $this->schema[$key]['null'] ? NULL : $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;
 		}
