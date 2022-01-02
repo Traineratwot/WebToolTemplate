@@ -841,7 +841,7 @@ SQL;
 
 		public function init()
 		{
-			$this->smarty->setPluginsDir(WT_SMARTY_PLUGINS_PATH . '/');
+			$this->smarty->addPluginsDir(WT_SMARTY_PLUGINS_PATH . '/');
 			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
 			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
 			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
