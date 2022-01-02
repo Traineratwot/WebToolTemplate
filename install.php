@@ -39,6 +39,15 @@
 			}
 		}
 	}
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'controllers', 0777) && !is_dir($concurrentDirectory)) {
+		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	}
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'locks', 0777) && !is_dir($concurrentDirectory)) {
+		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	}
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'logs', 0777) && !is_dir($concurrentDirectory)) {
+		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	}
 	$log[] = 'Folders created';
 	file_put_contents(WT_CORE_PATH . 'config.json', json_encode($myConfig));
 	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
