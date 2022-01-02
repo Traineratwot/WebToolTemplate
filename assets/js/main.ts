@@ -111,6 +111,12 @@ class Wt {
 			return false;
 		})
 	}
+
+	logout() {
+		$.get('/user/logout').done(function () {
+			document.location.href = '/'
+		})
+	}
 }
 
 class WtRender {

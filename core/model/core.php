@@ -340,12 +340,10 @@
 		private function getSchema($catch = TRUE)
 		{
 			if ($catch) {
-				$c = WT_CACHE_PATH . $this->table . '.json';
-				if (file_exists($c)) {
-					$data = json_decode(file_get_contents($c), 1);
-				} else {
+				$data = Cache::getCache($this->table, 'table');
+				if (!$data) {
 					$data = $this->getColumnNames($this->table);
-					file_put_contents($c, json_encode($data, 256));
+					Cache::setCache($this->table, $data, 0, 'table');
 				}
 			} else {
 				$data = $this->getColumnNames($this->table);
@@ -518,7 +516,7 @@ SQL;
 				if (is_numeric($value)) {
 					$this->data[$key] = (float)$value;
 				}
-				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+				if ($this->data[$key] == 'NULL') {
 					$this->data[$key] = NULL;
 				}
 			}
@@ -906,7 +904,7 @@ SQL;
 			$this->source = WT_PAGES_PATH . $alias . '.tpl';
 		}
 
-		public function redirect($alias)
+		public static function redirect($alias)
 		{
 			header("Location: $alias");
 		}
@@ -916,9 +914,10 @@ SQL;
 			$this->smarty->assign($name, $var, $nocache);
 		}
 
-		public function chunk($alias, $values = [])
+		public static function chunk($alias, $values = [])
 		{
-			$a = new Chunk($this->core, $alias, $values);
+			global $core;
+			$a = new Chunk($core, $alias, $values);
 			return $a->render();
 		}
 
