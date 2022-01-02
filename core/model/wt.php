@@ -180,8 +180,8 @@
 								Console::failure("windows don`t have command to get locale, use template 'XX.utf8' where XX - lang code");
 							}
 						} elseif ($lang == 'clear') {
-							$dir = WT_CACHE_PATH.'locale'.DIRECTORY_SEPARATOR;
-							if(is_dir($dir)) {
+							$dir = WT_CACHE_PATH . 'locale' . DIRECTORY_SEPARATOR;
+							if (is_dir($dir)) {
 								if (WT_TYPE_SYSTEM == 'win') {
 									system('RD /s/q "' . $dir . '"');
 								} else {
@@ -250,7 +250,28 @@
 						} else {
 							Console::failure("haven`t 1 argument");
 						}
-						break;
+					break;
+					case 'cron':
+						$alias = $argv[2];
+						if (!$alias) {
+							Console::failure('Missing path to cron controller');
+						} else {
+							$alias = strtr($alias, [
+									'/'  => DIRECTORY_SEPARATOR,
+									'\\' => DIRECTORY_SEPARATOR,
+							]);
+							$cron  = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
+							if ($cron and file_exists($cron)) {
+								$cmd = ' php ' . WT_CRON_PATH . 'launch.php -f"' . $alias . '"';
+								if ($argv[3] == 'run') {
+									echo exec($cmd);
+								} else {
+									Console::success($cmd);
+								}
+							} else {
+								Console::failure('Wrong path');
+							}
+						}
 				}
 			}
 		} catch (Exception $e) {

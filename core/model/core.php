@@ -5,7 +5,6 @@
 	use core\classes\users;
 	use Exception;
 	use Gettext\Generator\ArrayGenerator;
-	use Gettext\Generator\JsonGenerator;
 	use Gettext\Generator\MoGenerator;
 	use Gettext\GettextTranslator;
 	use Gettext\Loader\PoLoader;
@@ -235,47 +234,31 @@
 			if ($_gt and $lang) {
 				setlocale(LC_MESSAGES, $lang);
 				$domain = WT_LOCALE_DOMAIN;
-				$mo     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
 				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
-				$json   = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
-				$php    = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
+//				$json   = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
 				if (file_exists($po)) {
-					if (!file_exists($mo) or !file_exists($json) or !file_exists($php)) {
-						$translations = (new PoLoader())->loadFile($po);
-						if (!mkdir($concurrentDirectory = dirname($mo), 0777, TRUE) && !is_dir($concurrentDirectory)) {
-							throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-						}
+					if (WT_USE_GETTEXT) {
+						$mo = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
 						if (!file_exists($mo)) {
+							$translations = (new PoLoader())->loadFile($po);
 							(new MoGenerator())->generateFile($translations, $mo);
 						}
-						if (!file_exists($json)) {
-							(new JsonGenerator())->generateFile($translations, $json);
-						}
+					} else {
+						$php = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
 						if (!file_exists($php)) {
+							$translations = (new PoLoader())->loadFile($po);
 							(new ArrayGenerator())->generateFile($translations, $php);
 						}
 					}
-				}
-				if (file_exists($mo)) {
-					putenv("LANG_MO=$mo");
-				}
-				if (file_exists($po)) {
-					putenv("LANG_PO=$po");
-				}
-				if (file_exists($json)) {
-					putenv("LANG_JSON=$json");
-				}
-				if (file_exists($php)) {
-					putenv("LANG_PHP=$php");
 				}
 				// Задаем текущий язык проекта
 				putenv("LANGUAGE=$lang");
 				putenv("LANG=$lang");
 				putenv("LC_ALL=$lang");
 
-				header('X-locale: '.$lang);
-			}else{
-				header('X-locale: '.$_lang);
+				header('X-locale: ' . $lang);
+			} else {
+				header('X-locale: ' . $_lang);
 			}
 			if (WT_USE_GETTEXT) {
 				$t = new GettextTranslator();
@@ -1025,7 +1008,7 @@ PHP;
 		}
 
 		/**
-		 * @param $key mixed
+		 * @param $key      mixed
 		 * @param $category string
 		 * @return mixed|null
 		 */
@@ -1039,7 +1022,7 @@ PHP;
 		}
 
 		/**
-		 * @param $key mixed
+		 * @param $key      mixed
 		 * @param $category string
 		 * @return bool
 		 */

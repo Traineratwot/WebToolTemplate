@@ -47,6 +47,13 @@
 			];
 
 		// Returns colored string
+
+		/**
+		 * @param $string
+		 * @param $foreground_color
+		 * @param $background_color
+		 * @return mixed|string
+		 */
 		public static function getColoredString($string, $foreground_color = NULL, $background_color = NULL)
 		{
 			if (PHP_SAPI == 'cli') {

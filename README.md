@@ -34,14 +34,24 @@ Simple FrameWork for small web application
 
 - `wt error` - display error logs
 - `wt error clear` - clear error logs
-- `wt cache clear` - clear error cache
-- `wt cache clear sudo` - clear error cache with sudo
+
+
+- `wt cache` - clear error cache
+- `wt cache sudo` - clear error cache with sudo
+
+
 - `wt make ajax {name} {type? 'get'|'post'}` - create ajax method class. eg: `wt make ajax "logout"`
 - `wt make table {name} {primaryKey? 'id'}` - create table object class. eg: `wt make table "users"`
 - `wt make page {url} {template? 'base'}` - create table object class. eg: `wt make page "catalog/page1 base"`
+
+
 - `wt lang {locale}` - generate locale file .po from source code project eg: `wt lang ru_RU.utf8`
 - `wt lang clear` - clear lang cache eg: `wt lang clear`
 - `wt lang all` - display available languages eg: `wt lang all`
+
+
+- `wt cron {path to controller}` - generate launch command for crontab eg: `wt cron "category/test.php"`
+- `wt cron {path to controller} run` - try launch cron job: `wt cron "category/test.php" run`
 
 #### user
 
@@ -59,7 +69,7 @@ Simple FrameWork for small web application
 
 ## API
 
-#### cache
+#### Cache
 
 ```php
 /**
@@ -83,4 +93,23 @@ Cache::getCache($key,$category = '');
  * @return bool
  */
 Cache::removeCache($key,$category = '');
+```
+
+#### Console
+
+```php
+Console::success('text') //print green text;
+Console::warning('text') //print yellow text;
+Console::failure('text') //print red text;
+Console::prompt('Are you sure you?', ?hidden)// ask user in console
+/**
+ * @param $string
+ * @param $foreground_color
+ * @param $background_color
+ * @return mixed|string
+ */
+Console::getColoredString('text','red','yellow') //return colored string
+
+Console::foreground_colors //list text color
+Console::background_colors //list background color
 ```
