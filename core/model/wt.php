@@ -35,11 +35,20 @@
 					$class = mb_strtolower(make::name2class($b));
 					$p     = WT_CLASSES_PATH . $class . '.php';
 					$p     = mb_strtolower($p);
+					global $core;
 					if (!file_exists($p)) {
 						writeFile($p, make::makeTable($b, $c));
-						Console::success('ok: ' . $p);
+						if (file_exists($p)) {
+							include $p;
+							$core->getObject($class);
+							Console::success('ok: ' . $p);
+						} else {
+							Console::failure('can`t write: ' . $p);
+						}
 					} else {
-						Console::failure('Already exists');
+						include $p;
+						$core->getObject($class);
+						Console::warning('Already exists');
 					}
 					break;
 				case 'page':
@@ -250,7 +259,7 @@
 						} else {
 							Console::failure("haven`t 1 argument");
 						}
-					break;
+						break;
 					case 'cron':
 						$alias = $argv[2];
 						if (!$alias) {
@@ -264,7 +273,8 @@
 							if ($cron and file_exists($cron)) {
 								$cmd = ' php ' . WT_CRON_PATH . 'launch.php -f"' . $alias . '"';
 								if ($argv[3] == 'run') {
-									echo exec($cmd);
+									exec($cmd, $out);
+									echo implode("\n", $out).PHP_EOL;
 								} else {
 									Console::success($cmd);
 								}

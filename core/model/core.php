@@ -300,13 +300,13 @@
 	 */
 	abstract class bdObject extends CoreObject
 	{
-		public $table      = '';
-		public $primaryKey = '';
-		public $isNew      = TRUE;
-		public $schema     = [];
-		public $update     = [];
-		public $data       = [];
-		public $_fields    = [];
+		public  $table      = '';
+		public  $primaryKey = '';
+		public  $isNew      = TRUE;
+		public  $schema     = [];
+		private $update     = [];
+		private $data       = [];
+		public  $_fields    = [];
 
 		//--------------------------------------------------------
 		public function __construct(Core &$core, $where = [])
@@ -554,7 +554,7 @@ SQL;
 				if ($this->isNew()) {
 					$query = $builder->insert()
 									 ->setTable($this->table)
-									 ->setValues($this->data);
+									 ->setValues($this->update);
 
 					$sql    = $builder->write($query);
 					$values = $builder->getValues();
