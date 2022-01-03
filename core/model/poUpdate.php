@@ -1,7 +1,7 @@
 <?php
 
 	namespace core\model;
-	
+
 	use Gettext\Generator\PoGenerator;
 	use Gettext\Loader\PoLoader;
 	use Gettext\Merge;
@@ -24,6 +24,9 @@
 
 		public function __construct()
 		{
+			if (!WT_USE_GETTEXT) {
+				include_once WT_MODEL_PATH . 'phpScan2.php';
+			}
 		}
 
 		function run($lang)
@@ -76,7 +79,7 @@
 
 		function phpScan(Translations $old, $file = NULL)
 		{
-			if(WT_USE_GETTEXT) {
+			if (WT_USE_GETTEXT) {
 				$phpScanner = new PhpScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
@@ -96,14 +99,32 @@
 				foreach ($phpScanner->getTranslations() as $translations) {
 					return $translations->mergeWith($old, $this->strategy);
 				}
-			}else{
-				return $old;
+			} else {
+				$phpScanner = new PhpScanner2(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
+				if ($file) {
+					if (stripos($file, '.php') !== FALSE) {
+						$phpScanner->scanFile($file);
+						Console::success($file);
+					}
+				} else {
+					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
+						if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+							$phpScanner->scanFile($_file);
+							Console::success($_file);
+						}
+					}
+				}
+				foreach ($phpScanner->getTranslations() as $translations) {
+					return $translations->mergeWith($old, $this->strategy);
+				}
 			}
 		}
 
 		function jsScan(Translations $old, $file = NULL)
 		{
-			if(WT_USE_GETTEXT) {
+			if (WT_USE_GETTEXT) {
 				$phpScanner = new JsScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
@@ -123,7 +144,7 @@
 				foreach ($phpScanner->getTranslations() as $translations) {
 					return $translations->mergeWith($old, $this->strategy);
 				}
-			}else{
+			} else {
 				return $old;
 			}
 		}

@@ -54,7 +54,7 @@ class Wt {
 
 	events() {
 		var Core = this;
-		$(document).on('submit', 'form', function (e) {
+		$(document).on('submit', 'form:not(.default)', function (e) {
 			e.preventDefault();
 			if (this instanceof HTMLFormElement) {
 				var form = $(this);
