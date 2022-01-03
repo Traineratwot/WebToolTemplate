@@ -13,52 +13,47 @@ Simple FrameWork for small web application
 #### install
 
 1. unpack this in Directory
-
 2. `run install.php`
 
 #### Instructions
 
 - ###### File Structure
-	- locale => `gettext` translations
-	- core => Closed from external access directory with the core of the system
-	- core/model => Directory with basic scripts. do not touch anything there
-	- core/classes => Directory with your classes and scripts
-	- core/pages => Directory c site pages should. filenames must match url
-	- core/view => Directory with php code that is executed before by rendering the corresponding page. filenames must match url
-	- core/templates => Directory with `Smarty` templates
-	- core/database => Directory with SQLite database, You can use any database
-	- core/ajax => directory with php files available to users. the filename must be the same as the method name in the action field on your form. calling /index.php?a=[filename without extension]
-	- config.php => main configuration file
+	- `locale` => `gettext` translations
+	- `core` => Closed from external access directory with the core of the system
+	- `core/model` => Directory with basic scripts. do not touch anything there
+	- `core/classes` => Directory with your classes and scripts
+	- `core/pages` => Directory c site pages should. filenames must match url
+	- `core/view` => Directory with php code that is executed before by rendering the corresponding page. filenames must match url
+	- `core/templates` => Directory with `Smarty` templates
+	- `core/database` => Directory with SQLite database, You can use any database
+	- `core/ajax` => directory with php files available to users. the filename must be the same as the method name in the action field on your form. calling /index.php?a=[filename without extension]
+	- `core/config.php `=> main configuration file
 
-#### console tool
+- #### console tool
 
-- `wt error` - display error logs
-- `wt error clear` - clear error logs
+	- `wt error` - display error logs
+	- `wt error clear` - clear error logs
 
+	- `wt cache` - clear error cache
+	- `wt cache sudo` - clear error cache with sudo
 
-- `wt cache` - clear error cache
-- `wt cache sudo` - clear error cache with sudo
+	- `wt make ajax {name} {type? 'get'|'post'}` - create ajax method class. eg: `wt make ajax "logout"`
+	- `wt make table {name} {primaryKey? 'id'}` - create table object class. eg: `wt make table "users"`
+	- `wt make page {url} {template? 'base'}` - create table object class. eg: `wt make page "catalog/page1 base"`
 
+	- `wt lang {locale}` - generate locale file .po from source code project eg: `wt lang ru_RU.utf8`
+	- `wt lang clear` - clear lang cache eg: `wt lang clear`
+	- `wt lang all` - display available languages eg: `wt lang all`
 
-- `wt make ajax {name} {type? 'get'|'post'}` - create ajax method class. eg: `wt make ajax "logout"`
-- `wt make table {name} {primaryKey? 'id'}` - create table object class. eg: `wt make table "users"`
-- `wt make page {url} {template? 'base'}` - create table object class. eg: `wt make page "catalog/page1 base"`
+	- `wt cron {path to controller}` - generate launch command for crontab eg: `wt cron "category/test.php"`
+	- `wt cron {path to controller} run` - try launch cron job: `wt cron "category/test.php" run`
 
+- #### user
 
-- `wt lang {locale}` - generate locale file .po from source code project eg: `wt lang ru_RU.utf8`
-- `wt lang clear` - clear lang cache eg: `wt lang clear`
-- `wt lang all` - display available languages eg: `wt lang all`
+	- login: ~~admin@example.com~~
+	- password: ~~admin123~~
 
-
-- `wt cron {path to controller}` - generate launch command for crontab eg: `wt cron "category/test.php"`
-- `wt cron {path to controller} run` - try launch cron job: `wt cron "category/test.php" run`
-
-#### user
-
-- login: admin@example.com
-- password: admin123
-
-#### localization
+- #### localization
 
 1. edit `WT_LOCALE_SELECT_FUNCTION` in config
 2. generate locale file .po from source code project
