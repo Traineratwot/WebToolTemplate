@@ -1003,6 +1003,9 @@ PHP;
 		 */
 		public static function getKey($a)
 		{
+			if (is_string($a) and count($a) < 32 and preg_match('@\w{1,32}@', $a)) {
+				return $a;
+			}
 			return md5(serialize($a));
 		}
 
