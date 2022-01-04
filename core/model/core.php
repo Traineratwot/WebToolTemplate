@@ -18,7 +18,7 @@
 	use PHPSQLParser\PHPSQLParser;
 	use SmartyBC;
 
-	require_once(WT_MODEL_PATH . 'table.php');
+	include_once(WT_MODEL_PATH . 'table.php');
 
 	/**
 	 * Основной класс
@@ -487,10 +487,16 @@ SQL;
 			return $this->data;
 		}
 
-		public function fromArray($data)
+		public function fromArray($data, $isNew = TRUE)
 		{
-			array_merge($this->data, $data);
-			array_merge($this->update, $data);
+			$this->data = array_merge($this->data, $data);
+			if (!$this->isNew()) {
+				$this->update = array_merge($this->update, $data);
+			}
+			if ($isNew === FALSE) {
+				$this->isNew = FALSE;
+			}
+			$this->repair();
 			return $this;
 		}
 
@@ -883,8 +889,12 @@ SQL;
 			return $a->render();
 		}
 
-		final public function render()
+		final public function render($return = false)
 		{
+			if($return){
+				ob_end_flush();
+				ob_start();
+			}
 			$this->beforeRender();
 			if (!file_exists($this->source)) {
 				header('HTTP/1.1 404 Not Found');
@@ -892,6 +902,10 @@ SQL;
 				die;
 			}
 			$this->smarty->display($this->source);
+			if($return){
+				return ob_get_clean();
+			}
+			return null;
 		}
 
 		public function beforeRender()
@@ -918,7 +932,7 @@ SQL;
 		{
 			global $core;
 			$a = new Chunk($core, $alias, $values);
-			return $a->render();
+			return $a->render(true);
 		}
 
 		public function errorPage($code = 404)
@@ -945,23 +959,6 @@ SQL;
 			foreach ($values as $key => $value) {
 				$this->setVar($key, $value);
 			}
-		}
-
-		public function init()
-		{
-			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
-			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
-			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
-			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
-			$this->smarty->assign('title', $this->title);
-			$this->smarty->assign('page', $this);
-			$this->smarty->assign('core', $this->core);
-			$this->smarty->assign('_GET', $_GET);
-			$this->smarty->assign('_POST', $_POST);
-			$this->smarty->assign('_REQUEST', $_REQUEST);
-			$this->smarty->assign('_SERVER', $_SERVER);
-			$this->addModifier('user', '\core\model\Page::modifier_user');
-			$this->addModifier('chunk', '\core\model\Page::modifier_chunk');
 		}
 	}
 
