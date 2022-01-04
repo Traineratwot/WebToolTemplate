@@ -19,6 +19,7 @@
 	use SmartyBC;
 
 	include_once(WT_MODEL_PATH . 'table.php');
+	include_once(WT_MODEL_PATH . 'pdo.extended.php');
 
 	/**
 	 * Основной класс
@@ -40,7 +41,7 @@
 		public function __construct()
 		{
 			try {
-				$this->db = new PDO(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
+				$this->db = new PDOExtended(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
 			} catch (PDOException $e) {
 				Err::fatal($e->getMessage(), __LINE__, __FILE__);
 			}
