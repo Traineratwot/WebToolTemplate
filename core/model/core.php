@@ -283,6 +283,12 @@
 			}
 			return $lang;
 		}
+
+		public static function __set_state($arr)
+		{
+			global $core;
+			return $core;
+		}
 	}
 
 	/**
@@ -632,6 +638,16 @@ SQL;
 				$default = $this->schema[$key]['null'] ? NULL : $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;
+		}
+
+		/** @noinspection MagicMethodsValidityInspection */
+		public static function __set_state(array $array)
+		{
+			global $core;
+			$a   = get_called_class();
+			$obj = new $a($core);
+			$obj->fromArray($array['data'], FALSE);
+			return $obj;
 		}
 	}
 
@@ -1047,6 +1063,10 @@ PHP;
 				unlink(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name);
 			}
 			return !file_exists(WT_CACHE_PATH . $name);
+		}
+
+		public static function __set_state($arr){
+			return new Cache;
 		}
 	}
 

@@ -10,9 +10,9 @@
 	 */
 	class PhpScanner2
 	{
-
+		public $translations = [];
 		protected $functions
-			= [
+							 = [
 				'gettext',
 				'_',
 				'__',
@@ -85,8 +85,9 @@
 
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
-			$translation = Translation::create(NULL, $name);
-			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
+			$translation = $this->translations[$name] ?? $this->translations[$name] = Translation::create(NULL, $name);
+
+			$f = str_replace(WT_BASE_PATH, '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {
 				$translation->translate($translate);

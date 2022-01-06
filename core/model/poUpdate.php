@@ -20,7 +20,7 @@
 		private string $domain;
 		private        $lang;
 
-		public $strategy = Merge::REFERENCES_OURS | Merge::TRANSLATIONS_OURS;
+		public $strategy = Merge::REFERENCES_OURS | Merge::TRANSLATIONS_THEIRS;
 
 		public function __construct()
 		{
