@@ -4,7 +4,6 @@
 
 	use Gettext\Generator\PoGenerator;
 	use Gettext\Loader\PoLoader;
-	use Gettext\Merge;
 	use Gettext\Scanner\JsScanner;
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
@@ -20,7 +19,7 @@
 		private string $domain;
 		private        $lang;
 
-		public $strategy = Merge::REFERENCES_OURS | Merge::TRANSLATIONS_THEIRS;
+		public $strategy = 0;
 
 		public function __construct()
 		{
@@ -97,8 +96,9 @@
 					}
 				}
 				foreach ($phpScanner->getTranslations() as $translations) {
-					return $translations->mergeWith($old, $this->strategy);
+					$old = $old->mergeWith($translations, $this->strategy);
 				}
+				return $old;
 			} else {
 				$phpScanner = new PhpScanner2(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
@@ -117,8 +117,9 @@
 					}
 				}
 				foreach ($phpScanner->getTranslations() as $translations) {
-					return $translations->mergeWith($old, $this->strategy);
+					$old = $old->mergeWith($translations, $this->strategy);
 				}
+				return $old;
 			}
 		}
 
@@ -142,9 +143,29 @@
 					}
 				}
 				foreach ($phpScanner->getTranslations() as $translations) {
-					return $translations->mergeWith($old, $this->strategy);
+					$old = $old->mergeWith($translations, $this->strategy);
 				}
+				return $old;
 			} else {
+				$phpScanner = new PhpScanner2(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
+				if ($file) {
+					if (stripos($file, '.js') !== FALSE) {
+						$phpScanner->scanFile($file);
+						Console::success($file);
+					}
+				} else {
+					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.js', GLOB_BRACE) as $_file) {
+						if (stripos($_file, 'node_modules') === FALSE and stripos($_file, 'highlight') === FALSE) {
+							$phpScanner->scanFile($_file);
+							Console::success($_file);
+						}
+					}
+				}
+				foreach ($phpScanner->getTranslations() as $translations) {
+					$old = $old->mergeWith($translations, $this->strategy);
+				}
 				return $old;
 			}
 		}
@@ -168,7 +189,8 @@
 				}
 			}
 			foreach ($phpScanner->getTranslations() as $translations) {
-				return $translations->mergeWith($old, $this->strategy);
+				$old = $old->mergeWith($translations, $this->strategy);
 			}
+			return $old;
 		}
 	}

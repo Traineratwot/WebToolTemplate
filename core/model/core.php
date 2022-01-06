@@ -233,7 +233,7 @@
 			putenv("LANG_FOLDER=$_lang");
 			$lang = setlocale(LC_ALL, $_lang);
 			if ($lang === FALSE) {
-				Err::error("Can't set locale to '{$_lang}'");
+				Err::error("Can't set locale to '{$_lang}'", __LINE__, __FILE__);
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
 			if ($_gt and $lang) {
@@ -870,7 +870,6 @@ SQL;
 			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
 			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
 			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
-			$this->smarty->assignGlobal('title', $this->title);
 			$this->smarty->assignGlobal('page', $this);
 			$this->smarty->assignGlobal('core', $this->core);
 			$this->smarty->assignGlobal('user', $this->core->user);
@@ -916,6 +915,7 @@ SQL;
 				ob_start();
 			}
 			$this->beforeRender();
+			$this->smarty->assignGlobal('title', $this->title);
 			if (!file_exists($this->source)) {
 				header('HTTP/1.1 404 Not Found');
 				readfile(WT_PAGES_PATH . 'errors' . DIRECTORY_SEPARATOR . '404.html');

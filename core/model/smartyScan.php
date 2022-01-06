@@ -18,7 +18,7 @@
 			}
 		}
 
-		public $translations = [];
+		public $trans = [];
 
 		protected $functions
 			= [
@@ -170,7 +170,7 @@
 
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
-			$translation = $this->translations[$name] ?? $this->translations[$name] = Translation::create(NULL, $name);
+			$translation = $this->trans[$name] ?? $this->trans[$name] = Translation::create(NULL, $name);
 			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {
