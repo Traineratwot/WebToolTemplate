@@ -187,7 +187,7 @@
 				$cls      = new $class($this);
 				$order_by = $order_by ?: $cls->primaryKey;
 				if (empty($where)) {
-					$sql = "SELECT `{$cls->primaryKey}` FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
+					$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
 				} else {
 					$builder = new GenericBuilder();
 					$query   = $builder->select()
@@ -207,16 +207,16 @@
 				$q = $this->db->query($sql);
 				if ($q) {
 					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
-						$id     = $row[$cls->primaryKey];
-						$key    = $cls->primaryKey;
-						$data[] = new $class($this, [$key => $id]);
+						$c = new $class($this);
+						/** @var bdObject $c */
+						$c->fromArray($row, FALSE);
+						$data[] = $c;
 					}
 				}
 				return $data;
 			} else {
 				Err::fatal($class . " not exists", __FILE__, __FILE__);
 			}
-
 		}
 
 		/**
