@@ -4,6 +4,7 @@
 
 	use Gettext\Generator\PoGenerator;
 	use Gettext\Loader\PoLoader;
+	use Gettext\Merge;
 	use Gettext\Scanner\JsScanner;
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
@@ -55,10 +56,11 @@
 					$generator->generateFile($translations, $oldFile);
 					$this->old = $poLoader->loadFile($oldFile);
 				}
-				$new = $this->phpScan($this->old);
+				$new = $this->phpScan(Translations::create(WT_LOCALE_DOMAIN));
 				$new = $this->jsScan($new);
 				$new = $this->SmartyScan($new);
-				$generator->generateFile($new, $oldFile);
+				$new = $this->old->mergeWith($new, Merge::TRANSLATIONS_THEIRS);
+				$generator->generateFile($new, $oldFile,);
 			}
 		}
 
