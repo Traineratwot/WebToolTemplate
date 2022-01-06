@@ -153,6 +153,20 @@
 			}
 		}
 
+		public static function getClass($class)
+		{
+			if (class_exists($class)) {
+				return $class;
+			} else {
+				$class = "core\classes\\$class";
+				if (class_exists($class)) {
+					return $class;
+				} else {
+					Err::fatal($class . " not exists", __LINE__, __FILE__);
+				}
+			}
+		}
+
 		/**
 		 * @param       $class extends bdObject
 		 * @param array $where
@@ -161,16 +175,8 @@
 		 */
 		public function getObject($class, $where = [])
 		{
-			if (class_exists($class)) {
-				return new $class($this, $where);
-			} else {
-				$class = "core\classes\\$class";
-				if (class_exists($class)) {
-					return new $class($this, $where);
-				} else {
-					Err::fatal($class . " not exists", __FILE__, __FILE__);
-				}
-			}
+			$class = Core::getClass($class);
+			return new $class($this, $where);
 		}
 
 		/**
@@ -181,30 +187,29 @@
 		 */
 		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
 		{
-			$data  = [];
-			$class = "core\classes\\$class";
-			if (class_exists($class)) {
-				$cls      = new $class($this);
-				$order_by = $order_by ?: $cls->primaryKey;
-				if (empty($where)) {
-					$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
-				} else {
-					$builder = new GenericBuilder();
-					$query   = $builder->select()
-									   ->setTable($cls->table)
-									   ->orderBy($order_by, $order_dir)
-									   ->where();
-					foreach ($where as $key => $value) {
-						$query->equals($key, $value);
-					}
-					$query  = $query->end();
-					$sql    = $builder->write($query);
-					$values = $builder->getValues();
-					$values = bdObject::prepareBinds($values);
-					$sql    = bdObject::prepareSql($sql, $cls->table);
-					$sql    = strtr($sql, $values);
+			$data     = [];
+			$class    = Core::getClass($class);
+			$cls      = new $class($this);
+			$order_by = $order_by ?: $cls->primaryKey;
+			if (empty($where)) {
+				$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
+			} else {
+				$builder = new GenericBuilder();
+				$query   = $builder->select()
+								   ->setTable($cls->table)
+								   ->orderBy($order_by, $order_dir)
+								   ->where();
+				foreach ($where as $key => $value) {
+					$query->equals($key, $value);
 				}
-				$q = $this->db->query($sql);
+				$query  = $query->end();
+				$sql    = $builder->write($query);
+				$values = $builder->getValues();
+				$values = bdObject::prepareBinds($values);
+				$sql    = bdObject::prepareSql($sql, $cls->table);
+				$sql    = strtr($sql, $values);
+			}
+			$q = $this->db->query($sql);
 				if ($q) {
 					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
 						$c = new $class($this);
@@ -214,9 +219,7 @@
 					}
 				}
 				return $data;
-			} else {
-				Err::fatal($class . " not exists", __FILE__, __FILE__);
-			}
+
 		}
 
 		/**
@@ -1419,19 +1422,19 @@ PHP;
 		 */
 		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
 		{
-			$paths = glob(rtrim($baseDir, '\/') . DIRECTORY_SEPARATOR . $pattern, $flags);
-			if (is_array($paths)) {
-				foreach ($paths as $path) {
-					if (is_dir($path)) {
-						$subPaths = (__FUNCTION__)($path, $pattern, $flags);
-						if ($subPaths !== FALSE) {
-							$subPaths = (array)$subPaths;
-							array_push($paths, ...$subPaths);
-						}
-					}
-				}
+			$dirs     = new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS);
+			$fileList = [];
+			echo $baseDir . PHP_EOL;
+			$fileList[] = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
+			foreach ($dirs as $dir) {
+				echo $dir . PHP_EOL;
+				$fileList[] = glob(rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
 			}
-			return $paths;
+			$fileList = array_unique(array_merge(...$fileList));
+			foreach ($fileList as $k => $file) {
+				$fileList[$k] = realpath($file);
+			}
+			return $fileList;
 		}
 	}
 
