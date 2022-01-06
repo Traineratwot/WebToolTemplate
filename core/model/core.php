@@ -890,9 +890,9 @@ SQL;
 			return $a->render();
 		}
 
-		final public function render($return = false)
+		final public function render($return = FALSE)
 		{
-			if($return){
+			if ($return) {
 				ob_end_flush();
 				ob_start();
 			}
@@ -903,10 +903,10 @@ SQL;
 				die;
 			}
 			$this->smarty->display($this->source);
-			if($return){
+			if ($return) {
 				return ob_get_clean();
 			}
-			return null;
+			return NULL;
 		}
 
 		public function beforeRender()
@@ -933,7 +933,7 @@ SQL;
 		{
 			global $core;
 			$a = new Chunk($core, $alias, $values);
-			return $a->render(true);
+			return $a->render(TRUE);
 		}
 
 		public function errorPage($code = 404)
@@ -1019,9 +1019,15 @@ PHP;
 		 */
 		public static function getCache($key, $category = '')
 		{
+			if (function_exists('getallheaders')) {
+				$headers = getallheaders();
+				if ($headers['Cache-Control'] == 'no-cache') {
+					return NULL;
+				}
+			}
 			$name = Cache::getKey($key) . '.cache.php';
 			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
-				return require WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
+				return include WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
 			}
 			return NULL;
 		}
@@ -1040,6 +1046,7 @@ PHP;
 			return !file_exists(WT_CACHE_PATH . $name);
 		}
 	}
+
 	/**
 	 * Класс дла консоли
 	 *
@@ -1174,6 +1181,7 @@ PHP;
 			echo Console::getColoredString($t, 'green') . PHP_EOL;
 		}
 	}
+
 	/**
 	 * Класс с утилитами
 	 */
@@ -1400,6 +1408,30 @@ PHP;
 		public static function headerJson()
 		{
 			@header("Content-type: application/json; charset=utf8");
+		}
+
+		/**
+		 * Recursive `glob()`.
+		 * @param string $baseDir Base directory to search
+		 * @param string $pattern Glob pattern
+		 * @param int    $flags   Behavior bitmask
+		 * @return array|string|bool
+		 */
+		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
+		{
+			$paths = glob(rtrim($baseDir, '\/') . DIRECTORY_SEPARATOR . $pattern, $flags);
+			if (is_array($paths)) {
+				foreach ($paths as $path) {
+					if (is_dir($path)) {
+						$subPaths = (__FUNCTION__)($path, $pattern, $flags);
+						if ($subPaths !== FALSE) {
+							$subPaths = (array)$subPaths;
+							array_push($paths, ...$subPaths);
+						}
+					}
+				}
+			}
+			return $paths;
 		}
 	}
 

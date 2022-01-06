@@ -105,7 +105,6 @@
 			if (!empty($router)) {
 				$this->switcher = new Router();
 				$self           = $this;
-
 				foreach ($router['ajax'] as $pattern => $alias) {
 					$this->switcher->all($pattern, function () use ($alias, $self) {
 						$data        = func_get_args();
