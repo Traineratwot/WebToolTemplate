@@ -100,6 +100,29 @@
 			}
 		}
 
+		public function saveTmp()
+		: resource
+		{
+			$f           = tmpfile();
+			$metaData    = stream_get_meta_data($f);
+			$tmpFilename = $metaData['uri'];
+			if (!$this->saved) {
+				if (move_uploaded_file($this->path, $tmpFilename) and file_exists($tmpFilename) and filesize($tmpFilename) > 0) {
+					return $f;
+				} else {
+					throw new Exception('can`t save file');
+					return 'can`t save file';
+				}
+			} else {
+				if (copy($this->path, $tmpFilename) and file_exists($tmpFilename) and filesize($tmpFilename) > 0) {
+					return $f;
+				} else {
+					throw new Exception('can`t copy file');
+					return 'can`t copy file';
+				}
+			}
+		}
+
 		public function __toString()
 		{
 			return json_encode($this->toArray());
