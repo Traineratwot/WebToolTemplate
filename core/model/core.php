@@ -16,6 +16,7 @@
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\SMTP;
 	use PHPSQLParser\PHPSQLParser;
+	use RecursiveDirectoryIterator;
 	use SmartyBC;
 
 	include_once(WT_MODEL_PATH . 'table.php');
@@ -210,15 +211,15 @@
 				$sql    = strtr($sql, $values);
 			}
 			$q = $this->db->query($sql);
-				if ($q) {
-					while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
-						$c = new $class($this);
-						/** @var bdObject $c */
-						$c->fromArray($row, FALSE);
-						$data[] = $c;
-					}
+			if ($q) {
+				while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+					$c = new $class($this);
+					/** @var bdObject $c */
+					$c->fromArray($row, FALSE);
+					$data[] = $c;
 				}
-				return $data;
+			}
+			return $data;
 
 		}
 
@@ -710,10 +711,6 @@ SQL;
 		final public function run()
 		{
 			$initialized = $this->initialize();
-
-			foreach ($this->headers as $key => $value) {
-				header("$key: $value");
-			}
 			foreach ($this->LanguageTopics as $topic) {
 				$this->core->lexicon->load($topic);
 			}
@@ -725,6 +722,9 @@ SQL;
 				if ($this->httpResponseCode) {
 					http_response_code($this->httpResponseCode);
 				}
+			}
+			foreach ($this->headers as $key => $value) {
+				header("$key: $value");
 			}
 			if (is_array($o) or is_object($o)) {
 				util::headerJson();
@@ -902,7 +902,7 @@ SQL;
 			$this->beforeRender();
 			if (!file_exists($this->source)) {
 				header('HTTP/1.1 404 Not Found');
-				readfile(WT_PAGES_PATH . '404.html');
+				readfile(WT_PAGES_PATH . 'errors' . DIRECTORY_SEPARATOR . '404.html');
 				die;
 			}
 			$this->smarty->display($this->source);
@@ -1424,11 +1424,9 @@ PHP;
 		{
 			$dirs     = new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS);
 			$fileList = [];
-			echo $baseDir . PHP_EOL;
 			$fileList[] = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
 			foreach ($dirs as $dir) {
-				echo $dir . PHP_EOL;
-				$fileList[] = glob(rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
+				$fileList[] = glob(rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
 			}
 			$fileList = array_unique(array_merge(...$fileList));
 			foreach ($fileList as $k => $file) {

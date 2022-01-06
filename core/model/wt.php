@@ -137,7 +137,7 @@
 								if (strpos($buffer, '[error]') !== FALSE) {
 									Console::failure($i . '. ' . $buffer);
 								} elseif (strpos($buffer, '[warning]') !== FALSE) {
-									warning($i . '. ' . $buffer);
+									Console::warning($i . '. ' . $buffer);
 								} elseif (strpos($buffer, '[info]') !== FALSE) {
 									Console::success($i . '. ' . $buffer);
 								} else {
