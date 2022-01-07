@@ -47,7 +47,7 @@
 
 		public function route()
 		{
-			if (function_exists('core\model\WT_LOCALE_SELECT_FUNCTION')) {
+			if (function_exists('WT_LOCALE_SELECT_FUNCTION')) {
 				$lang = WT_LOCALE_SELECT_FUNCTION();
 				$this->selectLanguage($lang);
 			}

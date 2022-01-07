@@ -1,6 +1,4 @@
 <?php
-
-	namespace core\model;
 	//включаем ошибки
 	ini_set('display_errors',1);
 	error_reporting(E_ERROR);
