@@ -1064,9 +1064,12 @@ PHP;
 		public static function getCache($key, $category = '')
 		{
 			if (function_exists('getallheaders')) {
-				$headers = getallheaders();
-				if ($headers['Cache-Control'] == 'no-cache') {
-					return NULL;
+			if($category !='table') {
+				if (function_exists('getallheaders')) {
+					$headers = getallheaders();
+					if ($headers['Cache-Control'] == 'no-cache') {
+						return NULL;
+					}
 				}
 			}
 			$name = Cache::getKey($key) . '.cache.php';
@@ -1527,6 +1530,11 @@ PHP;
 			$name = strtr($name, [
 				'\\' => '_',
 				'/'  => '_',
+				'-'  => '_',
+				' '  => '_',
+				'*'  => '_',
+				'.'  => '_',
+				'+'  => '_',
 			]);
 			$n    = explode("_", $name);
 			$n2   = [];
