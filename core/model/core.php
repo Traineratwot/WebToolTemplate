@@ -1063,7 +1063,6 @@ PHP;
 		 */
 		public static function getCache($key, $category = '')
 		{
-			if (function_exists('getallheaders')) {
 			if($category !='table') {
 				if (function_exists('getallheaders')) {
 					$headers = getallheaders();
