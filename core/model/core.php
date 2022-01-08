@@ -298,7 +298,8 @@
 			$errPage->setVar('msg', $msg);
 			if ($page = $errPage->render()) {
 				ob_end_clean();
-				exit($page);
+				$page;
+				exit;
 			} else {
 				ob_end_clean();
 				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
@@ -306,7 +307,7 @@
 				} else {
 					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
 				}
-				die;
+				exit;
 			}
 		}
 	}
@@ -505,9 +506,6 @@ SQL;
 
 		public static function prepareSql($sql, $table)
 		{
-			if (WT_TYPE_DB != 'sqlite') {
-				return $sql;
-			}
 			return strtr($sql, [
 				$table . '.' => '',
 			]);
@@ -1553,6 +1551,9 @@ PHP;
 			}
 			$code = <<<TPL
 {extends file='{$template}'}
+{block name="head"}
+
+{/block}
 {block name='content'}
 	
 {/block}
