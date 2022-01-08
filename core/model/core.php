@@ -294,6 +294,8 @@
 		{
 			header("HTTP/1.1 $code $msg");
 			$errPage = new tmpPage($this, 'errors/' . $code);
+			$errPage->setVar('code', $code);
+			$errPage->setVar('msg', $msg);
 			if ($page = $errPage->render()) {
 				ob_end_clean();
 				exit($page);
