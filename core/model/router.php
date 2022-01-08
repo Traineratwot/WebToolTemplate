@@ -6,14 +6,6 @@
 	use Exception;
 
 	/** @var Core $core */
-	class tmpPage extends Page
-	{
-		public function __construct(Core $core, $alias, $data = [])
-		{
-			$this->alias = $alias;
-			parent::__construct($core, $data);
-		}
-	}
 
 	class WTRouterException extends Exception
 	{
@@ -60,17 +52,17 @@
 			} catch (WTRouterException $e) {
 				if ($e->getCode() == 404) {
 					if ($this->isAjax) {
-						$this->ErrorPage();
+						$this->core->errorPage();
 					} else {
 						try {
 							$this->AdvancedRoute();
 						} catch (Exception $e) {
-							$this->ErrorPage();
+							$this->core->errorPage();
 						}
 					}
 				}
 			}
-			$this->ErrorPage();
+			$this->core->errorPage();
 		}
 
 		private function selectLanguage($lang)
@@ -105,6 +97,7 @@
 			if (!empty($router)) {
 				$this->switcher = new Router();
 				$self           = $this;
+
 				foreach ($router['ajax'] as $pattern => $alias) {
 					$this->switcher->all($pattern, function () use ($alias, $self) {
 						$data        = func_get_args();
@@ -159,13 +152,6 @@
 					}
 				}
 			}
-		}
-
-		private function ErrorPage($code = 404, $msg = 'Not Found')
-		{
-			header("HTTP/1.1 {$code} {$msg}");
-			readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
-			die;
 		}
 
 		private function launchAjax($data = [])

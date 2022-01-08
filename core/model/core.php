@@ -25,7 +25,7 @@
 	/**
 	 * Основной класс
 	 */
-	final class Core
+	final class Core implements ErrorPage
 	{
 		public $db   = NULL;
 		public $user = NULL;
@@ -288,6 +288,24 @@
 		{
 			global $core;
 			return $core;
+		}
+
+		public function errorPage($code = 404, $msg = 'Not Found')
+		{
+			header("HTTP/1.1 $code $msg");
+			$errPage = new tmpPage($this, 'errors/' . $code);
+			if ($page = $errPage->render()) {
+				ob_end_clean();
+				exit($page);
+			} else {
+				ob_end_clean();
+				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
+					readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
+				} else {
+					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
+				}
+				die;
+			}
 		}
 	}
 
@@ -839,7 +857,7 @@ SQL;
 	/**
 	 * Класс для Страницы
 	 */
-	abstract class Page extends CoreObject
+	abstract class Page extends CoreObject implements ErrorPage
 	{
 
 		public $alias;
@@ -917,15 +935,13 @@ SQL;
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (!file_exists($this->source)) {
-				header('HTTP/1.1 404 Not Found');
-				readfile(WT_PAGES_PATH . 'errors' . DIRECTORY_SEPARATOR . '404.html');
-				die;
+				return FALSE;
 			}
 			$this->smarty->display($this->source);
 			if ($return) {
 				return ob_get_clean();
 			}
-			return NULL;
+			return TRUE;
 		}
 
 		public function beforeRender()
@@ -935,7 +951,12 @@ SQL;
 
 		public function forward($alias)
 		{
-			$this->source = WT_PAGES_PATH . $alias . '.tpl';
+			if (file_exists(WT_PAGES_PATH . $alias . '.tpl')) {
+				$this->source = WT_PAGES_PATH . $alias . '.tpl';
+				return TRUE;
+			} else {
+				return FALSE;
+			}
 		}
 
 		public static function redirect($alias)
@@ -955,15 +976,17 @@ SQL;
 			return $a->render(TRUE);
 		}
 
-		public function errorPage($code = 404)
+		public function errorPage($code = 404, $msg = 'Not Found')
 		{
-			header("HTTP/1.1 $code Not Found");
-			if (file_exists(WT_PAGES_PATH . $code . '.html')) {
-				readfile(WT_PAGES_PATH . $code . '.html');
-			} else {
-				readfile(WT_PAGES_PATH . '404.html');
+			header("HTTP/1.1 $code $msg");
+			if (!$this->forward('errors/' . $code)) {
+				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
+					readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
+				} else {
+					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
+				}
+				die;
 			}
-			die;
 		}
 	}
 
@@ -1354,7 +1377,6 @@ PHP;
 				'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 				'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 			];
-
 			for ($i = 0; $i < $length; $i++) {
 				$password .= $arr[random_int(0, count($arr) - 1)];
 			}
@@ -1581,4 +1603,17 @@ PHP;
 PHP;
 			return $code;
 		}
+	}
+
+	class tmpPage extends Page
+	{
+		public function __construct(Core $core, $alias, $data = [])
+		{
+			$this->alias = $alias;
+			parent::__construct($core, $data);
+		}
+	}
+
+	interface ErrorPage{
+		public function errorPage($code, $msg);
 	}
