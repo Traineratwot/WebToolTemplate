@@ -17,10 +17,6 @@
 		public $size;
 		public $content;
 		/**
-		 * @var bool|Csv
-		 */
-		public $csv;
-		/**
 		 * @var bool
 		 */
 		private $saved = FALSE;
@@ -94,8 +90,11 @@
 			}
 		}
 
+		/**
+		 * @return bool|resource
+		 * @throws Exception
+		 */
 		public function saveTmp()
-		: resource
 		{
 			$f           = tmpfile();
 			$metaData    = stream_get_meta_data($f);
@@ -152,7 +151,9 @@
 		 */
 		public function getContent()
 		{
-			$this->content = @file_get_contents($this->path);
+			if(!$this->content) {
+				$this->content = @file_get_contents($this->path);
+			}
 			return $this->content;
 		}
 
