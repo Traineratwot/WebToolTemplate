@@ -1457,6 +1457,20 @@ PHP;
 			@header("Content-type: application/json; charset=utf8");
 		}
 
+		public static function getSetOption($table = '', $column = '')
+		{
+			if (empty($table) or empty($column)) {
+				return FALSE;
+			}
+			global $core;
+			if (!($ret = $core->db->query("SHOW COLUMNS FROM $table LIKE '$column'"))) {
+				return FALSE;
+			}
+			$line = $ret->fetch(PDO::FETCH_ASSOC);
+			$set = rtrim(ltrim(preg_replace('@^[setnum]+@', '', $line['Type']), "('"), "')");
+			return preg_split("/','/", $set);
+		}
+
 		/**
 		 * Recursive `glob()`.
 		 * @param string $baseDir Base directory to search
