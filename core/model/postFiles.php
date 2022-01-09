@@ -6,10 +6,6 @@
 
 	class PostFile
 	{
-		/**
-		 * @var modX $core
-		 */
-		public $core;
 		public $name     = NULL;
 		public $path     = NULL;
 		public $ext      = NULL;
@@ -36,13 +32,11 @@
 
 		/**
 		 * PostFile constructor.
-		 * @param modX  $core
 		 * @param array $data
 		 * @throws Exception
 		 */
-		public function __construct(Core &$core, $data)
+		public function __construct($data)
 		{
-			$this->core = $core;
 			$this->data = $data;
 			if (!isset($data['name']) or !isset($data['tmp_name'])) {
 				throw new Exception('name or path not found');
@@ -168,7 +162,7 @@
 		}
 	}
 
-	class PostFiles extends CoreObject implements \Iterator, \Countable
+	class PostFiles implements \Iterator, \Countable
 	{
 		public $FILES = [];
 		public $containers;
@@ -178,9 +172,8 @@
 		public $index;
 		public $indexes;
 
-		function __construct($core)
+		function __construct()
 		{
-			parent::__construct($core);
 			$this->_FILES  = $_FILES;
 			$this->_fields = array_keys($this->_FILES);
 			if (is_array($this->_FILES[$this->_fields[0]])) {
@@ -194,7 +187,7 @@
 			foreach ($this->_FILES as $input => $file) {
 				foreach ($file as $value) {
 					$this->indexes[$this->index]    = $input;
-					$this->containers[$this->index] = new PostFile($core, $value);
+					$this->containers[$this->index] = new PostFile($value);
 					$this->FILES[$input][]          = $this->containers[$this->index];
 					$this->index++;
 				}
@@ -261,5 +254,10 @@
 		public function count()
 		{
 			return count($this->containers);
+		}
+
+		public function __invoke()
+		{
+			return $this->FILES;
 		}
 	}

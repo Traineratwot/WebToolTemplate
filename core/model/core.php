@@ -21,6 +21,7 @@
 
 	include_once(WT_MODEL_PATH . 'table.php');
 	include_once(WT_MODEL_PATH . 'pdo.extended.php');
+	include_once(WT_MODEL_PATH . 'postFiles.php');
 
 	/**
 	 * Основной класс
@@ -732,10 +733,7 @@ SQL;
 			$this->FILES          = [];
 			if (!empty($_FILES)) {
 				try {
-					$this->FILES = $this->util->files();
-					if (get_class($this->FILES) == 'PostFiles') {
-						$this->FILES = $this->FILES->FILES;
-					}
+					$this->FILES = new PostFiles();
 				} catch (Exception $e) {
 					Err::error($e->getMessage(), __LINE__, __FILE__);
 				}
@@ -1061,7 +1059,7 @@ PHP;
 		 */
 		public static function getCache($key, $category = '')
 		{
-			if($category !='table') {
+			if ($category != 'table') {
 				if (function_exists('getallheaders')) {
 					$headers = getallheaders();
 					if ($headers['Cache-Control'] == 'no-cache') {
@@ -1090,8 +1088,9 @@ PHP;
 			return !file_exists(WT_CACHE_PATH . $name);
 		}
 
-		public static function __set_state($arr){
-			return new Cache;
+		public static function __set_state($arr)
+		{
+			return new Cache();
 		}
 	}
 
@@ -1463,11 +1462,11 @@ PHP;
 				return FALSE;
 			}
 			global $core;
-			if (!($ret = $core->db->query("SHOW COLUMNS FROM $table LIKE '$column'"))) {
+			if (!($ret = $core->db->query("SHOW COLUMNS FROM `$table` LIKE '$column'"))) {
 				return FALSE;
 			}
 			$line = $ret->fetch(PDO::FETCH_ASSOC);
-			$set = rtrim(ltrim(preg_replace('@^[setnum]+@', '', $line['Type']), "('"), "')");
+			$set  = rtrim(ltrim(preg_replace('@^[setnum]+@', '', $line['Type']), "('"), "')");
 			return preg_split("/','/", $set);
 		}
 
@@ -1480,11 +1479,11 @@ PHP;
 		 */
 		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
 		{
-			$dirs     = new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS);
-			$fileList = [];
+			$dirs       = new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS);
+			$fileList   = [];
 			$fileList[] = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
 			foreach ($dirs as $dir) {
-				$fileList[] = glob(rtrim($dir,DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
+				$fileList[] = glob(rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
 			}
 			$fileList = array_unique(array_merge(...$fileList));
 			foreach ($fileList as $k => $file) {
@@ -1638,6 +1637,7 @@ PHP;
 		}
 	}
 
-	interface ErrorPage{
+	interface ErrorPage
+	{
 		public function errorPage($code, $msg);
 	}
