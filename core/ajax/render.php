@@ -13,7 +13,7 @@
 			$data  = $this->PUT['data'];
 			if ($alias) {
 				$data = (array)$data;
-				return Page::modifier_chunk($alias, $data);
+				return Page::chunk($alias, $data);
 			}
 			return $this->failure($alias, $data);
 		}

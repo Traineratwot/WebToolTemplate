@@ -60,6 +60,16 @@
 				} else {
 					session_unset();
 				}
+			} else {
+				$authKey = strip_tags($_COOKIE['authKey']);
+				$id      = (int)$_COOKIE['userId'];
+				$u       = $this->getUser($id);
+				if (!$u->isNew) {
+					if ($authKey == hash('sha256', $u->get('authKey') . util::getIp())) {
+						$this->user = &$u;
+						$this->user->login();
+					}
+				}
 			}
 			if ($this->user == NULL) {
 				$this->isAuthenticated = FALSE;
@@ -896,7 +906,7 @@ SQL;
 			$this->smarty->assignGlobal('_SERVER', $_SERVER);
 			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
 			$this->addModifier('user', '\core\model\Page::modifier_user');
-			$this->addModifier('chunk', '\core\model\Page::modifier_chunk');
+			$this->addModifier('chunk', '\core\model\Page::chunk');
 		}
 
 		public function addModifier($name, $function)
@@ -917,14 +927,7 @@ SQL;
 			return $value;
 		}
 
-		public static function modifier_chunk($alias, $values = [])
-		{
-			global $core;
-			$a = new Chunk($core, $alias, $values);
-			return $a->render();
-		}
-
-		final public function render($return = FALSE)
+		public function render($return = FALSE)
 		{
 			if ($return) {
 				ob_end_flush();
@@ -933,6 +936,7 @@ SQL;
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (!file_exists($this->source)) {
+				Err::fatal('can`t load: ' . $this->source);
 				return FALSE;
 			}
 			$this->smarty->display($this->source);
@@ -950,6 +954,7 @@ SQL;
 		public function forward($alias)
 		{
 			if (file_exists(WT_PAGES_PATH . $alias . '.tpl')) {
+				$this->alias  = $alias;
 				$this->source = WT_PAGES_PATH . $alias . '.tpl';
 				return TRUE;
 			} else {
@@ -1000,6 +1005,11 @@ SQL;
 			foreach ($values as $key => $value) {
 				$this->setVar($key, $value);
 			}
+		}
+
+		public function render()
+		{
+			return parent::render(TRUE);
 		}
 	}
 

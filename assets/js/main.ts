@@ -7,13 +7,13 @@ class Wt {
 	}
 
 	id(length = 6) {
-		length = length - 1
-		var result = 'a';
-		var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		length               = length - 1
+		var result           = 'a';
+		var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		var charactersLength = characters.length;
 		for (var i = 0; i < length; i++) {
 			result += characters.charAt(Math.floor(Math.random() *
-				charactersLength));
+												   charactersLength));
 		}
 		return result;
 	}
@@ -21,7 +21,7 @@ class Wt {
 	canSee(elem: string, async = false) {
 
 		var block_show = null
-		var displays = []
+		var displays   = []
 		$(elem).parents().each(function () {
 			displays.push($(this).css('display'));
 		})
@@ -57,23 +57,23 @@ class Wt {
 		$(document).on('submit', 'form:not(.default)', function (e) {
 			e.preventDefault();
 			if (this instanceof HTMLFormElement) {
-				var form = $(this);
+				var form     = $(this);
 				var formData = new FormData(this);
-				var c = form.trigger('beforeSubmit', formData)
+				var c        = form.trigger('beforeSubmit', formData)
 				if (c) {
-					var method: string = form.attr('method') || 'POST';
-					var action: string = form.attr('action');
-					var dataType: string = form.data('type') || 'json';
-					var before: string | false = form.data('before') || false;
+					var method: string                = form.attr('method') || 'POST';
+					var action: string                = form.attr('action');
+					var dataType: string              = form.data('type') || 'json';
+					var before: string | false        = form.data('before') || false;
 					var settings: JQuery.AjaxSettings = {
-						type: method,
-						url: '/index.php?a=' + action,
-						cache: false,
+						type       : method,
+						url        : '/index.php?a=' + action,
+						cache      : false,
 						contentType: false,
 						processData: false,
-						data: formData,
-						dataType: dataType,
-						success: function (msg) {
+						data       : formData,
+						dataType   : dataType,
+						success    : function (msg) {
 							msg.formId = id
 							if (msg.success == true) {
 								form.trigger('success', msg)
@@ -81,7 +81,7 @@ class Wt {
 								form.trigger('failure', msg)
 							}
 						},
-						error: function (e) {
+						error      : function (e) {
 							// @ts-ignore
 							e.success = false;
 							form.trigger('failure', e,)
@@ -127,14 +127,14 @@ class WtRender {
 		this.wt = wt
 	}
 
-	render(elem, alias, data = []) {
+	async render(elem, alias, data = []) {
 		$(elem).html("")
 		var self = this
-		this.getData(alias, data, (data) => {
+		await this.getData(alias, data, (data) => {
 			self.elem = $(data);
 			self.elem.appendTo(elem);
 		})
-
+		return true;
 	}
 
 	append(elem, alias, data = []) {
@@ -155,16 +155,16 @@ class WtRender {
 
 	private getData(alias, data = [], callback) {
 		var settings = {
-			"url": "/?a=render",
-			"method": "POST",
+			"url"    : "/?a=render",
+			"method" : "POST",
 			"timeout": 0,
 			"headers": {
 				"Content-Type": "application/json"
 			},
-			"data": JSON.stringify({
-				"alias": alias,
-				"data": data
-			}),
+			"data"   : JSON.stringify({
+										  "alias": alias,
+										  "data" : data
+									  }),
 		};
 
 		$.ajax(settings).done(function (response) {
