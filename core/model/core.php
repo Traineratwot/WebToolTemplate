@@ -307,10 +307,9 @@
 			$errPage = new tmpPage($this, 'errors/' . $code);
 			$errPage->setVar('code', $code);
 			$errPage->setVar('msg', $msg);
-			if ($page = $errPage->render()) {
+			if ($page = $errPage->render(TRUE)) {
 				ob_end_clean();
-				$page;
-				exit;
+				exit($page);
 			} else {
 				ob_end_clean();
 				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
@@ -546,6 +545,9 @@ SQL;
 		{
 			if (is_null($value) and !$this->schema[$key]['null']) {
 				$value = $this->schema[$key]['default'];
+			}
+			if (is_array($value)) {
+				$value = json_encode($value, 256);
 			}
 			if ($this->data[$key] != $value) {
 				$this->update[$key] = $value;
@@ -981,15 +983,7 @@ SQL;
 
 		public function errorPage($code = 404, $msg = 'Not Found')
 		{
-			header("HTTP/1.1 $code $msg");
-			if (!$this->forward('errors/' . $code)) {
-				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
-					readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
-				} else {
-					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
-				}
-				die;
-			}
+			$this->core->errorPage($code, $msg);
 		}
 	}
 
