@@ -5,6 +5,7 @@
 	use core\classes\users;
 	use Exception;
 	use Gettext\Generator\ArrayGenerator;
+	use Gettext\Generator\JsonGenerator;
 	use Gettext\Generator\MoGenerator;
 	use Gettext\GettextTranslator;
 	use Gettext\Loader\PoLoader;
@@ -39,6 +40,11 @@
 		 * @var Cache
 		 */
 		public $cache;
+		/**
+		 * Переводы текущей локали
+		 * @var mixed
+		 */
+		public $translation;
 
 		public function __construct()
 		{
@@ -239,7 +245,7 @@
 		 * @param $_gt  //use gettext
 		 * @return string|false
 		 */
-		public static function setLocale($_lang, $_gt = TRUE)
+		public function setLocale($_lang, $_gt = TRUE)
 		{
 			putenv("LANG_FOLDER=$_lang");
 			$lang = setlocale(LC_ALL, $_lang);
@@ -251,27 +257,32 @@
 				setlocale(LC_MESSAGES, $lang);
 				$domain = WT_LOCALE_DOMAIN;
 				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
-//				$json   = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
 				if (file_exists($po)) {
+					$json = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
+					if (!file_exists($json)) {
+						$translations = (new PoLoader())->loadFile($po);
+						(new JsonGenerator())->generateFile($translations, $json);
+					}
 					if (WT_USE_GETTEXT) {
 						$mo = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
 						if (!file_exists($mo)) {
 							$translations = (new PoLoader())->loadFile($po);
 							(new MoGenerator())->generateFile($translations, $mo);
 						}
+						$this->translation = json_decode(file_get_contents($json), TRUE);
 					} else {
 						$php = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
 						if (!file_exists($php)) {
 							$translations = (new PoLoader())->loadFile($po);
 							(new ArrayGenerator())->generateFile($translations, $php);
 						}
+						$this->translation = include $php;
 					}
 				}
 				// Задаем текущий язык проекта
 				putenv("LANGUAGE=$lang");
 				putenv("LANG=$lang");
 				putenv("LC_ALL=$lang");
-
 				header('X-locale: ' . $lang);
 			} else {
 				header('X-locale: ' . $_lang);
@@ -493,9 +504,7 @@ SQL;
 			if ($q) {
 				$data = $q->fetch(PDO::FETCH_ASSOC);
 				if ($data and !empty($data)) {
-					foreach ($data as $k => $v) {
-						$this->data[$k] = $v;
-					}
+					$this->fromArray($data, FALSE);
 					$this->isNew = FALSE;
 				}
 			} else {
