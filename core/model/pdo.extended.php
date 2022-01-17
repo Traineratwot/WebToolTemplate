@@ -77,7 +77,7 @@
 
 	class PDOExtendedStatement extends PDOStatement
 	{
-		private PDOExtended $connection;
+		private $connection;
 
 		protected function __construct(PDO $connection)
 		{
