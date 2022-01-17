@@ -254,7 +254,6 @@
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
 			if ($_gt and $lang) {
-				setlocale(LC_MESSAGES, $lang);
 				$domain = WT_LOCALE_DOMAIN;
 				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
 				if (file_exists($po)) {
@@ -1010,9 +1009,9 @@ SQL;
 			}
 		}
 
-		public function render()
+		public function render($return = TRUE)
 		{
-			return parent::render(TRUE);
+			return parent::render($return);
 		}
 	}
 
@@ -1059,7 +1058,7 @@ PHP;
 		 */
 		public static function getKey($a)
 		{
-			if (is_string($a) and count($a) < 32 and preg_match('@\w{1,32}@', $a)) {
+			if (is_string($a) and strlen($a) < 32 and preg_match('@\w{1,32}@', $a)) {
 				return $a;
 			}
 			return md5(serialize($a));
