@@ -73,7 +73,7 @@
 			foreach ($lines as $line => $str) {
 				$matches = NULL;
 				$line++;
-				$re = '/((' . $fns . ')\([\'`"](.*)[\'`"]\))/misuU';
+				$re = '/((' . $fns . ')\([\'`"](.*)[\'`"](,.+){0,}\))/misuU';
 				preg_match_all($re, $str, $matches, PREG_SET_ORDER, 0);
 				if ($matches) {
 					foreach ($matches as $match) {

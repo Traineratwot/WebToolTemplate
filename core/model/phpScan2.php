@@ -10,9 +10,9 @@
 	 */
 	class PhpScanner2
 	{
-		public    $trans = [];
+		public $trans = [];
 		protected $functions
-						 = [
+			= [
 				'gettext',
 				'_',
 				'__',
@@ -70,7 +70,7 @@
 			foreach ($lines as $line => $str) {
 				$matches = NULL;
 				$line++;
-				$re = '/((' . $fns . ')\([\'`"](.*)[\'`"]\))/misuU';
+				$re = '/((' . $fns . ')\([\'`"](.*)[\'`"](,.+){0,}\))/misuU';
 				preg_match_all($re, $str, $matches, PREG_SET_ORDER, 0);
 				if ($matches) {
 					foreach ($matches as $match) {
@@ -86,7 +86,7 @@
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
 			$translation = $this->trans[$name] ?? $this->trans[$name] = Translation::create(NULL, $name);
-			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
+			$f = str_replace(WT_BASE_PATH, '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {
 				$translation->translate($translate);
