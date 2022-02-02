@@ -537,7 +537,7 @@ SQL;
 		public function fromArray($data, $isNew = TRUE)
 		{
 			$this->data = array_merge($this->data, $data);
-			if (!$this->isNew()) {
+			if ($isNew) {
 				$this->update = array_merge($this->update, $data);
 			}
 			if ($isNew === FALSE) {
@@ -680,7 +680,7 @@ SQL;
 		}
 
 		/** @noinspection MagicMethodsValidityInspection */
-		public static function __set_state(array $array)
+		public static function __set_state($array)
 		{
 			global $core;
 			$a   = get_called_class();
@@ -891,7 +891,11 @@ SQL;
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
 			}
-			$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
+			if(strpos($this->alias,'string:') !== 0 AND strpos($this->alias,'eval:') !== 0) {
+				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
+			}else{
+				$this->source = $this->alias;
+			}
 			if (!$this->title) {
 				$this->title = util::basename($this->alias) ?: $this->alias;
 			}
@@ -945,9 +949,11 @@ SQL;
 			}
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
-			if (!file_exists($this->source)) {
-				Err::fatal('can`t load: ' . $this->source);
-				return FALSE;
+			if(strpos($this->source,'string:') !== 0 AND strpos($this->source,'eval:') !== 0){
+				if (!file_exists($this->source)) {
+					Err::fatal('can`t load: ' . $this->source);
+					return FALSE;
+				}
 			}
 			$this->smarty->display($this->source);
 			if ($return) {
@@ -1002,8 +1008,8 @@ SQL;
 	{
 		public function __construct(Core $core, $alias, $values)
 		{
+			$this->alias = $alias;
 			parent::__construct($core);
-			$this->source = WT_TEMPLATES_PATH . $alias . '.tpl';
 			foreach ($values as $key => $value) {
 				$this->setVar($key, $value);
 			}
@@ -1255,7 +1261,7 @@ PHP;
 				$error = 0;
 				// decode the JSON data
 				$string = preg_replace('/[[:cntrl:]]/', '', $string);
-				if (version_compare(PHP_VERSION, '7.3.0', '>=')) {
+				if (defined('JSON_THROW_ON_ERROR')) {
 					$result = json_decode($string, (bool)$assoc, $depth, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 				} else {
 					$result = json_decode($string, (bool)$assoc, $depth, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
