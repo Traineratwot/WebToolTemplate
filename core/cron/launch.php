@@ -8,7 +8,8 @@
 	}
 	require_once realpath(dirname(__DIR__) . '/config.php');
 	require_once realpath(WT_MODEL_PATH . 'engine.php');
-	$options = getopt("f:");
+	/** @var Core $core */
+	$options = getopt("f:d:");
 	$alias   = $options['f'];
 	$cron    = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
 	if ($cron and file_exists($cron)) {
@@ -16,7 +17,9 @@
 		$key       = md5($alias);
 		$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
 		if (file_exists($lock_path)) {
-			exit(Console::failure('Already launched'));
+			if (!isset($options['d']) or $options['d'] != "true") {
+				exit(Console::failure('Already launched'));
+			}
 		}
 		file_put_contents($lock_path, time());
 		$start = microtime(TRUE);
@@ -27,6 +30,7 @@
 		$end = microtime(TRUE);
 		echo PHP_EOL . '------STATS------' . PHP_EOL;
 		echo 'Time:            ' . round(abs($end - $start), 3) . ' ms' . PHP_EOL;
+		echo 'queries:         ' . $core->db->query_count . PHP_EOL;
 		echo 'Memory used:     ' . convert_bytes(memory_get_usage()) . PHP_EOL;
 		echo 'Memory max used: ' . convert_bytes(memory_get_peak_usage()) . PHP_EOL;
 		echo 'Date:            ' . date('Y-m-d H:i:s');

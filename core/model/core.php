@@ -504,7 +504,6 @@ SQL;
 				$data = $q->fetch(PDO::FETCH_ASSOC);
 				if ($data and !empty($data)) {
 					$this->fromArray($data, FALSE);
-					$this->isNew = FALSE;
 				}
 			} else {
 //				Err::warning("invalid sql string: ".$sql);
@@ -534,10 +533,10 @@ SQL;
 			return $this->data;
 		}
 
-		public function fromArray($data, $isNew = TRUE)
+		public function fromArray($data, $isNew = TRUE, $update = TRUE)
 		{
 			$this->data = array_merge($this->data, $data);
-			if ($isNew) {
+			if ($update) {
 				$this->update = array_merge($this->update, $data);
 			}
 			if ($isNew === FALSE) {
@@ -891,9 +890,9 @@ SQL;
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
 			}
-			if(strpos($this->alias,'string:') !== 0 AND strpos($this->alias,'eval:') !== 0) {
+			if (strpos($this->alias, 'string:') !== 0 and strpos($this->alias, 'eval:') !== 0) {
 				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
-			}else{
+			} else {
 				$this->source = $this->alias;
 			}
 			if (!$this->title) {
@@ -949,7 +948,7 @@ SQL;
 			}
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
-			if(strpos($this->source,'string:') !== 0 AND strpos($this->source,'eval:') !== 0){
+			if (strpos($this->source, 'string:') !== 0 and strpos($this->source, 'eval:') !== 0) {
 				if (!file_exists($this->source)) {
 					Err::fatal('can`t load: ' . $this->source);
 					return FALSE;
@@ -1237,6 +1236,13 @@ PHP;
 		{
 			$t = ucfirst($t);
 			echo Console::getColoredString($t, 'yellow') . PHP_EOL;
+		}
+
+		// Returns blue text
+		public static function info($t)
+		{
+			$t = ucfirst($t);
+			echo Console::getColoredString($t, 'light_blue') . PHP_EOL;
 		}
 
 		// Returns Green text

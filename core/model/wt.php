@@ -272,6 +272,9 @@
 							$cron  = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
 							if ($cron and file_exists($cron)) {
 								$cmd = ' php ' . WT_CRON_PATH . 'launch.php -f"' . $alias . '"';
+								if ($argv[4] == 'dev') {
+									$cmd .= ' -d true';
+								}
 								if ($argv[3] == 'run') {
 									exec($cmd, $out);
 									echo implode("\n", $out).PHP_EOL;
