@@ -16,6 +16,8 @@
 	define('WT_CRON_PATH', WT_CORE_PATH . 'cron' . DIRECTORY_SEPARATOR);
 	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
 	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
+	//настройка Cron
+	define('WT_PHP_EXEC_CMD', "php"); //команда запуска php скрипта
 	//Внешний url
 	define('WT_DOMAIN_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/");
 	define('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/');

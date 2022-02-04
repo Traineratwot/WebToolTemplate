@@ -11,41 +11,43 @@
 	/** @var Core $core */
 	$options = getopt("f:d:");
 	$alias   = $options['f'];
-	$cron    = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
-	if ($cron and file_exists($cron)) {
-		ob_start();
-		$key       = md5($alias);
-		$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
-		if (file_exists($lock_path)) {
-			if (!isset($options['d']) or $options['d'] != "true") {
-				exit(Console::failure('Already launched'));
-			}
+
+	ob_start();
+	$key       = md5($alias);
+	$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
+	if (file_exists($lock_path)) {
+		if (!isset($options['d']) or $options['d'] != "true") {
+			exit(Console::failure('Already launched'));
+		}
+	}
+	try {
+		if (!mkdir($concurrentDirectory = dirname($lock_path), 0777, TRUE) && !is_dir($concurrentDirectory)) {
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
 		file_put_contents($lock_path, time());
-		$start = microtime(TRUE);
-		try {
-			include $cron;
-		} catch (Exception $e) {
-		}
-		$end = microtime(TRUE);
-		echo PHP_EOL . '------STATS------' . PHP_EOL;
-		echo 'Time:            ' . round(abs($end - $start), 3) . ' ms' . PHP_EOL;
-		echo 'queries:         ' . $core->db->query_count . PHP_EOL;
-		echo 'Memory used:     ' . convert_bytes(memory_get_usage()) . PHP_EOL;
-		echo 'Memory max used: ' . convert_bytes(memory_get_peak_usage()) . PHP_EOL;
-		echo 'Date:            ' . date('Y-m-d H:i:s');
-		$log = WT_CRON_PATH . 'logs' . DIRECTORY_SEPARATOR . $alias . '.log';
-		try {
-			if (!mkdir($concurrentDirectory = dirname($log), 0777, TRUE) && !is_dir($concurrentDirectory)) {
-				throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-			}
-			file_put_contents($log, ob_get_contents());
-			$end = microtime(TRUE);
-		} catch (Exception $e) {
-		}
-		unlink($lock_path);
-		ob_end_flush();
+	} catch (Exception $e) {
 	}
+	$start = microtime(TRUE);
+	//запуск крона как дочерний процесс что-бы избежать любых остановок/ошибок во время выполнения
+	//таким образом что-бы ни произошло, лог будет записан, а блокирующий файл удален
+	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"{$alias}\"");
+	$end = microtime(TRUE);
+	echo PHP_EOL . '------STATS------' . PHP_EOL;
+	echo 'Time:            ' . round(abs($end - $start), 3) . ' ms' . PHP_EOL;
+	echo 'queries:         ' . $core->db->query_count . PHP_EOL;
+	echo 'Memory used:     ' . convert_bytes(memory_get_usage()) . PHP_EOL;
+	echo 'Memory max used: ' . convert_bytes(memory_get_peak_usage()) . PHP_EOL;
+	echo 'Date:            ' . date('Y-m-d H:i:s');
+	try {
+		$log = WT_CRON_PATH . 'logs' . DIRECTORY_SEPARATOR . $alias . '.log';
+		if (!mkdir($concurrentDirectory = dirname($log), 0777, TRUE) && !is_dir($concurrentDirectory)) {
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+		}
+		file_put_contents($log, ob_get_contents());
+	} catch (Exception $e) {
+	}
+	unlink($lock_path);
+	ob_end_flush();
 	function convert_bytes($size)
 	{
 		$i = 0;
