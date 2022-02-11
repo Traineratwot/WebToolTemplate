@@ -46,10 +46,11 @@
 		 * @var array|bool
 		 */
 		private $limits
-			= [
+					   = [
 				'l' => ['min' => 30, 'max' => 60],
 				's' => ['min' => 80, 'max' => 100],
 			];
+		public  $limit = FALSE;
 
 		/**
 		 * UtilitiesCsv constructor
@@ -743,18 +744,18 @@
 		 * @return $this|false
 		 * @filesource
 		 */
-		public function readCsv($source)
+		public function readCsv($source, $limit = 0)
 		{
 			switch (gettype($source)) {
 				case 'string':
 					if (!$this->strTest($source, "\n", [$this->line_delimiter, $this->str_delimiter]) and file_exists($source)) {
 						$source = @fopen($source, 'r');
-						return $this->_readCsvResource($source);
+						return $this->_readCsvResource($source, $limit);
 					} else {
-						return $this->_readCsvString($source);
+						return $this->_readCsvString($source, $limit);
 					}
 				case'resource':
-					return $this->_readCsvResource($source);
+					return $this->_readCsvResource($source, $limit);
 				default:
 					return FALSE;
 			}
@@ -788,12 +789,18 @@
 		 * @param resource $source
 		 * @return $this
 		 */
-		function _readCsvResource($source)
+		function _readCsvResource($source, $limit)
 		{
 			if (is_resource($source)) {
 				$i = 0;
 				while (($row = fgetcsv($source, 10240, $this->str_delimiter))) {
 					$i++;
+					if ($limit) {
+						if ($i > $limit) {
+							$this->limit = TRUE;
+							break;
+						}
+					}
 					foreach ($row as $i2 => $v) {
 						$row[$i2] = trim($v, $this->escape);
 					}
@@ -992,7 +999,7 @@
 		 * @param string $source
 		 * @return $this
 		 */
-		function _readCsvString($source)
+		function _readCsvString($source, $limit)
 		{
 			$i = 0;
 			//$rows = str_getcsv($source,$this->str_delimiter);
@@ -1000,6 +1007,12 @@
 			if (is_array($rows)) {
 				foreach ($rows as $row) {
 					$i++;
+					if ($limit) {
+						if ($i > $limit) {
+							$this->limit = TRUE;
+							break;
+						}
+					}
 					if (is_array($row)) {
 						foreach ($row as $i => $v) {
 							$row[$i] = $this->escape . $v . $this->escape;
