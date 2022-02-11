@@ -29,8 +29,9 @@
 	 */
 	final class Core implements ErrorPage
 	{
-		public $db   = NULL;
-		public $user = NULL;
+		public    $db     = NULL;
+		public    $user   = NULL;
+		protected $_cache = [];
 		/**
 		 * @var SmartyBC
 		 */
@@ -186,15 +187,23 @@
 		}
 
 		/**
-		 * @param       $class extends bdObject
-		 * @param array $where
+		 * @param        $class extends bdObject
+		 * @param array  $where
+		 * @param booean $cache
 		 * @return bdObject
 		 * @throws Exception
 		 */
-		public function getObject($class, $where = [])
+		public function getObject($class, $where = [], $cache = TRUE)
 		{
 			$class = Core::getClass($class);
-			return new $class($this, $where);
+			if (!$cache or empty($where)) {
+				return new $class($this, $where);
+			}
+			$key = md5(serialize($where));
+			if (!isset($this->_cache[$class]) or !isset($this->_cache[$class][$key])) {
+				$this->_cache[$class][$key] = new $class($this, $where);
+			}
+			return $this->_cache[$class][$key];
 		}
 
 		/**
@@ -890,10 +899,13 @@ SQL;
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
 			}
-			if (strpos($this->alias, 'string:') !== 0 and strpos($this->alias, 'eval:') !== 0) {
-				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
-			} else {
+			if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
 				$this->source = $this->alias;
+			} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
+				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
+			} else {
+				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
+
 			}
 			if (!$this->title) {
 				$this->title = util::basename($this->alias) ?: $this->alias;
@@ -1514,6 +1526,25 @@ PHP;
 				$fileList[$k] = realpath($file);
 			}
 			return $fileList;
+		}
+
+		public static function arrayToSqlIn($arr = [])
+		{
+			$dop = array_fill(0, count($arr), 256);
+			foreach ($arr as $key => $value) {
+				$arr[$key] = trim($value, "'");
+			}
+			return @implode(',', array_map('json_encode', $arr, $dop));
+		}
+
+		public static function mkDirs($path)
+		{
+			if (!file_exists($path) or !is_dir($path)) {
+				if (!mkdir($path, 0777, TRUE) && !is_dir($path)) {
+					throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+				}
+			}
+			return $path;
 		}
 	}
 

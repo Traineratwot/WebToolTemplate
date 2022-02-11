@@ -1,12 +1,12 @@
 <?php
 	//включаем ошибки
-	ini_set('display_errors',1);
+	ini_set('display_errors', 1);
 	error_reporting(E_ERROR);
 	//определяем основные пути
-	define('WT_BASE_PATH'     , realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR);
-	define('WT_CORE_PATH'     , realpath(__DIR__) . DIRECTORY_SEPARATOR);
-	define('WT_CACHE_PATH'    , WT_CORE_PATH . 'cache' . DIRECTORY_SEPARATOR);
-	define('WT_MODEL_PATH'    , WT_CORE_PATH . 'model' . DIRECTORY_SEPARATOR);
+	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR);
+	define('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
+	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache' . DIRECTORY_SEPARATOR);
+	define('WT_MODEL_PATH', WT_CORE_PATH . 'model' . DIRECTORY_SEPARATOR);
 	define('WT_VENDOR_PATH', WT_CORE_PATH . 'vendor' . DIRECTORY_SEPARATOR);
 	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages' . DIRECTORY_SEPARATOR);
 	define('WT_VIEWS_PATH', WT_CORE_PATH . 'views' . DIRECTORY_SEPARATOR);
@@ -38,26 +38,26 @@
 //	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB);
 	//Настройки шаблонизатора
 	define('WT_SMARTY_TEMPLATE_PATH', WT_CORE_PATH . 'templates');
-	define('WT_SMARTY_COMPILE_PATH' , WT_CACHE_PATH . 'smarty/compile');
-	define('WT_SMARTY_CONFIG_PATH'  , WT_CACHE_PATH . 'smarty/config');
-	define('WT_SMARTY_CACHE_PATH'   , WT_CACHE_PATH . 'smarty/cache');
-	define('WT_SMARTY_PLUGINS_PATH' , WT_MODEL_PATH . 'smarty' . DIRECTORY_SEPARATOR . 'plugins');
+	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');
+	define('WT_SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config');
+	define('WT_SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache');
+	define('WT_SMARTY_PLUGINS_PATH', WT_MODEL_PATH . 'smarty' . DIRECTORY_SEPARATOR . 'plugins');
 
 	//настройка Почты
 	define('WT_FROM_EMAIL_MAIL', 'admin@example.com');
-	define('WT_FROM_NAME_MAIL' , 'admin');
-	define('WT_SMTP_MAIL'      , FALSE);               //включить SMTP
-	define('WT_HOST_MAIL'      , 'smtp.example.com');
-	define('WT_AUTH_MAIL'      , FALSE);               //включить Авторизацию
-	define('WT_USERNAME_MAIL'  , 'admin');
-	define('WT_PASSWORD_MAIL'  , 'admin');
-	define('WT_SECURE_MAIL'    , 'ssl');               //тип шифрования
-	define('WT_PORT_MAIL'      , '465');
+	define('WT_FROM_NAME_MAIL', 'admin');
+	define('WT_SMTP_MAIL', FALSE);               //включить SMTP
+	define('WT_HOST_MAIL', 'smtp.example.com');
+	define('WT_AUTH_MAIL', FALSE);               //включить Авторизацию
+	define('WT_USERNAME_MAIL', 'admin');
+	define('WT_PASSWORD_MAIL', 'admin');
+	define('WT_SECURE_MAIL', 'ssl');               //тип шифрования
+	define('WT_PORT_MAIL', '465');
 	//настройка Локализации
 	define('WT_LOCALE_DOMAIN', 'wt');
-	define('WT_LOCALE_PATH'  , WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
+	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 	// Если у вас нет или не работает (как у меня) "gettext", отключите его, здесь будет использована альтернатива
-	define('WT_USE_GETTEXT', FALSE); //extension_loaded('gettext')
+	define('WT_USE_GETTEXT', FALSE);               //extension_loaded('gettext')
 	/**
 	 * Пользовательская функция возвращяющяя язык для установки локали на основе url
 	 * вы можете ее менять
@@ -92,5 +92,21 @@
 			return 'nix';
 		}
 	}
+
+	if (!function_exists('WT_START_SESSION_FUNCTION')) {
+		function WT_START_SESSION_FUNCTION()
+		{
+			session_set_cookie_params(0, '/');
+			session_start();
+		}
+
+		function WT_RESTART_SESSION_FUNCTION()
+		{
+			session_write_close();
+			session_unset();
+			WT_START_SESSION_FUNCTION();
+		}
+	}
+
 	define('WT_TYPE_SYSTEM', getSystem());
 

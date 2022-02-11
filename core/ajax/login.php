@@ -2,9 +2,9 @@
 
 	namespace core\ajax;
 
+	use core\classes\Users;
 	use core\model\Ajax;
 	use core\model\Err;
-	use core\model\util;
 
 	class Login extends Ajax
 	{
@@ -22,19 +22,19 @@
 		public function post()
 		{
 			try {
-				/** @var user $User */
+				/** @var users $User */
 				$User = $this->core->getUser(['email' => $this->email]);
 				if (!$User->isNew()) {
-					if ($User->get('password') !== md5($this->password)) {
+					$salt = $User->get('salt');
+					$pass = $this->password . $salt;
+					if ($User->get('password') !== hash('sha256', $pass)) {
 						Err::fatal('Неправильный пароль', __FILE__, __FILE__);
 					} else {
-						$_SESSION['authKey'] = $User->get('authKey');
-						$_SESSION['ip']      = util::getIp();
-						session_write_close();
+						$User->login();
 						return $this->success('Ok');
 					}
 				} else {
-					return $this->failure('Пользователь не существует: ' . $this->email);
+					return $this->failure('Пользователь не существует: ' . $this->login);
 				}
 			} catch (\Exception $e) {
 				return $this->failure($e->getMessage());

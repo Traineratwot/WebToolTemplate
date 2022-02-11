@@ -24,27 +24,7 @@
 			try {
 				$newUser = $this->core->getUser(['email' => $this->email]);
 				if ($newUser->isNew()) {
-					if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-						Err::fatal('Please enter a valid email', __FILE__, __FILE__);
-					}
-					if (strlen($this->password) < 6) {
-						Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
-					}
-					$salt    = random_int(1000000, 9999999);
-					$authKey = md5($this->password . $this->email . $salt);
-					/** @var Core $newUser */
-					$newUser->set('email', $this->email);
-					$newUser->set('password', md5($this->password));
-					$newUser->set('salt', $salt);
-					$newUser->set('authKey', $authKey);
-					$newUser->save();
-					if ($newUser->isNew()) {
-						Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
-					} else {
-						$_SESSION['authKey'] = $authKey;
-						$_SESSION['ip']      = util::getIp();
-						return $this->success('Ok');
-					}
+					$newUser->register($this->email, $this->password);
 				} else {
 					return $this->failure('User already exists');
 				}
