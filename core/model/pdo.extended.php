@@ -187,33 +187,47 @@
 			return $queries;
 		}
 
-		public function interpolateQuery($query, $params)
-		{
-			$keys   = [];
+		public function interpolateQuery($query, $params) {
+			$keys = array();
 			$values = $params;
+			$values_limit = [];
+
+			$words_repeated = array_count_values(str_word_count($query, 1, ':_'));
 
 			# build a regular expression for each parameter
 			foreach ($params as $key => $value) {
 				if (is_string($key)) {
-					$keys[] = '/:' . $key . '/';
+					$keys[] = '/:'.$key.'/';
+					$values_limit[$key] = (isset($words_repeated[':'.$key]) ? intval($words_repeated[':'.$key]) : 1);
 				} else {
 					$keys[] = '/[?]/';
+					$values_limit = [];
 				}
+				if (is_string($value))
+					$values[$key] = $value;
 
-				if (is_array($value)) {
-					$values[$key] = implode(',', $value);
-				}
+				if (is_array($value))
+					$values[$key] = json_encode($value);
 
-				if (is_null($value)) {
+				if (is_null($value))
 					$values[$key] = 'NULL';
-				}
 			}
-			// Walk the array to see if we can add single-quotes to strings
-			array_walk($values, create_function('&$v, $k', 'if (!is_numeric($v) && $v!="NULL") $v = PDO::quote($v);'));
+			array_walk($values, create_function('&$v, $k', 'if (!is_numeric($v) && $v!="NULL") $v = "\'".$v."\'";'));
+			if (is_array($values)) {
+				foreach ($values as $key => $val) {
+					if (isset($values_limit[$key])) {
+						$query = preg_replace(['/:'.$key.'/'], [$val], $query, $values_limit[$key], $count);
+					} else {
+						$query = preg_replace(['/:'.$key.'/'], [$val], $query, 1, $count);
+					}
+				}
+				unset($key, $val);
+			} else {
+				$query = preg_replace($keys, $values, $query, 1, $count);
+			}
 
-			$query = preg_replace($keys, $values, $query, 1, $count);
+			unset($keys, $values, $values_limit, $words_repeated);
 
 			return trim(trim($query), ';');
 		}
 	}
-
