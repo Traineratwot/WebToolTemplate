@@ -187,10 +187,11 @@
 		}
 
 		/**
-		 * @param        $class extends bdObject
-		 * @param array  $where
+		 * @template T of \bdObject
+		 * @param class-string<T> $class
+		 * @param array $where
 		 * @param booean $cache
-		 * @return bdObject
+		 * @return T
 		 * @throws Exception
 		 */
 		public function getObject($class, $where = [], $cache = TRUE)
@@ -207,9 +208,10 @@
 		}
 
 		/**
-		 * @param       $class extends bdObject
-		 * @param array $where
-		 * @return [bdObject]
+		 * @template T of \bdObject
+		 * @param class-string<T> $class extends bdObject
+		 * @param array           $where
+		 * @return   [T]
 		 * @throws Exception
 		 */
 		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
@@ -474,8 +476,8 @@
 									'type'      => $row['DATA_TYPE'] ?: '',
 									'maxLength' => (int)$row['COLUMN_MAXIMUM_LENGTH'] ?: NULL,
 									'null'      => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
-									'primary'   => strtolower($row['COLUMN_KEY']) == "pri" ? TRUE : FALSE,
-									'unique'    => strtolower($row['COLUMN_KEY']) == "uni" ? TRUE : FALSE,
+									'primary'   => strtolower($row['COLUMN_KEY']) == "pri",
+									'unique'    => strtolower($row['COLUMN_KEY']) == "uni",
 								];
 							}
 						}
@@ -901,8 +903,8 @@ SQL;
 			}
 			if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
 				$this->source = $this->alias;
-			} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
-				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
+			} elseif (strpos($this->alias, 'chunk:') === 0  or strpos($this->alias, 'file:') === 0) {
+				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i",'',$this->alias) . '.tpl';
 			} else {
 				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 
@@ -1254,7 +1256,7 @@ PHP;
 		public static function info($t)
 		{
 			$t = ucfirst($t);
-			echo Console::getColoredString($t, 'light_blue') . PHP_EOL;
+			echo Console::getColoredString($t, 'cyan') . PHP_EOL;
 		}
 
 		// Returns Green text
