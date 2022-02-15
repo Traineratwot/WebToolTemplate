@@ -14,6 +14,7 @@
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PDOException;
+	use PDOExtended\PDOExtended;
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\SMTP;
 	use PHPSQLParser\PHPSQLParser;
@@ -350,7 +351,10 @@
 	 */
 	abstract class CoreObject
 	{
-		public $core;
+		/**
+		 * @var Core
+		 */
+		public Core $core;
 
 		public function __construct(Core $core)
 		{
