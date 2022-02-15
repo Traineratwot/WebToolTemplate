@@ -90,13 +90,15 @@
 		 * @return table
 		 */
 		public function newTable()
-		: table
 		{
 			return new table();
 		}
 
+		/**
+		 * @param $where
+		 * @return Users
+		 */
 		public function getUser($where = [])
-		: users
 		{
 			return new Users($this, $where);
 		}
@@ -189,8 +191,8 @@
 		/**
 		 * @template T of \bdObject
 		 * @param class-string<T> $class
-		 * @param array $where
-		 * @param booean $cache
+		 * @param array           $where
+		 * @param booean          $cache
 		 * @return T
 		 * @throws Exception
 		 */
@@ -484,7 +486,7 @@
 						return $output;
 					}
 				} catch (PDOException $e) {
-					Err::error($e->getMessage(), __LINE__, __FILE__);
+					Err::error($e->getMessage());
 				}
 			}
 		}
@@ -903,8 +905,8 @@ SQL;
 			}
 			if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
 				$this->source = $this->alias;
-			} elseif (strpos($this->alias, 'chunk:') === 0  or strpos($this->alias, 'file:') === 0) {
-				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i",'',$this->alias) . '.tpl';
+			} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
+				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
 			} else {
 				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 
@@ -991,8 +993,9 @@ SQL;
 			}
 		}
 
-		public static function redirect($alias)
+		public static function redirect($alias, $code = 302)
 		{
+			http_response_code($code);
 			header("Location: $alias");
 		}
 
