@@ -1,10 +1,10 @@
 <?php
 
-	namespace core\ajax;
+	namespace ajax;
 
-	use core\classes\Users;
-	use core\model\Ajax;
-	use core\model\Err;
+	use classes\Users;
+	use model\Ajax;
+	use model\Err;
 
 	class Login extends Ajax
 	{

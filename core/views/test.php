@@ -1,9 +1,9 @@
 <?php
 
-	namespace core\page;
+	namespace page;
 
-	use core\model\Err;
-	use core\model\Page;
+	use model\Err;
+	use model\Page;
 
 	class Test extends Page
 	{

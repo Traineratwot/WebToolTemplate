@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model;
+	namespace model;
 
 	use Bramus\Router\Router;
 	use Exception;
@@ -123,9 +123,9 @@
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
 			if (file_exists($page)) {
 				$result = include $page;
-				$class  = 'core\page\\' . $result;
+				$class  = 'page\\' . $result;
 				if (!class_exists($class)) {
-					$class = 'core\page\\' . $page;
+					$class = 'page\\' . $page;
 				}
 				if (!class_exists($class)) {
 					Err::fatal("class '$class' is not define", __LINE__, __FILE__);
@@ -159,9 +159,9 @@
 			$ajax = WT_AJAX_PATH . $this->alias . '.php';
 			if (file_exists($ajax)) {
 				$result = include $ajax;
-				$class  = 'core\ajax\\' . $result;
+				$class  = 'ajax\\' . $result;
 				if (!class_exists($class)) {
-					$class = 'core\ajax\\' . $ajax;
+					$class = 'ajax\\' . $ajax;
 				}
 				if (!class_exists($class)) {
 					Err::fatal("class '$class' is not define");

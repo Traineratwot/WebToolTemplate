@@ -2,7 +2,7 @@ composer.phar
 composer.lock
 /core/cache/
 config.json
-/core/vendor/
+/vendor/
 .idea
 .vscode
 /node_modules/
@@ -16,3 +16,4 @@ package-lock.json
 !/pnpm-lock.yaml
 pnpm-lock.yaml
 !/core/cron/**/*
+!/vendor/.htaccess

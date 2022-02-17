@@ -1,10 +1,10 @@
 <?php
 
-	namespace core\ajax;
+	namespace ajax;
 
-	use core\model\Ajax;
-	use core\model\Err;
-	use core\model\util;
+	use model\Ajax;
+	use model\Err;
+	use model\util;
 
 	class register extends Ajax
 	{

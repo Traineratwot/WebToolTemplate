@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\model;
+	namespace model;
 
-	use core\classes\users;
+	use classes\tables\Users;
 	use Exception;
 	use Gettext\Generator\ArrayGenerator;
 	use Gettext\Generator\JsonGenerator;
@@ -180,7 +180,7 @@
 			if (class_exists($class)) {
 				return $class;
 			} else {
-				$class = "core\classes\\$class";
+				$class = "core\classes\\tables\\$class";
 				if (class_exists($class)) {
 					return $class;
 				} else {
@@ -938,8 +938,8 @@ SQL;
 			$this->smarty->assignGlobal('_REQUEST', $_REQUEST);
 			$this->smarty->assignGlobal('_SERVER', $_SERVER);
 			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
-			$this->addModifier('user', '\core\model\Page::modifier_user');
-			$this->addModifier('chunk', '\core\model\Page::chunk');
+			$this->addModifier('user', '\model\Page::modifier_user');
+			$this->addModifier('chunk', '\model\Page::chunk');
 		}
 
 		public function addModifier($name, $function)
@@ -1608,8 +1608,8 @@ PHP;
 			$class = make::name2class($name);
 			$code  = <<<PHP
 <?php
-	namespace core\ajax;
-	use core\model\Ajax;
+	namespace ajax;
+	use model\Ajax;
 	class {$class} extends Ajax
 	{
 		{$method}
@@ -1644,10 +1644,10 @@ TPL;
 			$code  = <<<PHP
 <?php
 
-	namespace core\page;
+	namespace page;
 
-	use core\model\Err;
-	use core\model\Page;
+	use model\Err;
+	use model\Page;
 
 	class {$class} extends Page
 	{
@@ -1675,7 +1675,7 @@ PHP;
 			$code       = <<<PHP
 <?php
 
-	namespace core\\classes;
+	namespace \classes\\table;
 	use core\\model\\bdObject;
 
 	/**

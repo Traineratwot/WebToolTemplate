@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model;
+	namespace model;
 
 	class table
 	{

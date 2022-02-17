@@ -59,7 +59,7 @@
 		$log[] = 'npm updated';
 	}
 	if (!file_exists(WT_VENDOR_PATH . 'autoload.php')) {
-		exec('cd ' . WT_CORE_PATH . ' && composer update');
+		exec('composer update');
 	}
 	if (!file_exists(WT_VENDOR_PATH . 'autoload.php')) {
 		$log[] = "Failed to install composer\n";

@@ -1,9 +1,9 @@
 <?php
 
-	namespace core\ajax;
+	namespace ajax;
 
-	use core\model\Ajax;
-	use core\model\Page;
+	use model\Ajax;
+	use model\Page;
 
 	class Render extends Ajax
 	{

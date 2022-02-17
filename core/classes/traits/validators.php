@@ -1,12 +1,10 @@
 <?php
 
-	namespace core\classes\traits;
+	namespace classes\traits;
 
 	use DOMDocument;
 	use DOMXPath;
 	use Exception;
-	use PDO;
-	use ZipArchive;
 
 	class ExceptionValidate extends Exception
 	{

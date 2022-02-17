@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-	use core\model\Console;
-	use core\model\Core;
-	use core\model\make;
-	use core\model\PoUpdate;
+	use model\Console;
+	use model\Core;
+	use model\make;
+	use model\PoUpdate;
 
 	/** @var Console $console */
 	/** @var Core $core */

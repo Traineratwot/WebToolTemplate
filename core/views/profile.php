@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\page;
+	namespace page;
 
-	use core\model\Page;
+	use model\Page;
 
 	class Profile extends Page
 	{

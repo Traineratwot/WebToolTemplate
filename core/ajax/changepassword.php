@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\ajax;
+	namespace ajax;
 
-	use core\model\Ajax;
+	use model\Ajax;
 
 	class Changepassword extends Ajax
 	{

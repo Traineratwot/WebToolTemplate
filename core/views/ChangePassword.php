@@ -1,9 +1,9 @@
 <?php
 
-	namespace core\page;
+	namespace page;
 
-	use core\model\Page;
-	use core\model\util;
+	use model\Page;
+	use model\util;
 
 	class ChangePassword extends Page
 	{
