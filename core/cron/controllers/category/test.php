@@ -2,4 +2,6 @@
 
 	use core\model\Console;
 
-	Console::success('ok');
+	Console::info('sleep 60');
+	sleep(60);
+	Console::success('sleep 60');

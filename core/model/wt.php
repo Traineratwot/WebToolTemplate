@@ -32,8 +32,8 @@
 					}
 					break;
 				case 'table':
-					$class = mb_strtolower(make::name2class($b));
-					$p     = WT_CLASSES_PATH . $class . '.php';
+					$class = make::name2class($b);
+					$p     = WT_CLASSES_PATH . 'tables/' . $class . '.php';
 					$p     = mb_strtolower($p);
 					global $core;
 					if (!file_exists($p)) {
@@ -277,7 +277,7 @@
 								}
 								if ($argv[3] == 'run') {
 									exec($cmd, $out);
-									echo implode("\n", $out).PHP_EOL;
+									echo implode("\n", $out) . PHP_EOL;
 								} else {
 									Console::success($cmd);
 								}

@@ -1559,6 +1559,26 @@ PHP;
 
 	class make
 	{
+		public static function name2class($name)
+		{
+			$name = strtr($name, [
+				'\\' => '_',
+				'/'  => '_',
+				'-'  => '_',
+				' '  => '_',
+				'*'  => '_',
+				'.'  => '_',
+				'+'  => '_',
+			]);
+			$n    = explode("_", $name);
+			$n2   = [];
+			foreach ($n as $value) {
+				$n2[] = ucfirst(mb_strtolower($value));
+			}
+			$class = ucfirst(implode('', $n2));
+			return $class;
+		}
+
 		public static function makeAjax($name, $type = 'any')
 		{
 			$method = '';
@@ -1599,32 +1619,12 @@ PHP;
 			return $code;
 		}
 
-		public static function name2class($name)
-		{
-			$name = strtr($name, [
-				'\\' => '_',
-				'/'  => '_',
-				'-'  => '_',
-				' '  => '_',
-				'*'  => '_',
-				'.'  => '_',
-				'+'  => '_',
-			]);
-			$n    = explode("_", $name);
-			$n2   = [];
-			foreach ($n as $key => $value) {
-				$n2[] = ucfirst(mb_strtolower($value));
-			}
-			$class = implode('', $n2);
-			return $class;
-		}
-
 		public static function makePageTpl($name, $template = 'base')
 		{
 			if (!$template) {
 				$template = 'base.tpl';
 			} else {
-				$template = $template . '.tpl';
+				$template .= '.tpl';
 			}
 			$code = <<<TPL
 {extends file='{$template}'}
