@@ -1,6 +1,6 @@
 <?php
 
-	namespace model;
+	namespace model\locale;
 
 	use Gettext\Translation;
 	use Gettext\Translations;

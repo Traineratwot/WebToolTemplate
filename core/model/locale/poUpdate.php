@@ -1,6 +1,6 @@
 <?php
 
-	namespace model;
+	namespace model\locale;
 
 	use Gettext\Generator\PoGenerator;
 	use Gettext\Loader\PoLoader;
@@ -102,7 +102,7 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new PhpScanner2(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner = new PoScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
@@ -149,7 +149,7 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new PhpScanner2(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner = new PoScanner(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {

@@ -2,8 +2,8 @@
 
 	namespace ajax;
 
-	use model\Ajax;
 	use model\Err;
+	use model\page\Ajax;
 	use model\util;
 
 	class register extends Ajax

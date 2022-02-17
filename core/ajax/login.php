@@ -3,8 +3,8 @@
 	namespace ajax;
 
 	use classes\Users;
-	use model\Ajax;
 	use model\Err;
+	use model\page\Ajax;
 
 	class Login extends Ajax
 	{

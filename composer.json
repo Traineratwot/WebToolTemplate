@@ -24,7 +24,7 @@
 		],
 		"psr-4":{
 			"classes\\":"core/classes/",
-			"model\\"  :"core/model"
+			"model\\"  :"core/model/"
 		}
 	}
 }

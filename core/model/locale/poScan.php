@@ -1,6 +1,6 @@
 <?php
 
-	namespace model;
+	namespace model\locale;
 
 	use Gettext\Translation;
 	use Gettext\Translations;
@@ -8,11 +8,11 @@
 	/**
 	 * Class to scan PHP files and get gettext translations
 	 */
-	class PhpScanner2
+	class PoScanner
 	{
-		public $trans = [];
+		public    $trans = [];
 		protected $functions
-			= [
+						 = [
 				'gettext',
 				'_',
 				'__',

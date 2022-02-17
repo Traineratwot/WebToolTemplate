@@ -2,7 +2,8 @@
 
 	namespace ajax;
 
-	use model\Ajax;
+
+	use model\page\Ajax;
 
 	class ForgotPassword extends Ajax
 	{

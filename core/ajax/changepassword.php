@@ -2,10 +2,13 @@
 
 	namespace ajax;
 
-	use model\Ajax;
+	use classes\traits\Utilities;
+	use model\page\Ajax;
 
 	class Changepassword extends Ajax
 	{
+		use Utilities;
+
 		public function initialize()
 		{
 			$this->password = strip_tags($_REQUEST['password']);
@@ -17,7 +20,7 @@
 			$this->core->auth();
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
-					$this->core->user->set('password', md5($this->password));
+					$this->core->user->set('password', self::hash($this->password));
 					$salt        = random_int(1000000, 9999999);
 					$this->email = $this->core->user->get('email');
 					$authKey     = md5($this->password . $this->email . $salt);
