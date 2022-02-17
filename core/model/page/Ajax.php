@@ -1,21 +1,25 @@
 <?php
 
 	namespace model\page;
-	use model\CoreObject;
+
+	use Exception;
+	use model\main\Core;
+	use model\main\CoreObject;
+	use traits\Utilities;
+	use traits\validators\jsonValidate;
 
 	/**
 	 * Класс для работы ajax запросами
 	 */
 	abstract class Ajax extends CoreObject
 	{
+		use Utilities;
+		use jsonValidate;
+
 		/**
 		 * @var array
 		 */
 		public $headers = [];
-		/**
-		 * @var array
-		 */
-		public $LanguageTopics = [];
 		/**
 		 * @var array
 		 */
@@ -43,7 +47,7 @@
 		 */
 		public $httpResponseCode = 0;
 
-		public function __construct(Core &$core, $data = [])
+		public function __construct(Core $core, $data = [])
 		{
 			parent::__construct($core);
 			if (!empty($data)) {
@@ -53,10 +57,10 @@
 			$this->httpResponseCode = 200;
 			$this->POST             = $_POST;
 			$this->PUT              = file_get_contents('php://input');
-			$this->HEADERS          = util::getRequestHeaders();
+			$this->HEADERS          = self::getRequestHeaders();
 			$this->REQUEST          = array_merge($_GET, $_POST);
 			try {
-				if ($put = util::jsonValidate($this->PUT)) {
+				if ($put = self::jsonValidate($this->PUT)) {
 					$this->PUT = $put;
 				}
 			} catch (Exception $e) {
@@ -76,10 +80,6 @@
 		final public function run()
 		{
 			$initialized = $this->initialize();
-			foreach ($this->LanguageTopics as $topic) {
-				$this->core->lexicon->load($topic);
-			}
-
 			if ($initialized !== TRUE) {
 				$o = $this->failure($initialized);
 			} else {
@@ -92,7 +92,7 @@
 				header("$key: $value");
 			}
 			if (is_array($o) or is_object($o)) {
-				util::headerJson();
+				self::headerJson();
 				$o = json_encode($o, 256);
 			}
 			return (string)$o;
@@ -103,16 +103,7 @@
 			return TRUE;
 		}
 
-		public function failure($msg = '', $object = NULL, $error = [])
-		{
-			return [
-				'success' => FALSE,
-				'message' => $msg,
-				'object'  => $object,
-				'errors'  => $error,
-				'code'    => $this->httpResponseCode,
-			];
-		}
+
 
 		public function process()
 		{
@@ -180,6 +171,16 @@
 				'success' => TRUE,
 				'message' => $msg,
 				'object'  => $object,
+				'code'    => $this->httpResponseCode,
+			];
+		}
+		public function failure($msg = '', $object = NULL, $error = [])
+		{
+			return [
+				'success' => FALSE,
+				'message' => $msg,
+				'object'  => $object,
+				'errors'  => $error,
 				'code'    => $this->httpResponseCode,
 			];
 		}

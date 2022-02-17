@@ -2,7 +2,7 @@
 
 	namespace ajax;
 
-	use model\Err;
+	use model\main\Err;
 	use model\page\Ajax;
 	use model\util;
 

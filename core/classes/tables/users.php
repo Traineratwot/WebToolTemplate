@@ -1,17 +1,19 @@
 <?php
 
-	namespace classes\tables;
+	namespace tables;
 
-	use model\bdObject;
-	use model\Err;
-	use model\util;
+	use model\main\BdObject;
+	use model\main\Err;
+	use traits\Utilities;
 
 	/**
 	 * Класс для работы с таблицей `users`
 	 * вызывается core::getObject('Users')
 	 */
-	class Users extends bdObject
+	class Users extends BdObject
 	{
+		use Utilities;
+
 		public $table      = 'users';
 		public $primaryKey = 'id';
 
@@ -42,7 +44,7 @@
 		{
 			WT_RESTART_SESSION_FUNCTION();
 			$_SESSION['authKey'] = $this->get('authKey');
-			$_SESSION['ip']      = util::getIp();
+			$_SESSION['ip']      = self::getIp();
 			$hash                = hash('sha256', $_SESSION['authKey'] . $_SESSION['ip']);
 			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
 			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
@@ -57,7 +59,7 @@
 		{
 			if ($this->isNew()) {
 				if (!$password) {
-					$password = util::id(8);
+					$password = self::id(8);
 				}
 				if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 					Err::fatal('Please enter a valid email', __FILE__, __FILE__);
@@ -65,7 +67,7 @@
 				if (strlen($password) < 6) {
 					Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
 				}
-				$salt    = util::id(8);
+				$salt    = self::id(8);
 				$pass    = $password . $salt;
 				$authKey = hash('sha256', $email . $pass);
 				$this->set('email', $email);

@@ -1,6 +1,6 @@
 <?php
 
-	namespace model;
+	namespace model\main;
 
 	/**
 	 * Класс для Кеша
@@ -18,7 +18,7 @@
 		 */
 		public static function setCache($key, $value, $expire = 600, $category = '')
 		{
-			$name                = \model\Cache::getKey($key) . '.cache.php';
+			$name                = \model\main\Cache::getKey($key) . '.cache.php';
 			$v                   = var_export($value, 1);
 			$expire              = $expire ? $expire + time() : 0;
 			$body                = <<<PHP

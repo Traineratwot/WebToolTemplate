@@ -2,7 +2,7 @@
 
 	namespace ajax;
 
-	use classes\traits\Utilities;
+	use traits\Utilities;
 	use model\page\Ajax;
 
 	class Changepassword extends Ajax

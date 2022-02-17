@@ -71,8 +71,8 @@ TPL;
 
 	namespace page;
 
-	use model\Err;
-	use model\Page;
+	use model\main\Err;
+	use model\page\Page;
 
 	class {$class} extends Page
 	{
@@ -119,18 +119,41 @@ PHP;
 			$class      = Make::name2class($name);
 			$code       = <<<PHP
 <?php
-
-	namespace \classes\\table;
-	use core\\model\\bdObject;
+	namespace tables;
+	use model\\core\\BdObject;
 
 	/**
 	 * Класс для работы с таблицей `$name`
-	 * вызывается core::getObject('$class')
+	 * вызывается Core::getObject('$class')
 	 */
-	class $class extends bdObject
+	class $class extends BdObject
 	{
 		public \$table = '$name';
 		public \$primaryKey = '$primaryKey';
+	}
+PHP;
+			return $code;
+		}
+
+		public static function makeClass($name, $category = '')
+		{
+			if ($category) {
+				$category = '\\' . $category;
+			}
+			$class = Make::name2class($name);
+			$code  = <<<PHP
+<?php
+	namespace classes{$category};
+	use model\\CoreObject;
+
+	/**
+	 * Класс для работы с таблицей `$name`
+	 * вызывается Core::getObject('$class')
+	 */
+	class $class extends CoreObject
+	{
+	
+	
 	}
 PHP;
 			return $code;

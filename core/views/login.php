@@ -2,7 +2,7 @@
 
 	namespace page;
 
-	use model\Page;
+	use model\page\Page;
 
 	class Login extends Page
 	{

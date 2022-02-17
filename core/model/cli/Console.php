@@ -43,14 +43,14 @@
 
 		public static function getForegroundColors()
 		{
-			return array_keys(Console::foreground_colors);
+			return array_keys(self::foreground_colors);
 		}
 
 		// Returns all foreground color names
 
 		public static function getBackgroundColors()
 		{
-			return array_keys(Console::background_colors);
+			return array_keys(self::background_colors);
 		}
 
 		// Returns all background color names
@@ -94,7 +94,7 @@
 		public static function failure($t)
 		{
 			$t = ucfirst($t);
-			echo Console::getColoredString($t, 'red') . PHP_EOL;
+			echo self::getColoredString($t, 'red') . PHP_EOL;
 		}
 
 		// Returns Red text
@@ -110,12 +110,12 @@
 			if (PHP_SAPI == 'cli') {
 				$colored_string = "";
 				// Check if given foreground color found
-				if (isset(\model\Console::foreground_colors[$foreground_color])) {
-					$colored_string .= "\033[" . Console::foreground_colors[$foreground_color] . "m";
+				if (isset(self::foreground_colors[$foreground_color])) {
+					$colored_string .= "\033[" . self::foreground_colors[$foreground_color] . "m";
 				}
 				// Check if given background color found
-				if (isset(Console::background_colors[$background_color])) {
-					$colored_string .= "\033[" . Console::background_colors[$background_color] . "m";
+				if (isset(self::background_colors[$background_color])) {
+					$colored_string .= "\033[" . self::background_colors[$background_color] . "m";
 				}
 				// Add string and end coloring
 				$colored_string .= $string . "\033[0m";
@@ -130,20 +130,20 @@
 		public static function warning($t)
 		{
 			$t = ucfirst($t);
-			echo Console::getColoredString($t, 'yellow') . PHP_EOL;
+			echo self::getColoredString($t, 'yellow') . PHP_EOL;
 		}
 
 		// Returns blue text
 		public static function info($t)
 		{
 			$t = ucfirst($t);
-			echo Console::getColoredString($t, 'cyan') . PHP_EOL;
+			echo self::getColoredString($t, 'cyan') . PHP_EOL;
 		}
 
 		// Returns Green text
 		public static function success($t)
 		{
 			$t = ucfirst($t);
-			echo Console::getColoredString($t, 'green') . PHP_EOL;
+			echo self::getColoredString($t, 'green') . PHP_EOL;
 		}
 	}

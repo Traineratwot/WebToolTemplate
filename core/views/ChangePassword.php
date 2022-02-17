@@ -2,13 +2,16 @@
 
 	namespace page;
 
-	use model\Page;
+	use model\page\Page;
 	use model\util;
+	use traits\Utilities;
 
 	class ChangePassword extends Page
 	{
 		public $alias = 'ChangePassword';
 		public $title = 'ChangePassword';
+
+		use Utilities;
 
 		public function beforeRender()
 		{
@@ -23,7 +26,7 @@
 					$User->set('authKey', $authKey);
 					$User->save();
 					$_SESSION['authKey'] = $authKey;
-					$_SESSION['ip']      = util::getIp();
+					$_SESSION['ip']      = self::getIp();
 				} else {
 					echo '<pre>';
 					echo("<h3>Страница больше недоступна. Запросите восстановление еще раз</h3>");

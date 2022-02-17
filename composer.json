@@ -19,12 +19,14 @@
 	},
 	"autoload":{
 		"files":[
-			"core/model/core.php",
-			"core/model/errors.php"
+			"core/model/main/core.php",
+			"core/model/main/errors.php"
 		],
 		"psr-4":{
 			"classes\\":"core/classes/",
-			"model\\"  :"core/model/"
+			"model\\"  :"core/model/",
+			"tables\\"  :"core/classes/tables/",
+			"traits\\"  :"core/classes/traits/"
 		}
 	}
 }

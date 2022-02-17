@@ -2,10 +2,11 @@
 
 	namespace model\page;
 
-	use classes\traits\Utilities;
-	use model\CoreObject;
-	use model\ErrorPage;
+	use model\main\Core;
+	use model\main\CoreObject;
+	use model\main\ErrorPage;
 	use SmartyBC;
+	use traits\Utilities;
 
 	/**
 	 * Класс для Страницы
@@ -59,8 +60,8 @@
 			$this->smarty->assignGlobal('_REQUEST', $_REQUEST);
 			$this->smarty->assignGlobal('_SERVER', $_SERVER);
 			$this->smarty->assignGlobal('isAuthenticated', $this->core->isAuthenticated);
-			$this->addModifier('user', '\model\Page::modifier_user');
-			$this->addModifier('chunk', '\model\Page::chunk');
+			$this->addModifier('user', '\model\page\Page::modifier_user');
+			$this->addModifier('chunk', '\model\page\Page::chunk');
 		}
 
 		public function addModifier($name, $function)

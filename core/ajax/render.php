@@ -2,7 +2,7 @@
 
 	namespace ajax;
 
-	use model\Page;
+	use model\page\Page;
 	use model\page\Ajax;
 
 	class Render extends Ajax
