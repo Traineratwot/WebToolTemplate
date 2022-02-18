@@ -4,6 +4,7 @@
 
 	use model\main\Core;
 	use model\main\CoreObject;
+	use model\main\Err;
 	use model\main\ErrorPage;
 	use SmartyBC;
 	use traits\Utilities;
@@ -104,8 +105,9 @@
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (strpos($this->source, 'string:') !== 0 and strpos($this->source, 'eval:') !== 0) {
+				$this->source = self::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
-					Err::fatal('can`t load: ' . $this->source);
+					Err::fatal('can`t load: "' . $this->source . '"', __LINE__, __FILE__);
 					return FALSE;
 				}
 			}

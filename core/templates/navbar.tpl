@@ -11,7 +11,7 @@
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {if $isAuthenticated}
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/profile">Profile</a>
+						<a class="nav-link active" aria-current="page" href="/user/profile">Profile</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="/links">Links</a>
@@ -21,10 +21,10 @@
 					</li>
                 {else}
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/login">Login</a>
+						<a class="nav-link active" aria-current="page" href="/user/login">Login</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/register">Register</a>
+						<a class="nav-link active" aria-current="page" href="/user/register">Register</a>
 					</li>
                 {/if}
 			</ul>

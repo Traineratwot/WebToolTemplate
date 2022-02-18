@@ -4,15 +4,15 @@
 	$log = [];
 	function installLinux()
 	{
-		global $log;
+
 		exec('chmod 755 -R -f ' . WT_MODEL_PATH);
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.php');
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
 		exec('chmod 744 -R -f ' . WT_AJAX_PATH);
-		$log[] = 'Permissions set';
-		$c     = 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
+		$GLOBALS['log'][] = 'Permissions set';
+		$c                = 'alias wt="php ' . WT_MODEL_PATH . 'wt.php"';
 		exec($c);
-		$log[] = 'command to install wt "' . $c . '"';
+		$GLOBALS['log'][] = 'command to install wt "' . $c . '"';
 	}
 
 	function installWindows()
@@ -24,19 +24,8 @@
 	$myConfig = [];
 	foreach ($config as $v => $i) {
 		if (stripos($v, 'WT_') === 0) {
-			$a                               = explode('_', $v);
-			$myConfig[$a[count($a) - 1]][$v] = [
-				'type'  => $a[count($a) - 1],
-				'value' => $i,
-				'name'  => $v,
-			];
-			if (stripos($v, '_PATH') !== FALSE) {
-				if (!file_exists($i) || !is_dir($i)) {
-					if (!mkdir($i, 0777, 1) && !is_dir($i)) {
-						throw new RuntimeException(sprintf('Directory "%s" was not created', $v));
-					}
-				}
-			}
+			$i = json_encode($i);
+			$myConfig[] = "if(!defined('$v')){define('$v',$i);}";
 		}
 	}
 	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'controllers', 0777) && !is_dir($concurrentDirectory)) {
@@ -49,7 +38,7 @@
 		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 	}
 	$log[] = 'Folders created';
-	file_put_contents(WT_CORE_PATH . 'config.json', json_encode($myConfig));
+//	file_put_contents(WT_CORE_PATH . '__config.php', "<?php\n# file for IDE highlight. not use this file \n".implode("\n", $myConfig));
 	if (!file_exists(WT_BASE_PATH . 'node_modules')) {
 		exec('npm update');
 	}

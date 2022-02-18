@@ -10,6 +10,7 @@
 	use Gettext\Loader\PoLoader;
 	use Gettext\Translator;
 	use Gettext\TranslatorFunctions;
+	use model\page\TmpPage;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
 	use PHPMailer\PHPMailer\PHPMailer;

@@ -227,6 +227,31 @@
 			if (!is_string($data)) {
 				$data = serialize($data);
 			}
-			return hash($data, 'sha256');
+			return hash('sha256', $data);
+		}
+
+		public static function pathNormalize($path)
+		{
+			$path = strtr($path, [
+				'/'  => "/",
+				'\\' => "/",
+			]);
+			if (file_exists($path)) {
+				if (is_dir($path)) {
+					if (WT_TYPE_SYSTEM === 'nix') {
+						$path = "/" . trim($path, "/") . "/";
+					} else {
+						$path = trim($path, "/") . "/";
+					}
+				} else {
+					if (WT_TYPE_SYSTEM === 'nix') {
+						$path = "/" . trim($path, "/");
+					} else {
+						$path = trim($path, "/");
+					}
+				}
+				return $path;
+			}
+			return $path;
 		}
 	}
