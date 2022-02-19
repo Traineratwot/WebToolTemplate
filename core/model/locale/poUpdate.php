@@ -8,6 +8,7 @@
 	use Gettext\Scanner\JsScanner;
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
+	use model\cli\Console;
 
 	include_once WT_MODEL_PATH . 'smartyScan.php';
 
@@ -25,7 +26,7 @@
 		public function __construct()
 		{
 			if (!WT_USE_GETTEXT) {
-				include_once WT_MODEL_PATH . 'phpScan2.php';
+				include_once WT_MODEL_PATH . 'locale/poScan.php';
 			}
 		}
 

@@ -2,6 +2,7 @@
 <?php
 namespace model\cli;
 
+use model\locale\PoUpdate;
 use model\main\Core;
 
 require_once realpath(dirname(dirname(__DIR__)) . '/config.php');
@@ -115,7 +116,7 @@ if (PHP_SAPI == 'cli') {
 
 	function localeGenerator($lang)
 	{
-		require_once(WT_MODEL_PATH . 'poUpdate.php');
+		require_once(WT_MODEL_PATH . 'locale/poUpdate.php');
 		(new PoUpdate())->run($lang);
 		Console::success('ok');
 		exit();
@@ -242,7 +243,7 @@ if (PHP_SAPI == 'cli') {
 								Console::failure("Chose lang from that list");
 								break;
 							} else {
-								Console::success('start generator');
+								Console::info('start generator');
 								localeGenerator($lang);
 							}
 						} else {

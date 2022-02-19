@@ -1,6 +1,6 @@
 # WebToolTemplate
 
-Simple FrameWork for small web application
+Простой фреймворк для небольшого веб-приложения
 
 #### includes
 
@@ -10,57 +10,59 @@ Simple FrameWork for small web application
 - gettext - locale
 - LiteSql,mysql,... - database
 
-#### install
+#### Установка
 
-1. unpack this in Directory
-2. `run install.php`
+1. распаковать это в директорию
+2. запустить `run install.php`
 
 #### Instructions
 
 - ###### File Structure
-	- `locale` => `gettext` translations
-	- `core` => Closed from external access directory with the core of the system
-	- `core/model` => Directory with basic scripts. do not touch anything there
-	- `core/classes` => Directory with your classes and scripts
-	- `core/pages` => Directory c site pages should. filenames must match url
-	- `core/view` => Directory with php code that is executed before by rendering the corresponding page. filenames must match url
-	- `core/templates` => Directory with `Smarty` templates
-	- `core/database` => Directory with SQLite database, You can use any database
-	- `core/ajax` => directory with php files available to users. the filename must be the same as the method name in the action field on your form. calling /index.php?a=[filename without extension]
-	- `core/config.php `=> main configuration file
+	- `locale` => `gettext` переводы
+	- `core` => Закрытый от внешнего доступа каталог с ядром системы
+	- `core/model` => Папка с основными скриптами. ничего там не трогайте
+	- `core/pages` => Каталог cо страницами сайта. имена файлов должны совпадать с URL либо используйте `core/router.php`
+	- `core/view` => Каталог с php-кодом, который выполняется перед рендерингом соответствующей страницы. имена файлов должны совпадать с URL либо используйте `core/router.php`
+	- `core/templates` => Каталог с `Smarty` шаблонами
+	- `core/database` => Каталог с базой данных SQLite, Вы можете использовать любую базу данных
+	- `core/ajax` => каталог с файлами php, доступными пользователям. имя файла должно совпадать с именем метода в поле действия в форме. вызов index.php?a=[имя файла без расширения]
+	- `core/cron/controllers`=> Папка с крон заданиями. смотри  `wt cron`
+	- `core/config.php `=> основной файл конфигурации
+	- `core/classes` => Каталог с вашими классами и скриптами
+	- `core/classes/smarty/plugins` => Каталог с пользовательскими `Smarty` плагинами
+	- `core/classes/tables` => Каталог с классами расширяет BdObject для работы с таблицей БД. смотри  `wt make table`
+	- `core/classes/traits` => Каталог с полезными `traits`
 
 - #### console tool
 
-	- `wt error` - display error logs
-	- `wt error clear` - clear error logs
+	- `wt error` - показать журналы ошибок
+	- `wt error clear` - очистить журналы ошибок
 
-	- `wt cache` - clear error cache
-	- `wt cache sudo` - clear error cache with sudo
+	- `wt cache` - очистить кеш ошибок
 
-	- `wt make ajax {name} {type? 'get'|'post'}` - create ajax method class. eg: `wt make ajax "logout"`
-	- `wt make table {name} {primaryKey? 'id'}` - create table object class. eg: `wt make table "users"`
-	- `wt make page {url} {template? 'base'}` - create table object class. eg: `wt make page "catalog/page1 base"`
+	- `wt make ajax {name} {type? 'get'|'post'}` - создать класс метода ajax. eg: `wt make ajax "logout"`
+	- `wt make table {name} {primaryKey? 'id'}` - создать класс объекта таблицы. eg: `wt make table "users"`
+	- `wt make page {url} {template? 'base'}` - создать класс и шаблон страницы для URL. eg: `wt make page "catalog/page1 base"`
 
-	- `wt lang {locale}` - generate locale file .po from source code project eg: `wt lang ru_RU.utf8`
-	- `wt lang clear` - clear lang cache eg: `wt lang clear`
-	- `wt lang all` - display available languages eg: `wt lang all`
+	- `wt lang {locale}` - создать файл локали .po из проекта исходного кода. eg: `wt lang ru_RU.utf8`
+	- `wt lang clear` - очистить кеш языков eg: `wt lang clear`
+	- `wt lang all` - показать доступные языки eg: `wt lang all`
 
-	- `wt cron {path to controller}` - generate launch command for crontab eg: `wt cron "category/test.php"`
-	- `wt cron {path to controller} run` - try launch cron job: `wt cron "category/test.php" run`
+	- `wt cron {path to controller}` - сгенерировать команду запуска для crontab eg: `wt cron "category/test.php"`
+	- `wt cron {path to controller} run` - попробовать запустить задание cron: `wt cron "category/test.php" run`
 
-- #### user
+- #### Пользователь
 
 	- login: ~~admin@example.com~~
 	- password: ~~admin123~~
 
-- #### localization
+- #### Локализация
 
-1. edit `WT_LOCALE_SELECT_FUNCTION` in config
-2. generate locale file .po from source code project
-3. edit .po file. I use poEdit for that
-4. clear lang cache
-5. profit
-6. if doesn't work disable `gettext` in config
+1. Отредактируйте функцию `WT_LOCALE_SELECT_FUNCTION` в конфиге под свой способ определить язык пользователя
+2. Создать файл локали .po из исходного кода проекта eg: `wt lang ru`
+3. Отредактируйте файл .po в паке `locale`. Я использую poEdit для этого
+5. Готово
+6. Если не работает - отключите `gettext` в конфиге
 
 ## API
 
@@ -93,6 +95,7 @@ Cache::removeCache($key,$category = '');
 #### Console
 
 ```php
+Console::info('text') //print cyan text;
 Console::success('text') //print green text;
 Console::warning('text') //print yellow text;
 Console::failure('text') //print red text;
