@@ -6,6 +6,7 @@
 	use Exception;
 	use model\main\Core;
 	use model\main\Err;
+
 	/** @var Core $core */
 	class WTRouterException extends Exception
 	{
@@ -123,9 +124,9 @@
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
 			if (file_exists($page)) {
 				$result = include $page;
-				$class  = 'core\page\\' . $result;
+				$class  = 'page\\' . $result;
 				if (!class_exists($class)) {
-					$class = 'core\page\\' . $page;
+					$class = 'page\\' . $page;
 				}
 				if (!class_exists($class)) {
 					Err::fatal("class '$class' is not define", __LINE__, __FILE__);
