@@ -180,7 +180,7 @@
 			if (class_exists($class)) {
 				return $class;
 			} else {
-				$class = "core\classes\\tables\\$class";
+				$class = "tables\\$class";
 				if (class_exists($class)) {
 					return $class;
 				} else {
