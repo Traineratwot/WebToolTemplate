@@ -2,6 +2,8 @@
 
 	namespace model\cli;
 
+	use model\main\Core;
+
 	class Make
 	{
 		public static function makeAjax($name, $type = 'any')
@@ -30,7 +32,7 @@ PHP;
 PHP;
 					break;
 			}
-			$class = \model\self::name2class($name);
+			$class = self::name2class($name);
 			$code  = <<<PHP
 <?php
 	namespace ajax;
@@ -91,6 +93,7 @@ PHP;
 
 		public static function name2class($name)
 		{
+			$name = preg_replace("@([A-Z])@","_$1",$name);
 			$name = strtr($name, [
 				'\\' => '_',
 				'/'  => '_',
