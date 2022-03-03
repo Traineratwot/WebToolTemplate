@@ -5,7 +5,7 @@
 	use Bramus\Router\Router;
 	use Exception;
 	use model\main\Core;
-
+	use model\main\Err;
 	/** @var Core $core */
 	class WTRouterException extends Exception
 	{
