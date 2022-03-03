@@ -22,11 +22,11 @@
 		public function __construct($dsn, $username = NULL, $password = NULL, $driverOptions = [])
 		{
 			parent::__construct($dsn, $username, $password, $driverOptions);
-			$this->ParseDsn($dsn);
+			$this->ParseDsn($dsn,$username,$password);
 			$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, ['model\main\PDOExtendedStatement', [$this]]);
 		}
 
-		protected function ParseDsn($dsn)
+		protected function ParseDsn($dsn,$username,$password)
 		{
 			$result = [
 				'driver'   => '',
@@ -45,17 +45,13 @@
 			} else {
 				return FALSE;
 			}
-
-			if (preg_match(self::DSN_REGEX, $dsn, $matches)) {
-				if (count($matches) > 0) {
-					foreach ($result as $key => $value) {
-						if (array_key_exists($key, $matches) and !empty($matches[$key])) {
-							$result[$key] = $matches[$key];
-						}
-					}
-				}
+			$b = explode(';',$a[1]);
+			foreach ($b as $c){
+				$c = explode('=',$c);
+				$this->dsn[$c[0]] = $c[1];
 			}
-			$this->dsn = $result;
+			$this->dsn['user'] = $username;
+			$this->dsn['pass'] = $password;
 			return $result;
 		}
 
