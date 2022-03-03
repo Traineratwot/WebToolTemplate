@@ -28,14 +28,6 @@
 
 		protected function ParseDsn($dsn,$username,$password)
 		{
-			$result = [
-				'driver'   => '',
-				'user'     => '',
-				'password' => '',
-				'host'     => 'localhost',
-				'port'     => 3306,
-				'database' => '',
-			];
 			if (strlen($dsn) == 0) {
 				return FALSE;
 			}
@@ -51,7 +43,7 @@
 				$this->dsn[$c[0]] = $c[1];
 			}
 			$this->dsn['user'] = $username;
-			$this->dsn['pass'] = $password;
+			$this->dsn['password'] = $password;
 			return $result;
 		}
 
