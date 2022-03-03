@@ -123,9 +123,9 @@
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
 			if (file_exists($page)) {
 				$result = include $page;
-				$class  = 'page\\' . $result;
+				$class  = 'core\page\\' . $result;
 				if (!class_exists($class)) {
-					$class = 'page\\' . $page;
+					$class = 'core\page\\' . $page;
 				}
 				if (!class_exists($class)) {
 					Err::fatal("class '$class' is not define", __LINE__, __FILE__);
