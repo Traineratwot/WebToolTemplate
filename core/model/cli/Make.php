@@ -36,7 +36,7 @@ PHP;
 			$code  = <<<PHP
 <?php
 	namespace ajax;
-	use model\Ajax;
+	use model\page\Ajax;
 	class {$class} extends Ajax
 	{
 		{$method}
