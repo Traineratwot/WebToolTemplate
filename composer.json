@@ -19,8 +19,10 @@
 	},
 	"autoload":{
 		"files":[
-			"core/model/main/core.php",
-			"core/model/main/errors.php"
+			"core/model/main/PDOExtended.php",
+			"core/model/main/Core.php",
+			"core/model/main/Err.php",
+			"core/model/main/Cache.php"
 		],
 		"psr-4":{
 			"classes\\":"core/classes/",
