@@ -30,7 +30,7 @@ PHP;
 PHP;
 					break;
 			}
-			$class = \model\Make::name2class($name);
+			$class = \model\self::name2class($name);
 			$code  = <<<PHP
 <?php
 	namespace ajax;
@@ -65,7 +65,7 @@ TPL;
 
 		public static function makePageClass($name, $template = 'base')
 		{
-			$class = Make::name2class($name);
+			$class = self::name2class($name);
 			$code  = <<<PHP
 <?php
 
@@ -116,11 +116,11 @@ PHP;
 		public static function makeTable($name, $primaryKey = 'id')
 		{
 			$primaryKey = $primaryKey ?: 'id';
-			$class      = Make::name2class($name);
+			$class      = self::name2class($name);
 			$code       = <<<PHP
 <?php
 	namespace tables;
-	use model\\core\\BdObject;
+	use model\\main\\BdObject;
 
 	/**
 	 * Класс для работы с таблицей `$name`
@@ -140,7 +140,7 @@ PHP;
 			if ($category) {
 				$category = '\\' . $category;
 			}
-			$class = Make::name2class($name);
+			$class = self::name2class($name);
 			$code  = <<<PHP
 <?php
 	namespace classes{$category};
@@ -155,6 +155,28 @@ PHP;
 	
 	
 	}
+PHP;
+			return $code;
+		}
+
+		public static function makeCron($name = '')
+		{
+			$class = self::name2class(basename($name));
+			$code  = <<<PHP
+<?php
+	namespace cron;
+	/** @var Core \$core */
+	use model\main\Core;
+	use model\main\CoreObject;
+	class $class extends CoreObject
+	{
+	
+		function process(){
+			//TODO: process
+		}
+	}
+
+	(new $class(\$core))->process();
 PHP;
 			return $code;
 		}

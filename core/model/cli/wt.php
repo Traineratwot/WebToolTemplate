@@ -18,6 +18,7 @@ if (PHP_SAPI == 'cli') {
 
 	function make($a, $b, $c)
 	{
+		global $core;
 		switch (mb_strtolower($a)) {
 			case 'ajax':
 				$p = strtr(WT_AJAX_PATH . $b . '.php', [
@@ -48,7 +49,6 @@ if (PHP_SAPI == 'cli') {
 			case 'table':
 				$class = Make::name2class($b);
 				$p     = WT_CLASSES_PATH . 'tables/' . $class . '.php';
-				global $core;
 				if (!file_exists($p)) {
 					writeFile($p, Make::makeTable($b, $c));
 					if (file_exists($p)) {
@@ -91,6 +91,18 @@ if (PHP_SAPI == 'cli') {
 					}
 				} else {
 					Console::failure('Already exists: ' . $p2);
+				}
+				break;
+			case 'cron':
+				$p = strtr(WT_CRON_PATH.'controllers/' . $b. '.php', [
+						'/'  => DIRECTORY_SEPARATOR,
+						'\\' => DIRECTORY_SEPARATOR,
+				]);
+				if (!file_exists($p)) {
+					writeFile($p, Make::makeCron($b));
+					Console::success('ok: ' . $p);
+				} else {
+					Console::failure('Already exists');
 				}
 				break;
 			default:
