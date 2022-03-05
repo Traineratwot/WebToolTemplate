@@ -104,6 +104,8 @@
 		{
 			session_write_close();
 			session_unset();
+			setcookie('authKey',null);
+			setcookie('userId',null);
 			WT_START_SESSION_FUNCTION();
 		}
 	}

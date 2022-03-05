@@ -9,6 +9,7 @@
 	namespace model\main;
 
 	use PDO;
+	use PDOStatement;
 
 	class PDOExtendedPoolStatement extends PDOStatement
 	{
@@ -84,7 +85,7 @@
 					$values[$key] = 'NULL';
 				}
 			}
-			array_walk($values, create_function('&$v, $k', 'if (!is_numeric($v) && $v!="NULL") $v = "\'".$v."\'";'));
+			array_walk($values, 'model\main\PDOExtendedPoolStatement::filter');
 			if (is_array($values)) {
 				foreach ($values as $key => $val) {
 					if (isset($values_limit[$key])) {
@@ -101,5 +102,9 @@
 			unset($keys, $values, $values_limit, $words_repeated);
 
 			return trim(trim($query), ';');
+		}
+
+		static function filter(&$v, $k){
+			if (!is_numeric($v) && $v!="NULL") $v = "\'".$v."\'";
 		}
 	}

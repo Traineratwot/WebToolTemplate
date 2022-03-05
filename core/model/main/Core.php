@@ -194,7 +194,7 @@
 		 * @param class-string<T> $class
 		 * @param array           $where
 		 * @param booean          $cache
-		 * @return T
+		 * @return BdObject|T
 		 * @throws Exception
 		 */
 		public function getObject($class, $where = [], $cache = TRUE)
@@ -203,7 +203,7 @@
 			if (!$cache or empty($where)) {
 				return new $class($this, $where);
 			}
-			$key = md5(serialize($where));
+			$key = self::hash($where);
 			if (!isset($this->_cache[$class]) or !isset($this->_cache[$class][$key])) {
 				$this->_cache[$class][$key] = new $class($this, $where);
 			}
@@ -342,6 +342,19 @@
 					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
 				}
 				exit;
+			}
+		}
+
+		/**
+		 * @return self
+		 */
+		public static function init() {
+			if(array_key_exists('core', $GLOBALS)){
+				return $GLOBALS['core'];
+			}else{
+				global $core;
+				$core = new self();
+				return $core;
 			}
 		}
 	}
