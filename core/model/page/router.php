@@ -6,6 +6,7 @@
 	use Exception;
 	use model\main\Core;
 	use model\main\Err;
+	use traits\Utilities;
 
 	/** @var Core $core */
 	class WTRouterException extends Exception
@@ -15,6 +16,7 @@
 
 	class WTRouter
 	{
+		use Utilities;
 		private bool   $isAjax;
 		private string $alias;
 		private Core   $core;
@@ -94,7 +96,8 @@
 		private function AdvancedRoute()
 		{
 			$this->isAdvanced = TRUE;
-			$router           = include WT_CORE_PATH . "router.php";
+			$router_path = self::findPath(WT_CORE_PATH . "router.php");
+			$router           = include$router_path;
 			if (!empty($router)) {
 				$this->switcher = new Router();
 				$self           = $this;
@@ -122,14 +125,12 @@
 		private function launchPage($data = [])
 		{
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
-			if (file_exists($page)) {
+			$page = self::findPath($page);
+			if ($page) {
 				$result = include $page;
 				$class  = 'page\\' . $result;
 				if (!class_exists($class)) {
-					$class = 'page\\' . $page;
-				}
-				if (!class_exists($class)) {
-					Err::fatal("class '$class' is not define", __LINE__, __FILE__);
+					return $this->launchAjax();
 				}
 				/** @var Page $result */
 				$result = new $class($this->core, $data);
@@ -141,7 +142,8 @@
 				}
 			} else {
 				$page = WT_PAGES_PATH . $this->alias . '.tpl';
-				if (file_exists($page)) {
+				$page = self::findPath($page);
+				if ($page) {
 					$result = new TmpPage($this->core, $this->alias, $data);
 					$result->render();
 					exit();
@@ -154,16 +156,13 @@
 				}
 			}
 		}
-
 		private function launchAjax($data = [])
 		{
 			$ajax = WT_AJAX_PATH . $this->alias . '.php';
-			if (file_exists($ajax)) {
+			$ajax = self::findPath($ajax);
+			if ($ajax) {
 				$result = include $ajax;
 				$class  = 'ajax\\' . $result;
-				if (!class_exists($class)) {
-					$class = 'ajax\\' . $ajax;
-				}
 				if (!class_exists($class)) {
 					Err::fatal("class '$class' is not define");
 				}
@@ -184,7 +183,6 @@
 				throw new WTRouterException('Ajax: "' . $ajax . '" file not found', 404);
 			}
 		}
-
 	}
 
 	$r = new WTRouter($core);

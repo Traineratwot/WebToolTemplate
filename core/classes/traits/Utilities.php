@@ -2,6 +2,8 @@
 
 	namespace traits;
 
+	use model\main\Cache;
+
 	/**
 	 * Класс с утилитами
 	 */
@@ -253,5 +255,44 @@
 				return $path;
 			}
 			return $path;
+		}
+
+		/**
+		 * Находит файл независимо от регистра и возвращает его абсолютный путь
+		 * @param $path
+		 * @return string
+		 */
+		public static function findPath($path)
+		{
+			$path = self::pathNormalize($path);
+			if (file_exists($path)) {
+				return realpath($path);
+			}
+			return Cache::call([$path],function($path){
+				$a          = explode("/", $path);
+				$array_path = [];
+				while (count($a)) {
+					$array_path[] = implode("/", $a);
+					unset($a[count($a) - 1]);
+				}
+				foreach ($array_path as $k => $p) {
+					if (file_exists($p)) {
+						break;
+					}
+				}
+				while ($k != 0) {
+					$k--;
+					$dir = scandir($p);
+					foreach ($dir as $d) {
+						if (mb_strtolower($d) == mb_strtolower(basename($array_path[$k]))) {
+							$p .= '/' . $d;
+							break;
+						}
+					}
+				}
+				if (file_exists($p)) {
+					return realpath($p);
+				}
+			},600,'filePaths',$path);
 		}
 	}

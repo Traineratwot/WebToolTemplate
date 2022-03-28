@@ -10,6 +10,32 @@
 	class Cache
 	{
 		/**
+		 * @param mixed $key
+		 * @param function $function Callback function
+		 * @param int $expire
+		 * @param string $category
+		 * @param mixed ...$args
+		 * @return mixed|null
+		 */
+		public static function call($key, $function, $expire = 600, $category = '', ...$args)
+		{
+			$result = self::getCache($key, $category);
+			if ($result !== NULL) {
+				return $result;
+			}
+			if (is_callable($function)) {
+				$args   = func_get_args();
+				$args   = array_slice($args, 4);
+				$result = call_user_func($function, ...$args);
+				self::setCache($key, $result, $expire, $category);
+				return $result;
+			} else {
+				Err::fatal("Is not a function", __LINE__, __FILE__);
+			}
+			return NULL;
+		}
+
+		/**
 		 * @param $key      mixed
 		 * @param $value    mixed
 		 * @param $expire   int
