@@ -8,7 +8,7 @@
 
 	class ChangePassword extends Page
 	{
-		public $alias = 'user/ChangePassword';
+		public $alias = 'user/changePassword';
 		public $title = 'ChangePassword';
 
 		use Utilities;

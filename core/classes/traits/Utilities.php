@@ -175,7 +175,7 @@
 			if (empty($table) or empty($column)) {
 				return FALSE;
 			}
-			global $core;
+			$core = Core::init();
 			if (!($ret = $core->db->query("SHOW COLUMNS FROM `$table` LIKE '$column'"))) {
 				return FALSE;
 			}
@@ -274,18 +274,21 @@
 			return Cache::call(
 				[$path],
 				function ($path) {
+					//разбиваю путь на массив в котором каждый старший элемент родитель младшего
 					$a          = explode("/", $path);
 					$array_path = [];
 					while (count($a)) {
 						$array_path[] = implode("/", $a);
 						unset($a[count($a) - 1]);
 					}
+					//нахожу первый существующий путь
 					foreach ($array_path as $k => $p) {
 						if (file_exists($p)) {
 							break;
 						}
 					}
 					$s = $k;
+					//ищю следующую часть пути без учета регистра
 					while ($k >= 0) {
 						$k--;
 						$dir = scandir($p);
@@ -300,6 +303,7 @@
 							break;
 						}
 					}
+					//проверяю что путь найден путем сравнения количество необходимых с количеством найденный частей путя
 					if ($s === $k and $k === 0) {
 						if (file_exists($p)) {
 							return realpath($p);

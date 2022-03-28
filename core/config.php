@@ -58,12 +58,13 @@
 	define('WT_LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR);
 	// Если у вас нет или не работает (как у меня) "gettext", отключите его, здесь будет использована альтернатива
 	define('WT_USE_GETTEXT', FALSE);               //extension_loaded('gettext')
-	/**
-	 * Пользовательская функция возвращяющяя язык для установки локали на основе url
-	 * вы можете ее менять
-	 * @return false|string
-	 */
+
 	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
+		/**
+		 * Пользовательская функция возвращающая язык для установки цокали на основе url
+		 * вы можете ее менять
+		 * @return false|string
+		 */
 		function WT_LOCALE_SELECT_FUNCTION()
 		{
 			preg_match('/^(.{1,3})?\..*$/', $_SERVER['HTTP_HOST'], $math);

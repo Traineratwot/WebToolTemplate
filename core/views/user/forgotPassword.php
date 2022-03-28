@@ -6,7 +6,7 @@
 
 	class ForgotPassword extends Page
 	{
-		public $alias = 'user/ForgotPassword';
+		public $alias = 'user/forgotPassword';
 		public $title = 'Forgot Password';
 
 		public function beforeRender()
