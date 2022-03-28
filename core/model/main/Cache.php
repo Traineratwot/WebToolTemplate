@@ -1,6 +1,9 @@
 <?php
 
 	namespace model\main;
+	if (!defined('WT_CACHE_PATH')) {
+		define('WT_CACHE_PATH', './');
+	}
 
 	/**
 	 * Класс для Кеша
@@ -10,11 +13,13 @@
 	class Cache
 	{
 		/**
-		 * @param mixed $key
+		 * Сохраняет результат выполнения callback функции в кеш или возвращает уже за кешированное значение
+		 *
+		 * @param mixed    $key
 		 * @param function $function Callback function
-		 * @param int $expire
-		 * @param string $category
-		 * @param mixed ...$args
+		 * @param int      $expire   Время жизни
+		 * @param string   $category папка кеша
+		 * @param mixed    ...$args
 		 * @return mixed|null
 		 */
 		public static function call($key, $function, $expire = 600, $category = '', ...$args)
@@ -27,24 +32,27 @@
 				$args   = func_get_args();
 				$args   = array_slice($args, 4);
 				$result = call_user_func($function, ...$args);
-				self::setCache($key, $result, $expire, $category);
-				return $result;
+				if ($result !== NULL) {
+					return self::setCache($key, $result, $expire, $category);
+				}
+				return NULL;
 			} else {
-				Err::fatal("Is not a function", __LINE__, __FILE__);
+				throw new Exception("Is not a function");
 			}
 			return NULL;
 		}
 
 		/**
-		 * @param $key      mixed
-		 * @param $value    mixed
-		 * @param $expire   int
-		 * @param $category string
+		 * Сохраняет значение в кеш
+		 * @param mixed  $key      ключ
+		 * @param mixed  $value    значение
+		 * @param int    $expire   Время жизни
+		 * @param string $category папка кеша
 		 * @return mixed
 		 */
 		public static function setCache($key, $value, $expire = 600, $category = '')
 		{
-			$name                = \model\main\Cache::getKey($key) . '.cache.php';
+			$name                = self::getKey($key) . '.cache.php';
 			$v                   = var_export($value, 1);
 			$expire              = $expire ? $expire + time() : 0;
 			$body                = <<<PHP
@@ -66,7 +74,8 @@ PHP;
 		}
 
 		/**
-		 * @param $a mixed
+		 * Превратить ключ кеша в строку
+		 * @param mixed $a
 		 * @return string
 		 */
 		public static function getKey($a)
@@ -78,9 +87,10 @@ PHP;
 		}
 
 		/**
-		 * @param $key      mixed
-		 * @param $category string
-		 * @return mixed|null
+		 * Возвращает значение из кеша
+		 * @param mixed  $key      ключ
+		 * @param string $category папка кеша
+		 * @return mixed|null значение
 		 */
 		public static function getCache($key, $category = '')
 		{
@@ -92,7 +102,7 @@ PHP;
 					}
 				}
 			}
-			$name = Cache::getKey($key) . '.cache.php';
+			$name = self::getKey($key) . '.cache.php';
 			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
 				return include WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
 			}
@@ -100,13 +110,14 @@ PHP;
 		}
 
 		/**
-		 * @param $key      mixed
-		 * @param $category string
+		 * Удаляет файл кеша
+		 * @param mixed  $key      ключ
+		 * @param string $category папка кеша
 		 * @return bool
 		 */
 		public static function removeCache($key, $category = '')
 		{
-			$name = Cache::getKey($key) . '.cache.php';
+			$name = self::getKey($key) . '.cache.php';
 			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
 				unlink(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name);
 			}

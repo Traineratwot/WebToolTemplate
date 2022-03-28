@@ -24,7 +24,7 @@
 					icon: 'fa fa-envelope'
 				})
 				setTimeout(function() {
-					document.location.href = '/login'
+					document.location.href = '/user/login'
 				}, 1000)
 			})
 			$('#login').on('failure', function(e, d) {

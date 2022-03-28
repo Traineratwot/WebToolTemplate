@@ -27,7 +27,7 @@
 				icon: 'fa fa-envelope'
 			})
 			setTimeout(function() {
-				document.location.href = '/profile'
+				document.location.href = '/user/profile'
 			}, 1000)
 		})
 		$('#reg').on('failure', function(e, d) {

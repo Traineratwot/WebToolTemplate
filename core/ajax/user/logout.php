@@ -12,6 +12,7 @@
 			if ($this->core->isAuthenticated) {
 				$this->core->user->logout();
 			}
+			return $this->success('ok');
 		}
 	}
 

@@ -25,6 +25,7 @@
 				$newUser = $this->core->getUser(['email' => $this->email]);
 				if ($newUser->isNew()) {
 					$newUser->register($this->email, $this->password);
+					return $this->success('Ok');
 				} else {
 					return $this->failure('User already exists');
 				}

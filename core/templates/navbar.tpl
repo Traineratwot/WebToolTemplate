@@ -29,7 +29,7 @@
                 {/if}
 			</ul>
             {if $isAuthenticated}
-				<form class="d-flex" action="logout" id="Logout">
+				<form class="d-flex" action="/user/logout" id="Logout">
 					<button class="btn btn-outline-info" type="submit">Logout</button>
 				</form>
             {/if}

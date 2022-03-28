@@ -102,10 +102,9 @@
 
 		function WT_RESTART_SESSION_FUNCTION()
 		{
-			session_write_close();
-			session_unset();
 			setcookie('authKey',null);
 			setcookie('userId',null);
+			session_unset();
 			WT_START_SESSION_FUNCTION();
 		}
 	}

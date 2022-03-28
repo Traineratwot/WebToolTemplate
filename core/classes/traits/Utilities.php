@@ -2,6 +2,7 @@
 
 	namespace traits;
 
+	use Exception;
 	use model\main\Cache;
 
 	/**
@@ -258,9 +259,11 @@
 		}
 
 		/**
-		 * Находит файл независимо от регистра и возвращает его абсолютный путь
+		 * Находит файл независимо от регистра и возвращает его абсолютный
+		 * путь в случаи неудаче вернет null
 		 * @param $path
-		 * @return string
+		 * @return string|null
+		 * @throws Exception
 		 */
 		public static function findPath($path)
 		{
@@ -268,31 +271,45 @@
 			if (file_exists($path)) {
 				return realpath($path);
 			}
-			return Cache::call([$path],function($path){
-				$a          = explode("/", $path);
-				$array_path = [];
-				while (count($a)) {
-					$array_path[] = implode("/", $a);
-					unset($a[count($a) - 1]);
-				}
-				foreach ($array_path as $k => $p) {
-					if (file_exists($p)) {
-						break;
+			return Cache::call(
+				[$path],
+				function ($path) {
+					$a          = explode("/", $path);
+					$array_path = [];
+					while (count($a)) {
+						$array_path[] = implode("/", $a);
+						unset($a[count($a) - 1]);
 					}
-				}
-				while ($k != 0) {
-					$k--;
-					$dir = scandir($p);
-					foreach ($dir as $d) {
-						if (mb_strtolower($d) == mb_strtolower(basename($array_path[$k]))) {
-							$p .= '/' . $d;
+					foreach ($array_path as $k => $p) {
+						if (file_exists($p)) {
 							break;
 						}
 					}
-				}
-				if (file_exists($p)) {
-					return realpath($p);
-				}
-			},600,'filePaths',$path);
+					$s = $k;
+					while ($k >= 0) {
+						$k--;
+						$dir = scandir($p);
+						foreach ($dir as $d) {
+							if (mb_strtolower($d) == mb_strtolower(basename($array_path[$k]))) {
+								$s--;
+								$p .= '/' . $d;
+								break;
+							}
+						}
+						if ($k == 0) {
+							break;
+						}
+					}
+					if ($s === $k and $k === 0) {
+						if (file_exists($p)) {
+							return realpath($p);
+						}
+					}
+					return NULL;
+				},
+				600,
+				'filePaths',
+				$path
+			);
 		}
 	}

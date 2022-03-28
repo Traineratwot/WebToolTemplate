@@ -7,7 +7,7 @@
 			<input
 					name="email" type="email" class="form-control" id="exampleFormControlInput1"
 					placeholder="email@example.com"
-					oninput="$(forgot_password).attr('href','/forgot_password?email='+this.value)"
+					oninput="$(forgot_password).attr('href','/user/forgot_password?email='+this.value)"
 			>
 		</div>
 		<div class="mb-3">
