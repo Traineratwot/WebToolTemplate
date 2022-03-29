@@ -316,4 +316,19 @@
 				$path
 			);
 		}
+
+		public static function dateFormat($inputFormat, $date, $outputFormat = 'U', $modify = '')
+		{
+			$dt = DateTime::createFromFormat($inputFormat, $date);
+			if ($dt) {
+				if ($modify) {
+					$dt->modify($modify);
+				}
+				if (!$outputFormat) {
+					return $dt;
+				}
+				return (string)$dt->format($outputFormat);
+			}
+			return FALSE;
+		}
 	}
