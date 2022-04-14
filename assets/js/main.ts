@@ -131,7 +131,8 @@ class WtRenderer {
 		var self = this
 		return this.getData(alias, data, (data) => {
 			self.elem = $(data);
-			self.elem.html(elem);
+			$(elem).html('')
+			self.elem.appendTo(elem);
 		})
 	}
 
