@@ -1,9 +1,9 @@
 class Wt {
-	public render: WtRender;
+	public renderer: WtRenderer;
 
 	constructor() {
 		this.events()
-		this.render = new WtRender(this)
+		this.renderer = new WtRenderer(this)
 	}
 
 	id(length = 6) {
@@ -119,9 +119,9 @@ class Wt {
 	}
 }
 
-class WtRender {
-	public wt: Wt;
-	public elem: any;
+class WtRenderer {
+	private wt: Wt;
+	private elem: any;
 
 	constructor(wt) {
 		this.wt = wt

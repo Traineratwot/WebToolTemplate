@@ -22,10 +22,9 @@
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
 					$salt        = random_int(1000000, 9999999);
-					$authKey     = md5($this->password . $this->email . $salt);
 					$this->email = $this->core->user->get('email');
-					$this->core->user->set('password', self::hash($this->password . $salt));
-					$this->core->user->set('salt', $salt);
+					$this->core->user->setPassword($this->password);
+					$authKey = md5($this->core->user->get('password') . $this->email . $salt);
 					$this->core->user->set('authKey', $authKey);
 					$this->core->user->save();
 					session_unset();

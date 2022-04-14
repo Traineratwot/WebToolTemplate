@@ -95,6 +95,7 @@ PHP;
 		public static function getCache($key, $category = '')
 		{
 			if ($category != 'table') {
+				//если установлен заголовок отключить кеш отключаем кеш
 				if (function_exists('getallheaders')) {
 					$headers = getallheaders();
 					if ($headers['Cache-Control'] == 'no-cache') {

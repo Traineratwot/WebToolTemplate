@@ -1,8 +1,8 @@
 class Wt {
-    render;
+    renderer;
     constructor() {
         this.events();
-        this.render = new WtRender(this);
+        this.renderer = new WtRenderer(this);
     }
     id(length = 6) {
         length = length - 1;
@@ -52,7 +52,7 @@ class Wt {
     }
     events() {
         var Core = this;
-        $(document).on('submit', 'form', function (e) {
+        $(document).on('submit', 'form:not(.default)', function (e) {
             e.preventDefault();
             if (this instanceof HTMLFormElement) {
                 var form = $(this);
@@ -117,19 +117,20 @@ class Wt {
         });
     }
 }
-class WtRender {
+class WtRenderer {
     wt;
     elem;
     constructor(wt) {
         this.wt = wt;
     }
-    render(elem, alias, data = []) {
+    async render(elem, alias, data = []) {
         $(elem).html("");
         var self = this;
-        this.getData(alias, data, (data) => {
+        await this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.appendTo(elem);
         });
+        return true;
     }
     append(elem, alias, data = []) {
         var self = this;

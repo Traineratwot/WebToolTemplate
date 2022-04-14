@@ -6,6 +6,7 @@
 	use model\main\CoreObject;
 	use model\main\Err;
 	use model\main\ErrorPage;
+	use Exception;
 	use SmartyBC;
 	use traits\Utilities;
 
@@ -33,6 +34,12 @@
 				$this->source = $this->alias;
 			} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
 				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
+				if (!file_exists($this->source)) {
+					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
+					if (!file_exists($this->source)) {
+						throw new Exception('Chunk error: "' . $this->source . '" file not found ');
+					}
+				}
 			} else {
 				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
 

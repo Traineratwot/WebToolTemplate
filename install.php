@@ -55,6 +55,50 @@
 	} else {
 		$log[] = 'composer updated';
 		require_once realpath(WT_MODEL_PATH . 'engine.php');
+		try {
+			$core = Core::init();
+			$needInstall = !($core->db->tableExists("users"));
+		if ($needInstall) {
+			$log[] = 'install Database';
+			if($core->db->dsn_info['driver'] == 'sqlite'){
+				$core->db->exec(<<<SQL
+CREATE TABLE users
+(
+	id       INTEGER
+		PRIMARY KEY AUTOINCREMENT
+		ON CONFLICT FAIL,
+	email    VARCHAR(64)
+		UNIQUE
+			ON CONFLICT FAIL,
+	password VARCHAR(64),
+	authKey  VARCHAR(64),
+	salt     INTEGER(11) DEFAULT 0
+);
+SQL);
+			}else{
+				$core->db->exec(<<<SQL
+CREATE TABLE `users` (
+	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`email` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`password` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`authKey` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`salt` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`time_create` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+	PRIMARY KEY (`id`) USING BTREE,
+	UNIQUE INDEX `email` (`email`) USING BTREE,
+	UNIQUE INDEX `authKey` (`authKey`) USING BTREE
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2314
+;
+SQL);
+			}
+		}
+
+		}catch (Exception $e){
+
+		}
 	}
 	//----------------------------------------------
 	$system = PHP_OS;

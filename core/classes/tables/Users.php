@@ -67,12 +67,10 @@
 				if (strlen($password) < 6) {
 					Err::fatal('Please enter a password length >= 6 characters', __FILE__, __FILE__);
 				}
-				$salt    = self::id(8);
-				$pass    = $password . $salt;
-				$authKey = hash('sha256', $email . $pass);
+				$pass = $password;
+				$this->setPassword($pass);
+				$authKey = hash('sha256', $email . $this->get('password'));
 				$this->set('email', $email);
-				$this->set('password', hash('sha256', $pass));
-				$this->set('salt', $salt);
 				$this->set('authKey', $authKey);
 				$this->save();
 				if ($this->isNew()) {
@@ -82,5 +80,18 @@
 					return TRUE;
 				}
 			}
+		}
+
+		public function setPassword($password)
+		{
+			$salt = self::id(8);
+			$this->set('salt', $salt);
+			$password .= $salt;
+			$this->set('password', password_hash($password,PASSWORD_DEFAULT));
+		}
+
+		public function verifyPassword($password)
+		{
+			return password_verify($password . $this->get('salt'), $this->get('password'));
 		}
 	}

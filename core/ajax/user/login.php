@@ -2,9 +2,9 @@
 
 	namespace ajax;
 
-	use classes\Users;
 	use model\main\Err;
 	use model\page\Ajax;
+	use tables\Users;
 
 	class Login extends Ajax
 	{
@@ -22,12 +22,10 @@
 		public function post()
 		{
 			try {
-				/** @var users $User */
+				/** @var Users $User */
 				$User = $this->core->getUser(['email' => $this->email]);
 				if (!$User->isNew()) {
-					$salt = $User->get('salt');
-					$pass = $this->password . $salt;
-					if ($User->get('password') !== self::hash($pass)) {
+					if (!$User->verifyPassword($this->password)) {
 						Err::fatal('Неправильный пароль', __FILE__, __FILE__);
 					} else {
 						$User->login();
