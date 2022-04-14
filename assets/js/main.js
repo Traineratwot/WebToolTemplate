@@ -124,24 +124,22 @@ class WtRenderer {
         this.wt = wt;
     }
     async render(elem, alias, data = []) {
-        $(elem).html("");
         var self = this;
-        await this.getData(alias, data, (data) => {
+        return this.getData(alias, data, (data) => {
             self.elem = $(data);
-            self.elem.appendTo(elem);
+            self.elem.html(elem);
         });
-        return true;
     }
     append(elem, alias, data = []) {
         var self = this;
-        this.getData(alias, data, (data) => {
+        return this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.appendTo(elem);
         });
     }
     prepend(elem, alias, data = []) {
         var self = this;
-        this.getData(alias, data, (data) => {
+        return this.getData(alias, data, (data) => {
             self.elem = $(data);
             self.elem.prependTo(elem);
         });
