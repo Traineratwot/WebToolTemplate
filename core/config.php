@@ -28,6 +28,7 @@
 	define('WT_TYPE_DB', 'sqlite');
 	define('WT_USER_DB', '');
 	define('WT_PASS_DB', '');
+	define('WT_CHARSET_DB', '');
 	define('WT_DSN_DB', WT_TYPE_DB . ":" . WT_HOST_DB);
 //	define('WT_HOST_DB', 'localhost');
 //	define('WT_PORT_DB', '3306');
@@ -35,7 +36,8 @@
 //	define('WT_TYPE_DB', 'mysql');
 //	define('WT_USER_DB', 'root');
 //	define('WT_PASS_DB', '');
-//	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB);
+//	define('WT_CHARSET_DB', 'utf8mb4');
+//	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB.";charset=". WT_CHARSET_DB);
 	//Настройки шаблонизатора
 	define('WT_SMARTY_TEMPLATE_PATH', WT_CORE_PATH . 'templates');
 	define('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile');

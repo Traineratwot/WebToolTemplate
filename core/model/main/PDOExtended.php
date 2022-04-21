@@ -127,7 +127,7 @@
 			if ($this->dsn_info['driver'] == 'sqlite') {
 				return (bool)(int)$this->query("SELECT name FROM sqlite_master WHERE type='table' AND name='{$table}'")->fetchAll(PDO::FETCH_NUM);
 			} else {
-				return (bool)(int)$this->query("SHOW TABLES FROM 'db_name' LIKE '{$table}'")->fetchAll(PDO::FETCH_NUM);
+				return (bool)(int)$this->query("SHOW TABLES LIKE '{$table}'")->fetchAll(PDO::FETCH_NUM);
 			}
 		}
 
