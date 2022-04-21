@@ -1,11 +1,11 @@
 <?php
 
-	namespace ajax;
+	namespace ajax\user;
 
 
 	use model\page\Ajax;
 
-	class logout extends Ajax
+	class Logout extends Ajax
 	{
 		function process()
 		{
@@ -16,4 +16,4 @@
 		}
 	}
 
-	return 'logout';
+	return Logout::class;

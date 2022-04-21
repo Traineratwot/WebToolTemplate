@@ -19,4 +19,4 @@
 		}
 	}
 
-	return 'render';
+	return Render::class;

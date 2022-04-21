@@ -1,6 +1,6 @@
 <?php
 
-	namespace ajax;
+	namespace ajax\user;
 
 	use model\main\Err;
 	use model\page\Ajax;
@@ -40,4 +40,4 @@
 		}
 	}
 
-	return 'Login';
+	return Login::class;

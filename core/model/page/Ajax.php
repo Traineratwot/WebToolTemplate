@@ -3,8 +3,10 @@
 	namespace model\page;
 
 	use Exception;
+	use model\helper\PostFiles;
 	use model\main\Core;
 	use model\main\CoreObject;
+	use model\main\Err;
 	use traits\Utilities;
 	use traits\validators\jsonValidate;
 
@@ -46,6 +48,12 @@
 		 * @var integer
 		 */
 		public $httpResponseCode = 0;
+		public $ip;
+		public $HEADERS;
+		/**
+		 * @var array|mixed
+		 */
+		public $data;
 
 		public function __construct(Core $core, $data = [])
 		{
@@ -53,6 +61,7 @@
 			if (!empty($data)) {
 				$this->data = $data;
 			}
+			$this->ip               = self::getIp();
 			$this->GET              = $_GET;
 			$this->httpResponseCode = 200;
 			$this->POST             = $_POST;
@@ -104,7 +113,6 @@
 		}
 
 
-
 		public function process()
 		{
 			switch ($_SERVER['REQUEST_METHOD']) {
@@ -127,6 +135,7 @@
 				case 'TRACE':
 					return $this->TRACE();
 			}
+			return 'ok';
 		}
 
 		public function GET()
@@ -174,6 +183,7 @@
 				'code'    => $this->httpResponseCode,
 			];
 		}
+
 		public function failure($msg = '', $object = NULL, $error = [])
 		{
 			return [

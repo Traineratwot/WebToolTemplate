@@ -2,30 +2,24 @@
 
 	namespace model\page;
 
-	use Bramus\Router\Router;
 	use Exception;
+	use model\main\Cache;
 	use model\main\Core;
 	use model\main\Err;
 	use traits\Utilities;
 
-	/** @var Core $core */
-	class WTRouterException extends Exception
-	{
-
-	}
-
-	class WTRouter
+	class Router
 	{
 		use Utilities;
-		private bool   $isAjax;
-		private string $alias;
-		private Core   $core;
-		private Router $switcher;
-		private bool   $isAdvanced = FALSE;
 
-		public function __construct(Core $core)
+		private $isAjax;
+		private $alias;
+		private $core;
+		private $isAdvanced = FALSE;
+
+		public function __construct()
 		{
-			$this->core = $core;
+			$this->core = Core::init();
 			if (isset($_GET['a'])) {
 				$this->isAjax = TRUE;
 				$this->alias  = mb_strtolower($_GET['a']);
@@ -52,18 +46,19 @@
 				} else {
 					$this->launchPage();
 				}
-			} catch (WTRouterException $e) {
-				if ($e->getCode() == 404) {
+			} catch (RouterException $e) {
+				if ($e->getCode() === 404) {
 					if ($this->isAjax) {
 						$this->core->errorPage();
 					} else {
 						try {
-							$this->AdvancedRoute();
+							$this->advancedRoute();
 						} catch (Exception $e) {
 							$this->core->errorPage();
 						}
 					}
 				}
+			} catch (Exception $e) {
 			}
 			$this->core->errorPage();
 		}
@@ -71,39 +66,40 @@
 		private function selectLanguage($lang)
 		{
 			if ($lang) {
-				$newLang = $this->core->cache->getCache('locale_' . $lang, 'locales');
-				if ($newLang) {
-					$this->core->setLocale($newLang, TRUE);
-				} else {
+				$newLang = Cache::getCache('locale_' . $lang, 'locales');
+				if (!$newLang) {
 					$locales = scandir(WT_LOCALE_PATH);
 					$index   = [
 						-1 => $lang,
 					];
 					foreach ($locales as $locale) {
-						if (stripos($locale, $lang) !== FALSE or stripos($lang, $locale) !== FALSE) {
+						if (stripos($locale, $lang) !== false or stripos($lang, $locale) !== false ) {
 							$sim         = similar_text($lang, $locale);
 							$index[$sim] = $locale;
 						}
 					}
 					ksort($index, SORT_NUMERIC);
 					$newLang = end($index);
-					$this->core->cache->setCache('locale_' . $lang, $newLang, 600, 'locales');
-					$this->core->setLocale($newLang, TRUE);
+					Cache::setCache('locale_' . $lang, $newLang, 600, 'locales');
 				}
+				$this->core->setLocale($newLang, TRUE);
 			}
 		}
 
-		private function AdvancedRoute()
+		/**
+		 * @throws Exception
+		 */
+		private function advancedRoute()
 		{
 			$this->isAdvanced = TRUE;
-			$router_path = self::findPath(WT_CORE_PATH . "router.php");
-			$router           = include$router_path;
+			$router_path      = self::findPath(WT_CORE_PATH . "router.php");
+			$router           = include $router_path;
 			if (!empty($router)) {
-				$this->switcher = new Router();
-				$self           = $this;
+				$switcher = new \Bramus\Router\Router();
+				$self     = $this;
 
 				foreach ($router['ajax'] as $pattern => $alias) {
-					$this->switcher->all($pattern, function () use ($alias, $self) {
+					$switcher->all($pattern, function () use ($alias, $self) {
 						$data        = func_get_args();
 						$self->alias = $alias;
 						$self->launchAjax($data);
@@ -111,35 +107,41 @@
 					});
 				}
 				foreach ($router['page'] as $pattern => $alias) {
-					$this->switcher->all($pattern, function () use ($alias, $self) {
+					$switcher->all($pattern, function () use ($alias, $self) {
 						$data        = func_get_args();
 						$self->alias = $alias;
 						$self->launchPage($data);
 						exit();
 					});
 				}
-				$this->switcher->run();
+				$switcher->run();
 			}
 		}
 
+		/**
+		 * @throws RouterException
+		 * @throws Exception
+		 */
 		private function launchPage($data = [])
 		{
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
 			$page = self::findPath($page);
 			if ($page) {
-				$result = include $page;
-				$class  = 'page\\' . $result;
+				$class = include $page;
 				if (!class_exists($class)) {
-					return $this->launchAjax();
+					$class = 'page\\' . $class;
+					if (!class_exists($class)) {
+						$this->launchAjax();
+						return;
+					}
 				}
 				/** @var Page $result */
 				$result = new $class($this->core, $data);
 				if ($result instanceof Page) {
 					$result->render();
 					exit();
-				} else {
-					Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
 				}
+				Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
 			} else {
 				$page = WT_PAGES_PATH . $this->alias . '.tpl';
 				$page = self::findPath($page);
@@ -147,24 +149,30 @@
 					$result = new TmpPage($this->core, $this->alias, $data);
 					$result->render();
 					exit();
+				}
+				if (!$this->isAdvanced) {
+					$this->launchAjax();
 				} else {
-					if (!$this->isAdvanced) {
-						$this->launchAjax();
-					} else {
-						throw new WTRouterException('Page not found', 404);
-					}
+					throw new RouterException('Page not found', 404);
 				}
 			}
 		}
+
+		/**
+		 * @throws RouterException
+		 * @throws Exception
+		 */
 		private function launchAjax($data = [])
 		{
 			$ajax = WT_AJAX_PATH . $this->alias . '.php';
 			$ajax = self::findPath($ajax);
 			if ($ajax) {
-				$result = include $ajax;
-				$class  = 'ajax\\' . $result;
+				$class = include $ajax;
 				if (!class_exists($class)) {
-					Err::fatal("class '$class' is not define");
+					$class = 'ajax\\' . $class;
+					if (!class_exists($class)) {
+						Err::fatal("class '$class' is not define");
+					}
 				}
 				/** @var Ajax $result */
 				$result = new $class($this->core, $data);
@@ -179,11 +187,10 @@
 					$response = json_encode($result, 256);
 				}
 				exit($response);
-			} else {
-				throw new WTRouterException('Ajax: "' . $ajax . '" file not found', 404);
 			}
+			throw new RouterException('Ajax: "' . $ajax . '" file not found', 404);
 		}
 	}
 
-	$r = new WTRouter($core);
+	$r = new Router();
 	$r->route();

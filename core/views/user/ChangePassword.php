@@ -1,14 +1,12 @@
 <?php
 
-	namespace page;
+	namespace page\user;
 
 	use model\page\Page;
-	use model\util;
 	use traits\Utilities;
 
 	class ChangePassword extends Page
 	{
-		public $alias = 'user/changePassword';
 		public $title = 'ChangePassword';
 
 		use Utilities;
@@ -40,4 +38,4 @@
 		}
 	}
 
-	return 'ChangePassword';
+	return ChangePassword::class;

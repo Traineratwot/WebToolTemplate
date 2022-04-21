@@ -8,7 +8,7 @@
 	 */
 	class Console
 	{
-		public const foreground_colors
+		public const FOREGROUND_COLORS
 			= [
 				'black'        => '0;30',
 				'dark_gray'    => '1;30',
@@ -27,7 +27,7 @@
 				'light_gray'   => '0;37',
 				'white'        => '1;37',
 			];
-		public const background_colors
+		public const BACKGROUND_COLORS
 			= [
 				'black'      => '40',
 				'red'        => '41',
@@ -39,21 +39,21 @@
 				'light_gray' => '47',
 			];
 
-		// Returns colored string
+		// Returns all foreground color names
 
 		public static function getForegroundColors()
 		{
-			return array_keys(self::foreground_colors);
-		}
-
-		// Returns all foreground color names
-
-		public static function getBackgroundColors()
-		{
-			return array_keys(self::background_colors);
+			return array_keys(self::FOREGROUND_COLORS);
 		}
 
 		// Returns all background color names
+
+		public static function getBackgroundColors()
+		{
+			return array_keys(self::BACKGROUND_COLORS);
+		}
+
+		//prompt
 
 		public static function prompt($prompt = "", $hidden = FALSE)
 		{
@@ -70,23 +70,23 @@
 				$password = rtrim(shell_exec($command));
 				unlink($vbscript);
 				return $password;
-			} else {
-				$prompt  = strtr($prompt, [
-					"'" => '"',
-				]);
-				$hidden  = $hidden ? '-s' : '';
-				$command = "/usr/bin/env bash -c 'echo OK'";
-				if (rtrim(shell_exec($command)) !== 'OK') {
-					trigger_error("Can't invoke bash");
-					return;
-				}
-				$command  = "/usr/bin/env bash -c {$hidden} 'read  -p \""
-					. addslashes($prompt . ' ')
-					. "\" answer && echo \$answer'";
-				$password = rtrim(shell_exec($command));
-				echo "\n";
-				return $password;
 			}
+
+			$prompt  = strtr($prompt, [
+				"'" => '"',
+			]);
+			$hidden  = $hidden ? '-s' : '';
+			$command = "/usr/bin/env bash -c 'echo OK'";
+			if (rtrim(shell_exec($command)) !== 'OK') {
+				trigger_error("Can't invoke bash");
+				return '';
+			}
+			$command  = "/usr/bin/env bash -c {$hidden} 'read  -p \""
+				. addslashes($prompt . ' ')
+				. "\" answer && echo \$answer'";
+			$password = rtrim(shell_exec($command));
+			echo "\n";
+			return $password;
 		}
 
 		// Ask user, Return user prompt
@@ -107,22 +107,22 @@
 		 */
 		public static function getColoredString($string, $foreground_color = NULL, $background_color = NULL)
 		{
-			if (PHP_SAPI == 'cli') {
+			if (PHP_SAPI === 'cli') {
 				$colored_string = "";
 				// Check if given foreground color found
-				if (isset(self::foreground_colors[$foreground_color])) {
-					$colored_string .= "\033[" . self::foreground_colors[$foreground_color] . "m";
+				if (isset(self::FOREGROUND_COLORS[$foreground_color])) {
+					$colored_string .= "\033[" . self::FOREGROUND_COLORS[$foreground_color] . "m";
 				}
 				// Check if given background color found
-				if (isset(self::background_colors[$background_color])) {
-					$colored_string .= "\033[" . self::background_colors[$background_color] . "m";
+				if (isset(self::BACKGROUND_COLORS[$background_color])) {
+					$colored_string .= "\033[" . self::BACKGROUND_COLORS[$background_color] . "m";
 				}
 				// Add string and end coloring
 				$colored_string .= $string . "\033[0m";
 				return $colored_string;
-			} else {
-				return $string;
 			}
+
+			return $string;
 		}
 
 		// Returns Yellow text

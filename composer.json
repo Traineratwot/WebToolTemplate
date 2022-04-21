@@ -1,11 +1,11 @@
 {
-	"authors" :[
+	"authors"    :[
 		{
 			"name" :"Kirill",
 			"email":"41589091+Traineratwot@users.noreply.github.com"
 		}
 	],
-	"require" :{
+	"require"    :{
 		"nilportugues/sql-query-builder":"^1.8",
 		"smarty/smarty"                 :"~3.1",
 		"greenlion/php-sql-parser"      :"^4.4",
@@ -17,7 +17,10 @@
 		"gettext/json"                  :"^1.0",
 		"gettext/translator"            :"^1.0"
 	},
-	"autoload":{
+	"require-dev":{
+		"roave/security-advisories":"dev-latest"
+	},
+	"autoload"   :{
 		"files":[
 			"core/model/main/PDOExtended.php",
 			"core/model/main/Core.php",
@@ -27,8 +30,10 @@
 		"psr-4":{
 			"classes\\":"core/classes/",
 			"model\\"  :"core/model/",
-			"tables\\"  :"core/classes/tables/",
-			"traits\\"  :"core/classes/traits/"
+			"tables\\" :"core/classes/tables/",
+			"traits\\" :"core/classes/traits/",
+			"ajax\\"   :"core/ajax/",
+			"page\\"   :"core/views/"
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-	namespace page;
+	namespace page\user;
 
 	use model\page\Page;
 
@@ -13,4 +13,4 @@
 		}
 	}
 
-	return 'Login';
+	return Login::class;

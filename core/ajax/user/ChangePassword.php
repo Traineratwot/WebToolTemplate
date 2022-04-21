@@ -1,6 +1,6 @@
 <?php
 
-	namespace ajax;
+	namespace ajax\user;
 
 	use model\page\Ajax;
 	use traits\Utilities;
@@ -8,6 +8,8 @@
 	class ChangePassword extends Ajax
 	{
 		use Utilities;
+
+		private string $password;
 
 		public function initialize()
 		{
@@ -21,21 +23,21 @@
 
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
-					$salt        = random_int(1000000, 9999999);
-					$this->email = $this->core->user->get('email');
+					$salt  = random_int(1000000, 9999999);
+					$email = $this->core->user->get('email');
 					$this->core->user->setPassword($this->password);
-					$authKey = md5($this->core->user->get('password') . $this->email . $salt);
+					$authKey = md5($this->core->user->get('password') . $email . $salt);
 					$this->core->user->set('authKey', $authKey);
 					$this->core->user->save();
 					session_unset();
 					return $this->success('Ok');
-				} else {
-					return $this->failure('empty password');
 				}
-			} else {
-				return $this->failure('ошибка');
+
+				return $this->failure('empty password');
 			}
+
+			return $this->failure('ошибка');
 		}
 	}
 
-	return 'ChangePassword';
+	return ChangePassword::class;

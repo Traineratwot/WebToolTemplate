@@ -40,6 +40,11 @@
 			return $url;
 		}
 
+		public function getName()
+		{
+			return $this->get('email');
+		}
+
 		public function login()
 		{
 			WT_RESTART_SESSION_FUNCTION();
@@ -87,7 +92,7 @@
 			$salt = self::id(8);
 			$this->set('salt', $salt);
 			$password .= $salt;
-			$this->set('password', password_hash($password,PASSWORD_DEFAULT));
+			$this->set('password', password_hash($password, PASSWORD_DEFAULT));
 		}
 
 		public function verifyPassword($password)

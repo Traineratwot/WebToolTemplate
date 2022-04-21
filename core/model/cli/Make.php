@@ -3,9 +3,12 @@
 	namespace model\cli;
 
 	use model\main\Core;
+	use traits\Utilities;
 
 	class Make
 	{
+		use Utilities;
+
 		public static function makeAjax($name, $type = 'any')
 		{
 			$method = '';
@@ -32,18 +35,17 @@ PHP;
 PHP;
 					break;
 			}
-			$class = self::name2class($name);
-			$code  = <<<PHP
+			self::name2class($name, $class, $namespace);
+			return <<<PHP
 <?php
-	namespace ajax;
+	namespace ajax{$namespace};
 	use model\page\Ajax;
 	class {$class} extends Ajax
 	{
 		{$method}
 	}
-	return '{$class}';
+	return {$class}::class;
 PHP;
-			return $code;
 		}
 
 		public static function makePageTpl($name, $template = 'base')
@@ -53,7 +55,7 @@ PHP;
 			} else {
 				$template .= '.tpl';
 			}
-			$code = <<<TPL
+			return <<<TPL
 {extends file='{$template}'}
 {block name="head"}
 
@@ -62,23 +64,20 @@ PHP;
 	
 {/block}
 TPL;
-			return $code;
 		}
 
 		public static function makePageClass($name, $template = 'base')
 		{
-			$class = self::name2class($name);
-			$code  = <<<PHP
+			self::name2class($name,$class, $namespace);
+			return <<<PHP
 <?php
 
-	namespace page;
+	namespace page{$namespace};
 
-	use model\main\Err;
 	use model\page\Page;
 
 	class {$class} extends Page
 	{
-		public \$alias = '$name';
 		public \$title = '$name';
 
 		public function beforeRender(){
@@ -86,14 +85,17 @@ TPL;
 		}
 	}
 
-	return '{$class}';
+	return {$class}::class;
 PHP;
-			return $code;
 		}
 
-		public static function name2class($name)
+		public static function name2class($name, &$class = '', &$namespace = '')
 		{
-			$name = preg_replace("@([A-Z])@","_$1",$name);
+			$n0        = explode(":::", self::pathNormalize($name, ':::'));
+			$class     = array_pop($n0);
+			$namespace = '\\' . implode('\\', $n0);
+
+			$name = preg_replace("@([A-Z])@", "_$1", $name);
 			$name = strtr($name, [
 				'\\' => '_',
 				'/'  => '_',
@@ -107,20 +109,17 @@ PHP;
 			$n2   = [];
 			foreach ($n as $value) {
 				$n2[] = ucfirst(mb_strtolower($value));
+				$n3[] = ucfirst(mb_strtolower($value));
 			}
-			$class = ucfirst(implode('', $n2));
-			return $class;
-		}
 
-		public static function makeTemplate($name, $template = 'base')
-		{
+			return ucfirst(implode('', $n2));
 		}
 
 		public static function makeTable($name, $primaryKey = 'id')
 		{
 			$primaryKey = $primaryKey ?: 'id';
 			$class      = self::name2class($name);
-			$code       = <<<PHP
+			return <<<PHP
 <?php
 	namespace tables;
 	use model\\main\\BdObject;
@@ -135,7 +134,6 @@ PHP;
 		public \$primaryKey = '$primaryKey';
 	}
 PHP;
-			return $code;
 		}
 
 		public static function makeClass($name, $category = '')
@@ -144,7 +142,7 @@ PHP;
 				$category = '\\' . $category;
 			}
 			$class = self::name2class($name);
-			$code  = <<<PHP
+			return <<<PHP
 <?php
 	namespace classes{$category};
 	use model\\CoreObject;
@@ -159,13 +157,12 @@ PHP;
 	
 	}
 PHP;
-			return $code;
 		}
 
 		public static function makeCron($name = '')
 		{
 			$class = self::name2class(basename($name));
-			$code  = <<<PHP
+			return <<<PHP
 <?php
 	namespace cron;
 	/** @var Core \$core */
@@ -181,6 +178,5 @@ PHP;
 
 	(new $class(\$core))->process();
 PHP;
-			return $code;
 		}
 	}

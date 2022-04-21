@@ -1,22 +1,24 @@
 <?php
 
-	namespace ajax;
+	namespace ajax\user;
 
-	use model\main\Err;
+	use Exception;
 	use model\page\Ajax;
-	use model\util;
 
-	class register extends Ajax
+	class Register extends Ajax
 	{
+		private string $password;
+		private string $email;
+
 		public function initialize()
 		{
 			$this->email    = strip_tags($_REQUEST['email']);
 			$this->password = strip_tags($_REQUEST['password']);
 			if ($this->email and $this->password) {
 				return TRUE;
-			} else {
-				return 'empty email or password';
 			}
+
+			return 'empty email or password';
 		}
 
 		public function process()
@@ -26,13 +28,13 @@
 				if ($newUser->isNew()) {
 					$newUser->register($this->email, $this->password);
 					return $this->success('Ok');
-				} else {
-					return $this->failure('User already exists');
 				}
-			} catch (\Exception $e) {
+
+				return $this->failure('User already exists');
+			} catch (Exception $e) {
 				return $this->failure($e->getMessage());
 			}
 		}
 	}
 
-	return 'register';
+	return Register::class;

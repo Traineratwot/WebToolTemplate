@@ -2,6 +2,7 @@
 
 	namespace traits;
 
+	use DateTime;
 	use Exception;
 	use model\main\Cache;
 
@@ -149,20 +150,18 @@
 		{
 			if (function_exists('getallheaders')) {
 				return getallheaders();
-			} else {
-				if (!is_array($_SERVER)) {
-					return [];
-				}
-				$headers = [];
-				foreach ($_SERVER as $name => $value) {
-					if (substr($name, 0, 5) == 'HTTP_') {
-						$key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-						$headers[$key] = $value;
-					}
-				}
-				return $headers;
 			}
-			return [];
+			if (!is_array($_SERVER)) {
+				return [];
+			}
+			$headers = [];
+			foreach ($_SERVER as $name => $value) {
+				if (substr($name, 0, 5) == 'HTTP_') {
+					$key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+					$headers[$key] = $value;
+				}
+			}
+			return $headers;
 		}
 
 		public static function headerJson()
@@ -225,32 +224,29 @@
 			return $path;
 		}
 
-		public static function hash($data)
+		public static function hash($data, $algo = 'sha256')
 		{
 			if (!is_string($data)) {
 				$data = serialize($data);
 			}
-			return hash('sha256', $data);
+			return hash($algo, $data);
 		}
 
-		public static function pathNormalize($path)
+		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
 		{
-			$path = strtr($path, [
-				'/'  => "/",
-				'\\' => "/",
-			]);
+			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
 			if (file_exists($path)) {
 				if (is_dir($path)) {
 					if (WT_TYPE_SYSTEM === 'nix') {
-						$path = "/" . trim($path, "/") . "/";
+						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
 					} else {
-						$path = trim($path, "/") . "/";
+						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
 					}
 				} else {
 					if (WT_TYPE_SYSTEM === 'nix') {
-						$path = "/" . trim($path, "/");
+						$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
 					} else {
-						$path = trim($path, "/");
+						$path = trim($path, $DIRECTORY_SEPARATOR);
 					}
 				}
 				return $path;
@@ -330,5 +326,31 @@
 				return (string)$dt->format($outputFormat);
 			}
 			return FALSE;
+		}
+
+		public static function translit($value)
+		{
+			$converter = [
+				'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',
+				'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i',
+				'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n',
+				'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't',
+				'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'c', 'ч' => 'ch',
+				'ш' => 'sh', 'щ' => 'sch', 'ь' => '', 'ы' => 'y', 'ъ' => '',
+				'э' => 'e', 'ю' => 'yu', 'я' => 'ya',
+
+				'А'  => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D',
+				'Е'  => 'E', 'Ё' => 'E', 'Ж' => 'Zh', 'З' => 'Z', 'И' => 'I',
+				'Й'  => 'Y', 'К' => 'K', 'Л' => 'L', 'М' => 'M', 'Н' => 'N',
+				'О'  => 'O', 'П' => 'P', 'Р' => 'R', 'С' => 'S', 'Т' => 'T',
+				'У'  => 'U', 'Ф' => 'F', 'Х' => 'H', 'Ц' => 'C', 'Ч' => 'Ch',
+				'Ш'  => 'Sh', 'Щ' => 'Sch', 'Ь' => '', 'Ы' => 'Y', 'Ъ' => '',
+				'Э'  => 'E', 'Ю' => 'Yu', 'Я' => 'Ya',
+				'\\' => "~", '/' => "~", ':' => "~", '*' => "~", '?' => "~", '"' => "~", '<' => "~", '>' => "~", '|' => "~", "'" => "~",
+				' '  => "_",
+			];
+
+			$value = strtr($value, $converter);
+			return $value;
 		}
 	}
