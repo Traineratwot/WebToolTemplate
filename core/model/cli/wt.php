@@ -6,7 +6,7 @@ use Exception;
 use model\locale\PoUpdate;
 use model\main\Core;
 
-require_once realpath(dirname(dirname(__DIR__)) . '/config.php');
+require_once realpath(dirname(__DIR__, 2) . '/config.php');
 require_once realpath(WT_MODEL_PATH . 'engine.php');
 /** @var Console $console */
 /** @var Core $core */

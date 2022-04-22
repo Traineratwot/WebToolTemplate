@@ -8,7 +8,9 @@
 	{
 		public function beforeRender()
 		{
-			$this->title = 'Профиль пользователя ' . $this->core->user->getName();
+			if ($this->core->isAuthenticated) {
+				$this->title = 'Профиль пользователя ' . $this->core->user->getName();
+			}
 		}
 	}
 
