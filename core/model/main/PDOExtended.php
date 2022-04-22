@@ -3,7 +3,6 @@
 	namespace model\main;
 
 	use PDO;
-	use PDOStatement;
 
 	/** Расширение для класса PDO
 	 *

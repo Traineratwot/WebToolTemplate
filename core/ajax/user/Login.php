@@ -4,7 +4,6 @@
 
 	use model\main\Err;
 	use model\page\Ajax;
-	use tables\Users;
 
 	class Login extends Ajax
 	{

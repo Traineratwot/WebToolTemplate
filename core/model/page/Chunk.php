@@ -2,6 +2,7 @@
 
 	namespace model\page;
 	use model\main\Core;
+
 	/**
 	 * Класс для Чанка
 	 */

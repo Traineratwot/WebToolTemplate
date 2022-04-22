@@ -2,7 +2,6 @@
 
 	namespace model\main;
 	use Exception;
-	use Peast\Syntax\Node\Function_;
 
 	if (!defined('WT_CACHE_PATH')) {
 		define('WT_CACHE_PATH', './');

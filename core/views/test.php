@@ -2,7 +2,6 @@
 
 	namespace page;
 
-	use model\main\Err;
 	use model\page\Page;
 
 	class Test extends Page

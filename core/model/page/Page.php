@@ -7,7 +7,6 @@
 	use model\main\CoreObject;
 	use model\main\Err;
 	use model\main\ErrorPage;
-
 	use model\main\Utilities;
 	use SmartyBC;
 
