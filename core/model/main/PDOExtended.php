@@ -3,8 +3,6 @@
 	namespace model\main;
 
 	use PDO;
-	use model\main\PDOExtendedPoolStatement;
-	use model\main\PDOExtendedStatement;
 
 	/** Расширение для класса PDO
 	 *
