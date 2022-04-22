@@ -19,7 +19,8 @@
 	//проверка запущен ли еще предидущий крон
 	if (file_exists($lock_path)) {
 		if (!isset($options['d']) or $options['d'] != "true") {
-			exit(Console::failure('Already launched'));
+			Console::failure('Already launched');
+			exit();
 		}
 	}
 	//создание lock файла
@@ -33,12 +34,12 @@
 	//запуск крона как дочерний процесс что-бы избежать любых остановок/ошибок во время выполнения
 	//таким образом что-бы ни произошло, лог будет записан, а блокирующий файл удален
 	$start = microtime(TRUE);
-	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"{$alias}\"");
+	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"{$alias}\"", $output);
 	$end = microtime(TRUE);
 	//Вывод статистики
 	echo PHP_EOL . '------STATS------' . PHP_EOL;
 	echo 'Time:            ' . round(abs($end - $start), 3) . ' ms' . PHP_EOL;
-	echo 'queries:         ' . $core->db->query_count . PHP_EOL;
+	echo 'SQL Queries:     ' . ($core->db->queryCount() ?: (int)$output) . PHP_EOL;
 	echo 'Memory used:     ' . convert_bytes(memory_get_usage()) . PHP_EOL;
 	echo 'Memory max used: ' . convert_bytes(memory_get_peak_usage()) . PHP_EOL;
 	echo 'Date:            ' . date('Y-m-d H:i:s');
@@ -46,7 +47,7 @@
 	try {
 		$log = WT_CRON_PATH . 'logs' . DIRECTORY_SEPARATOR . $alias . '.log';
 		if (!mkdir($concurrentDirectory = dirname($log), 0777, TRUE) && !is_dir($concurrentDirectory)) {
-			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+			throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
 		file_put_contents($log, ob_get_contents());
 	} catch (Exception $e) {
