@@ -15,7 +15,7 @@
 	 */
 	abstract class Page extends CoreObject implements ErrorPage
 	{
-		
+
 
 		public $alias;
 		public $title;
@@ -23,8 +23,11 @@
 		/**
 		 * @var mixed|string
 		 */
-		private mixed $source;
+		public $source;
 
+		/**
+		 * @throws Exception
+		 */
 		public function __construct(Core $core, $data = [])
 		{
 			parent::__construct($core);
@@ -34,19 +37,23 @@
 			if (!$this->alias) {
 				$this->alias = $_GET['q'];
 			}
-			if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
-				$this->source = $this->alias;
-			} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
-				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
-				if (!file_exists($this->source)) {
-					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
+			if (!$this->source) {
+				if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
+					$this->source = $this->alias;
+				} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
+					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
 					if (!file_exists($this->source)) {
-						throw new Exception('Chunk error: "' . $this->source . '" file not found ');
+						$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
+						if (!file_exists($this->source)) {
+							throw new Exception('Chunk error: "' . $this->source . '" file not found ');
+						}
+					}
+				} else {
+					$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
+					if (!$this->source && is_dir(WT_PAGES_PATH . $this->alias)) {
+						$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 					}
 				}
-			} else {
-				$this->source = WT_PAGES_PATH . $this->alias . '.tpl';
-
 			}
 			if (!$this->title) {
 
@@ -100,11 +107,13 @@
 			header("Location: $alias");
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public static function chunk($alias, $values = [])
 		{
 			global $core;
-			$a = new Chunk($core, $alias, $values);
-			return $a->render(TRUE);
+			return (new Chunk($core, $alias, $values))->render(TRUE);
 		}
 
 		public function render($return = FALSE)
@@ -140,9 +149,9 @@
 				$this->alias  = $alias;
 				$this->source = WT_PAGES_PATH . $alias . '.tpl';
 				return TRUE;
-			} else {
-				return FALSE;
 			}
+
+			return FALSE;
 		}
 
 		public function setVar($name, $var, $nocache = FALSE)

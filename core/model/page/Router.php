@@ -11,7 +11,7 @@
 
 	class Router
 	{
-		
+
 
 		private $isAjax;
 		private $alias;
@@ -31,10 +31,12 @@
 				$this->isAjax = FALSE;
 				$this->alias  = 'index';
 			}
-
 		}
 
 
+		/**
+		 * @throws Exception
+		 */
 		public function route()
 		{
 			if (function_exists('WT_LOCALE_SELECT_FUNCTION')) {
@@ -42,26 +44,47 @@
 				$this->selectLanguage($lang);
 			}
 			try {
-				if ($this->isAjax) {
-					$this->launchAjax();
-				} else {
-					$this->launchPage();
-				}
+				$this->_route();
+				$this->advancedRoute();
 			} catch (RouterException $e) {
-				if ($e->getCode() === 404) {
-					if ($this->isAjax) {
-						$this->core->errorPage();
-					} else {
-						try {
-							$this->advancedRoute();
-						} catch (Exception $e) {
-							$this->core->errorPage();
-						}
-					}
-				}
+				$this->core->errorPage();
 			} catch (Exception $e) {
+				Err::error($e->getMessage(), __LINE__, __FILE__);
+				$this->core->errorPage(500, 'route ErrorPage');
 			}
-			$this->core->errorPage();
+		}
+
+		/**
+		 * @throws RouterException
+		 * @throws Exception
+		 */
+		private function _route($data = [])
+		{
+			if ($this->isAjax) {
+				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
+				$this->launchAjax($ajax, $data);
+			} else {
+				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . '.php');
+				if ($page) {
+					$this->launchPage($page, $data);
+				}
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
+				if ($page) {
+					$this->launchPageTpl($page, $data);
+				}
+				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
+				if ($ajax) {
+					$this->launchAjax($ajax, $data);
+				}
+				$pageIndex = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
+				if ($pageIndex) {
+					$this->launchPage($pageIndex, $data);
+				}
+				$pageIndex = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
+				if ($pageIndex) {
+					$this->launchPageTpl($pageIndex, $data);
+				}
+			}
 		}
 
 		private function selectLanguage($lang)
@@ -74,7 +97,7 @@
 						-1 => $lang,
 					];
 					foreach ($locales as $locale) {
-						if (stripos($locale, $lang) !== false or stripos($lang, $locale) !== false ) {
+						if (stripos($locale, $lang) !== FALSE or stripos($lang, $locale) !== FALSE) {
 							$sim         = similar_text($lang, $locale);
 							$index[$sim] = $locale;
 						}
@@ -101,9 +124,10 @@
 
 				foreach ($router['ajax'] as $pattern => $alias) {
 					$switcher->all($pattern, function () use ($alias, $self) {
-						$data        = func_get_args();
-						$self->alias = $alias;
-						$self->launchAjax($data);
+						$data         = func_get_args();
+						$self->isAjax = TRUE;
+						$self->alias  = $alias;
+						$self->_route($data);
 						exit();
 					});
 				}
@@ -111,7 +135,7 @@
 					$switcher->all($pattern, function () use ($alias, $self) {
 						$data        = func_get_args();
 						$self->alias = $alias;
-						$self->launchPage($data);
+						$self->_route($data);
 						exit();
 					});
 				}
@@ -123,75 +147,79 @@
 		 * @throws RouterException
 		 * @throws Exception
 		 */
-		private function launchPage($data = [])
+		private function launchPage($page, $data = [])
 		{
-			$page = WT_VIEWS_PATH . $this->alias . '.php';
-			$page = Utilities::findPath($page);
-			if ($page) {
-				$class = include $page;
+			$class = include $page;
+			if (!class_exists($class)) {
+				$class = 'page\\' . $class;
 				if (!class_exists($class)) {
-					$class = 'page\\' . $class;
-					if (!class_exists($class)) {
-						$this->launchAjax();
-						return;
-					}
-				}
-				/** @var Page $result */
-				$result = new $class($this->core, $data);
-				if ($result instanceof Page) {
-					$result->render();
-					exit();
-				}
-				Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
-			} else {
-				$page = WT_PAGES_PATH . $this->alias . '.tpl';
-				$page = Utilities::findPath($page);
-				if ($page) {
-					$result = new TmpPage($this->core, $this->alias, $data);
-					$result->render();
-					exit();
-				}
-				if (!$this->isAdvanced) {
 					$this->launchAjax();
-				} else {
-					throw new RouterException('Page not found', 404);
+					return;
 				}
 			}
+			/** @var Page $result */
+			$result = new $class($this->core, $data);
+			if ($result instanceof Page) {
+				try {
+					$result->render();
+				} catch (Exception $e) {
+					Err::error($e->getMessage, __LINE__, __FILE__);
+				}
+				exit();
+			}
+			Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		private function launchPageTpl($page, $data = [])
+		{
+			$result = new TmpPage($this->core, $this->alias, $data, $page);
+			try {
+				$result->render();
+			} catch (Exception $e) {
+				Err::error($e->getMessage, __LINE__, __FILE__);
+			}
+			exit();
 		}
 
 		/**
 		 * @throws RouterException
 		 * @throws Exception
 		 */
-		private function launchAjax($data = [])
+		private function launchAjax($ajax, $data = [])
 		{
-			$ajax = WT_AJAX_PATH . $this->alias . '.php';
-			$ajax = Utilities::findPath($ajax);
-			if ($ajax) {
-				$class = include $ajax;
+			$class = include $ajax;
+			if (!class_exists($class)) {
+				$class = 'ajax\\' . $class;
 				if (!class_exists($class)) {
-					$class = 'ajax\\' . $class;
-					if (!class_exists($class)) {
-						Err::fatal("class '$class' is not define");
-					}
+					Err::fatal("class '$class' is not define");
 				}
-				/** @var Ajax $result */
-				$result = new $class($this->core, $data);
-				try {
-					if ($result instanceof Ajax) {
-						$response = $result->run();
-					} else {
-						Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
-					}
-				} catch (Exception $e) {
-					Err::fatal($e->getMessage(), __LINE__, __FILE__);
-					$response = json_encode($result, 256);
-				}
-				exit($response);
 			}
-			throw new RouterException('Ajax: "' . $ajax . '" file not found', 404);
+			/** @var Ajax $result */
+			$result = new $class($this->core, $data);
+			try {
+				if ($result instanceof Ajax) {
+					try {
+						$response = $result->run();
+					} catch (Exception $e) {
+						Err::error($e->getMessage, __LINE__, __FILE__);
+					}
+				} else {
+					Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+				}
+			} catch (Exception $e) {
+				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+				$response = json_encode($result, 256);
+			}
+			exit($response);
 		}
 	}
 
 	$r = new Router();
-	$r->route();
+	try {
+		$r->route();
+	} catch (Exception $e) {
+		Err::Fatal($e->getMessage(), __LINE__, __FILE__);
+	}
