@@ -9,7 +9,7 @@ require_once realpath(dirname(dirname(__DIR__)) . '/config.php');
 require_once realpath(WT_MODEL_PATH . 'engine.php');
 /** @var Console $console */
 /** @var Core $core */
-if (PHP_SAPI == 'cli') {
+if (PHP_SAPI === 'cli') {
 	function note($t)
 	{
 		$t = ucfirst($t);
