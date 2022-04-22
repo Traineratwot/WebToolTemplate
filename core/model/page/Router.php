@@ -76,17 +76,18 @@
 				if ($ajax) {
 					$this->launchAjax($ajax, $data);
 				}
-				$pageIndex = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
-				if ($pageIndex) {
-					$this->launchPage($pageIndex, $data);
+				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
+				if ($page) {
+					$this->launchPage($page, $data);
 				}
-				$pageIndex = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
-				if ($pageIndex) {
-					$this->launchPageTpl($pageIndex, $data);
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
+				if ($page) {
+					$this->launchPageTpl($page, $data);
 				}
 			}
 		}
 
+		//устнавливает языковой модуль
 		private function selectLanguage($lang)
 		{
 			if ($lang) {
@@ -111,6 +112,7 @@
 		}
 
 		/**
+		 * Запускает страницу или REST на основе шаблона в ./core/router.php
 		 * @throws Exception
 		 */
 		private function advancedRoute()
@@ -144,6 +146,7 @@
 		}
 
 		/**
+		 * запускает старницу из файла .php
 		 * @throws RouterException
 		 * @throws Exception
 		 */
@@ -171,6 +174,7 @@
 		}
 
 		/**
+		 * запускает старницу из файла .tpl
 		 * @throws Exception
 		 */
 		private function launchPageTpl($page, $data = [])
@@ -185,6 +189,7 @@
 		}
 
 		/**
+		 * Запускает REST controller
 		 * @throws RouterException
 		 * @throws Exception
 		 */
