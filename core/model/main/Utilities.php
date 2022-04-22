@@ -1,21 +1,26 @@
 <?php
 
-	namespace traits;
+	namespace model\main;
 
 	use DateTime;
 	use Exception;
-	use model\main\Cache;
+	use FilesystemIterator;
+	use PDO;
+	use RecursiveDirectoryIterator;
+	use RuntimeException;
+	use traits\validators\jsonValidate;
 
 	/**
 	 * Класс с утилитами
 	 */
-	trait Utilities
+	class Utilities
 	{
+		use JsonValidate;
 		public static function ping($host = '', $useSocket = FALSE, $timeout = 2, $port = 80)
 		{
-			$_args = func_get_args();
-			if (count($_args) == 1 and is_array($_args[0])) {
-				extract($_args[0], EXTR_OVERWRITE);
+			$args = func_get_args();
+			if (count($args) === 1 and is_array($args[0])) {
+				extract($args[0], EXTR_OVERWRITE);
 			}
 			if ($host) {
 				$sock = FALSE;
@@ -23,7 +28,7 @@
 					$sock = @fsockopen($host, $port, $errno, $errStr, $timeout);
 				}
 				if (!$sock) {
-					if (!$useSocket or $errStr == 'Unable to find the socket transport "https" - did you forget to enable it when you configured PHP?') {
+					if (!$useSocket or $errStr === 'Unable to find the socket transport "https" - did you forget to enable it when you configured PHP?') {
 						$opts = [
 							'http'  => [
 								'timeout' => $timeout,
@@ -35,19 +40,15 @@
 								'header'  => "User - Agent: Mozilla / 5.0\r\n",
 							],
 						];
-						if (version_compare(PHP_VERSION, '7.1.0', '>=')) {
+						if (PHP_VERSION_ID >= 70100) {
 							$context = stream_context_create($opts);
 							$headers = @get_headers($host, 1, $context); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 						} else {
 							stream_context_set_default($opts);
 							$headers = @get_headers($host, 1); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 						}
-						preg_match('@HTTP\/\d+.\d+\s([2-3]\d+)?\s@', $headers[0], $math);
-						if (isset($math[1]) and $math[1]) {
-							return TRUE;
-						} else {
-							return FALSE;
-						}
+						preg_match('@HTTP/\d+.\d+\s([2-3]\d+)?\s@', $headers[0], $math);
+						return isset($math[1]) and $math[1];
 					}
 				} else {
 					return TRUE;
@@ -114,25 +115,25 @@
 
 		public static function getSystem()
 		{
-			$sys = \model\util::rawText(php_uname('s'));
+			$sys = self::rawText(php_uname('s'));
 			if (strpos($sys, 'windows') !== FALSE) {
 				return 'win';
 			}
 			if (strpos($sys, 'linux') !== FALSE) {
 				return 'nix';
 			}
-			return 'nix';
+			return 'unknown';
 		}
 
 		public static function rawText($a = '')
 		{
-			return mb_strtolower(preg_replace('@[^A-zА-я0-9]|[\/_\\\.\,]@u', '', (string)$a));
+			return mb_strtolower(preg_replace('@[^A-zА-я\d]|[/_\\\.,]@u', '', (string)$a));
 		}
 
 		public static function baseExt($file = '')
 		{
-			$_tmp = explode('.', basename($file));
-			return end($_tmp);
+			$tmp = explode('.', basename($file));
+			return end($tmp);
 		}
 
 		/**
@@ -141,9 +142,9 @@
 		 */
 		public static function baseName($file = '')
 		{
-			$_tmp = explode('.', basename($file));
-			array_pop($_tmp);
-			return implode('', $_tmp);
+			$tmp = explode('.', basename($file));
+			array_pop($tmp);
+			return implode('', $tmp);
 		}
 
 		public static function getRequestHeaders()
@@ -156,7 +157,7 @@
 			}
 			$headers = [];
 			foreach ($_SERVER as $name => $value) {
-				if (substr($name, 0, 5) == 'HTTP_') {
+				if (strpos($name, 'HTTP_') === 0) {
 					$key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
 					$headers[$key] = $value;
 				}
@@ -180,7 +181,7 @@
 			}
 			$line = $ret->fetch(PDO::FETCH_ASSOC);
 			$set  = rtrim(ltrim(preg_replace('@^[setnum]+@', '', $line['Type']), "('"), "')");
-			return preg_split("/','/", $set);
+			return explode("','", $set);
 		}
 
 		/**
@@ -188,11 +189,11 @@
 		 * @param string $baseDir Base directory to search
 		 * @param string $pattern Glob pattern
 		 * @param int    $flags   Behavior bitmask
-		 * @return array|string|bool
+		 * @return array
 		 */
 		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
 		{
-			$dirs       = new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS);
+			$dirs       = new RecursiveDirectoryIterator($baseDir, FilesystemIterator::SKIP_DOTS);
 			$fileList   = [];
 			$fileList[] = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
 			foreach ($dirs as $dir) {
@@ -218,7 +219,7 @@
 		{
 			if (!file_exists($path) or !is_dir($path)) {
 				if (!mkdir($path, 0777, TRUE) && !is_dir($path)) {
-					throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+					throw new RuntimeException(sprintf('Directory "%s" was not created', $path));
 				}
 			}
 			return $path;
@@ -242,12 +243,10 @@
 					} else {
 						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
 					}
+				} elseif (WT_TYPE_SYSTEM === 'nix') {
+					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
 				} else {
-					if (WT_TYPE_SYSTEM === 'nix') {
-						$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
-					} else {
-						$path = trim($path, $DIRECTORY_SEPARATOR);
-					}
+					$path = trim($path, $DIRECTORY_SEPARATOR);
 				}
 				return $path;
 			}
@@ -263,13 +262,13 @@
 		 */
 		public static function findPath($path)
 		{
-			$path = self::pathNormalize($path);
+			$path = self::pathNormalize($path, "/");
 			if (file_exists($path)) {
 				return realpath($path);
 			}
 			return Cache::call(
 				[$path],
-				function ($path) {
+				function () use ($path) {
 					//разбиваю путь на массив в котором каждый старший элемент родитель младшего
 					$a          = explode("/", $path);
 					$array_path = [];
@@ -287,30 +286,28 @@
 					//ищю следующую часть пути без учета регистра
 					while ($k >= 0) {
 						$k--;
-						$dir = scandir($p);
-						foreach ($dir as $d) {
-							if (mb_strtolower($d) == mb_strtolower(basename($array_path[$k]))) {
-								$s--;
-								$p .= '/' . $d;
-								break;
+						if (!empty($p)) {
+							$dir = scandir($p);
+							foreach ($dir as $d) {
+								if (mb_strtolower($d) === mb_strtolower(basename($array_path[$k]))) {
+									$s--;
+									$p .= '/' . $d;
+									break;
+								}
 							}
 						}
-						if ($k == 0) {
+						if ($k === 0) {
 							break;
 						}
 					}
 					//проверяю что путь найден путем сравнения количество необходимых с количеством найденный частей путя
-					if ($s === $k and $k === 0) {
-						if (file_exists($p)) {
-							return realpath($p);
-						}
+					if (($s === $k and $k === 0) && file_exists($p)) {
+						return realpath($p);
 					}
 					return NULL;
 				},
 				600,
-				'filePaths',
-				$path
-			);
+				'filePaths');
 		}
 
 		public static function dateFormat($inputFormat, $date, $outputFormat = 'U', $modify = '')
@@ -323,7 +320,7 @@
 				if (!$outputFormat) {
 					return $dt;
 				}
-				return (string)$dt->format($outputFormat);
+				return $dt->format($outputFormat);
 			}
 			return FALSE;
 		}
@@ -350,7 +347,25 @@
 				' '  => "_",
 			];
 
-			$value = strtr($value, $converter);
-			return $value;
+			return strtr($value, $converter);
+		}
+
+		public static function isAssoc(&$arr = [])
+		{
+			if (function_exists('array_is_list')) {
+				return !array_is_list($arr);
+			}
+
+			if (is_array($arr)) {
+				$c = count($arr);
+				if ($c > 10) {
+					return !(array_key_exists(0, $arr) and array_key_exists(random_int(0, $c - 1), $arr) and array_key_exists($c - 1, $arr));
+				}
+
+				if ($c > 0) {
+					return !(range(0, count($arr) - 1) === array_keys($arr));
+				}
+			}
+			return FALSE;
 		}
 	}

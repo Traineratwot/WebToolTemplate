@@ -2,7 +2,10 @@
 
 	namespace model\helper;
 
-	class table
+	use Exception;
+	use model\main\Utilities;
+
+	class CsvTable
 	{
 		/* @var string chr(239) . chr(187) . chr(191) */
 		public $utf8bom;
@@ -41,16 +44,13 @@
 		/**
 		 * @var array|bool
 		 */
-		private $sort;
-		/**
-		 * @var array|bool
-		 */
 		private $limits
 					   = [
 				'l' => ['min' => 30, 'max' => 60],
 				's' => ['min' => 80, 'max' => 100],
 			];
 		public  $limit = FALSE;
+		private $output;
 
 		/**
 		 * UtilitiesCsv constructor
@@ -67,24 +67,22 @@
 		 *  - mode = default | fast
 		 *
 		 *  - output_file
-		 * @param array        $param
+		 * @param array $param
 		 * @throws Exception
 		 */
 		public function __construct($param = [])
 		{
-			$this->inputCharset = isset($param['inputCharset']) ? $param['inputCharset'] : 'utf8';
+			$this->inputCharset = $param['inputCharset'] ?? 'utf8';
 
 			$this->utf8bom        = array_key_exists('woBom', $param) ? $param['woBom'] : chr(239) . chr(187) . chr(191);
 			$this->str_delimiter  = array_key_exists('delimiter', $param) ? $param['delimiter'] : ';';
 			$this->line_delimiter = array_key_exists('line_delimiter', $param) ? $param['line_delimiter'] : "\n";
 			$this->escape         = array_key_exists('line_delimiter', $param) ? $param['line_delimiter'] : '"';
-			$this->output_file    = array_key_exists('output_file', $param) ? $param['output_file'] : NULL;
+			$this->output_file    = $param['output_file'] ?? NULL;
 			$this->mode           = array_key_exists('mode', $param) ? $param['mode'] : 'default';
 
-			if ($this->mode == 'fast') {
-				if ($this->output_file and $this->utf8bom) {
-					fwrite($this->output_file, $this->utf8bom);
-				}
+			if (($this->mode == 'fast') && $this->output_file and $this->utf8bom) {
+				fwrite($this->output_file, $this->utf8bom);
 			}
 
 		}
@@ -93,12 +91,12 @@
 		 * @param array $param
 		 * @return $this
 		 */
-		public function reset($param = [])
+		public function reset(&$param = [])
 		{
-			$this->inputCharset   = isset($param['inputCharset']) ? $param['inputCharset'] : $this->inputCharset;
+			$this->inputCharset   = $param['inputCharset'] ?? $this->inputCharset;
 			$this->utf8bom        = (isset($param['woBom']) and $param['woBom'] = TRUE) ? NULL : $this->utf8bom;
-			$this->str_delimiter  = isset($param['delimiter']) ? $param['delimiter'] : $this->str_delimiter;
-			$this->line_delimiter = isset($param['line_delimiter']) ? $param['line_delimiter'] : $this->line_delimiter;
+			$this->str_delimiter  = $param['delimiter'] ?? $this->str_delimiter;
+			$this->line_delimiter = $param['line_delimiter'] ?? $this->line_delimiter;
 			$this->csv            = NULL;
 			$this->html           = NULL;
 			$this->matrix         = NULL;
@@ -125,7 +123,7 @@
 				$args = $args[0];
 			}
 			$head    = array_flip($this->_head);
-			$isAssoc = $this->isAssoc($args);
+			$isAssoc = Utilities::isAssoc($args);
 			foreach ($args as $k => $art) {
 				if (!is_string($art) and !is_numeric($art)) {
 					$art = NULL;
@@ -152,13 +150,13 @@
 			if (!empty($this->head)) {
 				switch ($this->appendType) {
 					case 'row':
-						if (in_array($x, $this->head)) {
+						if (in_array($x, $this->head, TRUE)) {
 							$head = array_flip($this->head);
 							$x    = $head[$x];
 						}
 						break;
 					case 'column':
-						if (in_array($y, $this->head)) {
+						if (in_array($y, $this->head, TRUE)) {
 							$head = array_flip($this->head);
 							$y    = $head[$y];
 						}
@@ -195,13 +193,13 @@
 			if (!empty($this->head)) {
 				switch ($this->appendType) {
 					case 'row':
-						if (in_array($x, $this->head)) {
+						if (in_array($x, $this->head, TRUE)) {
 							$head = array_flip($this->head);
 							$x    = $head[$x];
 						}
 						break;
 					case 'column':
-						if (in_array($y, $this->head)) {
+						if (in_array($y, $this->head, TRUE)) {
 							$head = array_flip($this->head);
 							$y    = $head[$y];
 						}
@@ -240,7 +238,7 @@
 		public function toHtml($cls = '', $rainbow = FALSE)
 		{
 			$this->_buildHtmlTable($cls, $rainbow);
-			return (string)$this->html;
+			return $this->html;
 		}
 
 		/**
@@ -282,7 +280,7 @@
 			foreach ($this->matrix as $key => $row) {
 				$_row = [];
 				for ($i = 0; $i < $len; $i++) {
-					$_row[$i] = (isset($row[$i])) ? $row[$i] : '';
+					$_row[$i] = $row[$i] ?? '';
 				}
 				if (!$this->isEmpty($_row)) {
 					$this->html .= "<tr data-key='$key'>";
@@ -333,7 +331,7 @@
 				} else {
 					$seed = (int)($options['salt'] * 100);
 				}
-				srand($seed);
+				mt_srand($seed);
 			}
 
 			if (isset($this->cache[__FUNCTION__][$options['format']][$options['type']][$options['salt']])) {
@@ -341,38 +339,38 @@
 			}
 			if (isset($options['limits']['l'])) {
 				if (isset($options['limits']['l']['max'])) {
-					$options['limits']['l']['max'] = $options['limits']['l']['max'] >= 100 ? 100 : $options['limits']['l']['max'];
-					$options['limits']['l']['max'] = $options['limits']['l']['max'] < 0 ? 0 : $options['limits']['l']['max'];
+					$options['limits']['l']['max'] = min($options['limits']['l']['max'], 100);
+					$options['limits']['l']['max'] = max($options['limits']['l']['max'], 0);
 				}
 				if (isset($options['limits']['l']['min'])) {
-					$options['limits']['l']['min'] = $options['limits']['l']['min'] >= 100 ? 100 : $options['limits']['l']['min'];
-					$options['limits']['l']['min'] = $options['limits']['l']['min'] < 0 ? 0 : $options['limits']['l']['min'];
+					$options['limits']['l']['min'] = min($options['limits']['l']['min'], 100);
+					$options['limits']['l']['min'] = max($options['limits']['l']['min'], 0);
 				}
 			}
 			if (isset($options['limits']['s'])) {
 				if (isset($options['limits']['l']['max'])) {
-					$options['limits']['s']['max'] = $options['limits']['s']['max'] >= 100 ? 100 : $options['limits']['s']['max'];
-					$options['limits']['s']['max'] = $options['limits']['s']['max'] < 0 ? 0 : $options['limits']['s']['max'];
+					$options['limits']['s']['max'] = min($options['limits']['s']['max'], 100);
+					$options['limits']['s']['max'] = max($options['limits']['s']['max'], 0);
 				}
 				if (isset($options['limits']['l']['min'])) {
-					$options['limits']['s']['min'] = $options['limits']['s']['min'] >= 100 ? 100 : $options['limits']['s']['min'];
-					$options['limits']['s']['min'] = $options['limits']['s']['min'] < 0 ? 0 : $options['limits']['s']['min'];
+					$options['limits']['s']['min'] = min($options['limits']['s']['min'], 100);
+					$options['limits']['s']['min'] = max($options['limits']['s']['min'], 0);
 				}
 			}
 			if (isset($options['limits']['h'])) {
 				if (isset($options['limits']['l']['max'])) {
-					$options['limits']['h']['max'] = $options['limits']['h']['max'] >= 360 ? 360 : $options['limits']['h']['max'];
-					$options['limits']['h']['max'] = $options['limits']['h']['max'] < 0 ? 0 : $options['limits']['h']['max'];
+					$options['limits']['h']['max'] = min($options['limits']['h']['max'], 360);
+					$options['limits']['h']['max'] = max($options['limits']['h']['max'], 0);
 				}
 				if (isset($options['limits']['l']['min'])) {
-					$options['limits']['h']['min'] = $options['limits']['h']['min'] >= 360 ? 360 : $options['limits']['h']['min'];
-					$options['limits']['h']['min'] = $options['limits']['h']['min'] < 0 ? 0 : $options['limits']['h']['min'];
+					$options['limits']['h']['min'] = min($options['limits']['h']['min'], 360);
+					$options['limits']['h']['min'] = max($options['limits']['h']['min'], 0);
 				}
 			}
 
-			$h = rand($options['limits']['h']['min'] ?? 0, $options['limits']['h']['max'] ?? 360);
-			$s = rand($options['limits']['s']['min'] ?? 0, $options['limits']['s']['max'] ?? 100);
-			$l = rand($options['limits']['l']['min'] ?? 0, $options['limits']['l']['max'] ?? 100);
+			$h = random_int($options['limits']['h']['min'] ?? 0, $options['limits']['h']['max'] ?? 360);
+			$s = random_int($options['limits']['s']['min'] ?? 0, $options['limits']['s']['max'] ?? 100);
+			$l = random_int($options['limits']['l']['min'] ?? 0, $options['limits']['l']['max'] ?? 100);
 			switch (mb_strtolower($options['format'])) {
 				case 'hex';
 					$this->hsl2rgb($h, $s, $l);
@@ -406,6 +404,27 @@
 					];
 			}
 
+		}
+
+		public function rgb2hex(&$R, &$G, &$B)
+		{
+
+			$R = dechex($R);
+			if (strlen($R) < 2) {
+				$R = '0' . $R;
+			}
+
+			$G = dechex($G);
+			if (strlen($G) < 2) {
+				$G = '0' . $G;
+			}
+
+			$B = dechex($B);
+			if (strlen($B) < 2) {
+				$B = '0' . $B;
+			}
+
+			return '#' . $R . $G . $B;
 		}
 
 		/**
@@ -461,7 +480,7 @@
 		public function toHtmlTable($cls = '', $rainbow = FALSE)
 		{
 			$this->_buildHtmlTable($cls, $rainbow);
-			return (string)$this->html;
+			return $this->html;
 		}
 
 		/**
@@ -513,7 +532,7 @@
 			foreach ($this->matrix as $key => $row) {
 				$_row = [];
 				for ($i = 0; $i < $len; $i++) {
-					$_row[$i] = (isset($row[$i])) ? $row[$i] : '';
+					$_row[$i] = $row[$i] ?? '';
 				}
 				if (!$this->isEmpty($_row)) {
 					$this->html .= "<$item>";
@@ -553,7 +572,7 @@
 				$this->currentRow++;
 				return $this->head;
 			}
-			$row = (isset($this->matrix[$this->currentRow])) ? $this->matrix[$this->currentRow] : FALSE;
+			$row = $this->matrix[$this->currentRow] ?? FALSE;
 			if ($row) {
 				$this->currentRow++;
 				$_row = [];
@@ -567,10 +586,10 @@
 					}
 				}
 				return $_row;
-			} else {
-				$this->currentRow = 0;
-				return FALSE;
 			}
+
+			$this->currentRow = 0;
+			return FALSE;
 		}
 
 		public function getAssoc($type = 'row')
@@ -591,7 +610,7 @@
 									if (empty($response[$key])) {
 										$response[$key] = [$cell];
 									} else {
-										array_push($response[$key], $cell);
+										$response[$key][] = $cell;
 									}
 								} else {
 									$response[$key] = $cell;
@@ -636,18 +655,18 @@
 			if ($col) {
 				$this->currentCol++;
 				return $col;
-			} else {
-				$this->currentCol = 0;
-				return FALSE;
 			}
+
+			$this->currentCol = 0;
+			return FALSE;
 		}
 
 		/**
-		 * @return csvString|string
+		 * @return string "csvString"|string
 		 */
 		final public function __toString()
 		{
-			return (string)$this->toCsv();
+			return $this->toCsv();
 		}
 
 		/**
@@ -656,7 +675,7 @@
 		public function toCsv()
 		{
 			$this->_buildCsv();
-			return (string)$this->csv;
+			return $this->csv;
 		}
 
 		/**
@@ -709,7 +728,7 @@
 
 		/**
 		 * @param $name
-		 * @return bool
+		 * @return false|array
 		 */
 		final public function __get($name)
 		{
@@ -726,13 +745,15 @@
 		/**
 		 * @param $name
 		 * @param $value
-		 * @return $this|false|string
+		 * @return $this|false
+		 * @throws Exception
 		 */
 		final public function __set($name, $value)
 		{
 			switch ($name) {
 				case 'matrix':
 					$this->matrix = $value;
+					break;
 				case 'csv':
 					return $this->readCsv($value);
 			}
@@ -742,6 +763,7 @@
 		/**
 		 * @param resource|string $source
 		 * @return $this|false
+		 * @throws Exception
 		 * @filesource
 		 */
 		public function readCsv($source, $limit = 0)
@@ -749,11 +771,11 @@
 			switch (gettype($source)) {
 				case 'string':
 					if (!$this->strTest($source, "\n", [$this->line_delimiter, $this->str_delimiter]) and file_exists($source)) {
-						$source = @fopen($source, 'r');
+						$source = @fopen($source, 'rb');
 						return $this->_readCsvResource($source, $limit);
-					} else {
-						return $this->_readCsvString($source, $limit);
 					}
+
+					return $this->_readCsvString($source, $limit);
 				case'resource':
 					return $this->_readCsvResource($source, $limit);
 				default:
@@ -788,6 +810,7 @@
 		/**
 		 * @param resource $source
 		 * @return $this
+		 * @throws Exception
 		 */
 		function _readCsvResource($source, $limit)
 		{
@@ -795,11 +818,9 @@
 				$i = 0;
 				while (($row = fgetcsv($source, 10240, $this->str_delimiter))) {
 					$i++;
-					if ($limit) {
-						if ($i > $limit) {
-							$this->limit = TRUE;
-							break;
-						}
+					if ($limit && $i > $limit) {
+						$this->limit = TRUE;
+						break;
 					}
 					foreach ($row as $i2 => $v) {
 						$row[$i2] = trim($v, $this->escape);
@@ -820,14 +841,13 @@
 		/**
 		 * add row to csv
 		 * @return $this|bool
+		 * @throws Exception
 		 */
 		public function addRow()
 		{
 
-			if (!$this->appendType) {
-				if (!$this->isEmpty(($this->matrix))) {
-					$this->appendType = 'row';
-				}
+			if (!$this->appendType && !$this->isEmpty(($this->matrix))) {
+				$this->appendType = 'row';
 			}
 
 			if ($this->appendType != 'row') {
@@ -845,7 +865,7 @@
 
 			$head = array_flip($this->_head);
 
-			$isAssoc = $this->isAssoc($args);
+			$isAssoc = Utilities::isAssoc($args);
 			$args_   = [];
 
 			foreach ($args as $k => $art) {
@@ -857,12 +877,10 @@
 					} else {
 						$args_[$head[$k]] = $art;
 					}
+				} elseif (!is_string($art) and !is_numeric($art)) {
+					$args_[$k] = NULL;
 				} else {
-					if (!is_string($art) and !is_numeric($art)) {
-						$args_[$k] = NULL;
-					} else {
-						$args_[$k] = $art;
-					}
+					$args_[$k] = $art;
 				}
 			}
 			if ($this->mode == 'fast') {
@@ -903,12 +921,13 @@
 			foreach ($var as $k => $v) {
 				$score += $this->isEmpty($v);
 			}
-			return !(bool)$score;
+			return !$score;
 		}
 
 		/**
 		 * add header for csv
 		 * @return $this
+		 * @throws Exception
 		 */
 		public function setHead()
 		{
@@ -950,17 +969,16 @@
 
 		/**
 		 * @param $text string
+		 * @throws Exception
 		 */
 		private function writeFile($text)
 		{
-			if (gettype($this->output_file) == 'resource') {
+			if (is_resource($this->output_file)) {
 				fwrite($this->output_file, $text);
+			} elseif ($this->_output_file) {
+				file_put_contents($this->_output_file, $text, FILE_APPEND);
 			} else {
-				if ($this->_output_file) {
-					file_put_contents($this->_output_file, $text, FILE_APPEND);
-				} else {
-					throw new Exception('you call "save" too early');
-				}
+				throw new Exception('you call "save" too early');
 			}
 		}
 
@@ -982,22 +1000,11 @@
 			}
 		}
 
-		public static function isAssoc(&$arr = [])
-		{
-			if (is_array($arr)) {
-				$c = count($arr);
-				if ($c > 10) {
-					return !(array_key_exists(0, $arr) and array_key_exists(rand(0, $c - 1), $arr) and array_key_exists($c - 1, $arr));
-				} elseif ($c > 0) {
-					return !(range(0, count($arr) - 1) === array_keys($arr));
-				}
-			}
-			return FALSE;
-		}
 
 		/**
 		 * @param string $source
 		 * @return $this
+		 * @throws Exception
 		 */
 		function _readCsvString($source, $limit)
 		{
@@ -1007,11 +1014,9 @@
 			if (is_array($rows)) {
 				foreach ($rows as $row) {
 					$i++;
-					if ($limit) {
-						if ($i > $limit) {
-							$this->limit = TRUE;
-							break;
-						}
+					if ($limit && $i > $limit) {
+						$this->limit = TRUE;
+						break;
 					}
 					if (is_array($row)) {
 						foreach ($row as $i => $v) {

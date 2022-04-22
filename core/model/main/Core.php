@@ -10,24 +10,25 @@
 	use Gettext\Loader\PoLoader;
 	use Gettext\Translator;
 	use Gettext\TranslatorFunctions;
+	use model\helper\CsvTable;
 	use model\page\TmpPage;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
+	use PDOException;
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\SMTP;
 	use SmartyBC;
 	use tables\Users;
-	use traits\Utilities;
 
 	/**
 	 * Основной класс
 	 */
 	final class Core implements ErrorPage
 	{
-		use Utilities;
 
-		public    $db     = NULL;
-		public    $user   = NULL;
+
+		public    $db;
+		public    $user;
 		protected $_cache = [];
 		/**
 		 * @var SmartyBC
@@ -56,12 +57,12 @@
 		}
 
 		/**
-		 * Check autorization
+		 * Check authorization
 		 * @return void
 		 */
 		public function auth()
 		{
-			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['ip'] == self::getIp()) {
+			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['ip'] == Utilities::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
@@ -72,11 +73,9 @@
 				$authKey = strip_tags($_COOKIE['authKey']);
 				$id      = (int)$_COOKIE['userId'];
 				$u       = $this->getUser($id);
-				if (!$u->isNew) {
-					if ($authKey == hash('sha256', $u->get('authKey') . self::getIp())) {
-						$this->user = &$u;
-						$this->user->login();
-					}
+				if (!$u->isNew && $authKey == hash('sha256', $u->get('authKey') . Utilities::getIp())) {
+					$this->user = &$u;
+					$this->user->login();
 				}
 			}
 			if ($this->user == NULL) {
@@ -88,11 +87,11 @@
 
 		/**
 		 * Simple work with csv table
-		 * @return table
+		 * @return CsvTable
 		 */
 		public function newTable()
 		{
-			return new table();
+			return new CsvTable();
 		}
 
 		/**
@@ -179,31 +178,31 @@
 		{
 			if (class_exists($class)) {
 				return $class;
-			} else {
-				$class = "tables\\$class";
-				if (class_exists($class)) {
-					return $class;
-				} else {
-					Err::fatal($class . " not exists", __LINE__, __FILE__);
-				}
 			}
+
+			$class = "tables\\$class";
+			if (class_exists($class)) {
+				return $class;
+			}
+
+			Err::fatal($class . " not exists", __LINE__, __FILE__);
 		}
 
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T> $class
 		 * @param array           $where
-		 * @param booean          $cache
+		 * @param boolean         $cache
 		 * @return BdObject|T
 		 * @throws Exception
 		 */
 		public function getObject($class, $where = [], $cache = TRUE)
 		{
-			$class = Core::getClass($class);
+			$class = self::getClass($class);
 			if (!$cache or empty($where)) {
 				return new $class($this, $where);
 			}
-			$key = self::hash($where);
+			$key = Utilities::hash($where);
 			if (!isset($this->_cache[$class]) or !isset($this->_cache[$class][$key])) {
 				$this->_cache[$class][$key] = new $class($this, $where);
 			}
@@ -214,13 +213,14 @@
 		 * @template T of \BdObject
 		 * @param class-string<T> $class extends BdObject
 		 * @param array           $where
-		 * @return   [T]
-		 * @throws Exception
+		 * @param null            $order_by
+		 * @param string          $order_dir
+		 * @return array [T]
 		 */
 		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
 		{
 			$data     = [];
-			$class    = Core::getClass($class);
+			$class    = self::getClass($class);
 			$cls      = new $class($this);
 			$order_by = $order_by ?: $cls->primaryKey;
 			if (empty($where)) {
@@ -230,7 +230,8 @@
 				$query   = $builder->select()
 								   ->setTable($cls->table)
 								   ->orderBy($order_by, $order_dir)
-								   ->where();
+								   ->where()
+				;
 				foreach ($where as $key => $value) {
 					$query->equals($key, $value);
 				}
@@ -255,9 +256,9 @@
 		}
 
 		/**
-		 * @param $lang //locale code
-		 * @param $_gt  //use gettext
-		 * @return string|false
+		 * @param      $_lang
+		 * @param bool $_gt //use gettext
+		 * @return string
 		 */
 		public function setLocale($_lang, $_gt = TRUE)
 		{
@@ -334,27 +335,28 @@
 			if ($page = $errPage->render(TRUE)) {
 				ob_end_clean();
 				exit($page);
-			} else {
-				ob_end_clean();
-				if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
-					readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
-				} else {
-					readfile(WT_PAGES_PATH . 'errors/' . '404.html');
-				}
-				exit;
 			}
+
+			ob_end_clean();
+			if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
+				readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
+			} else {
+				readfile(WT_PAGES_PATH . 'errors/' . '404.html');
+			}
+			exit;
 		}
 
 		/**
 		 * @return self
 		 */
-		public static function init() {
-			if(array_key_exists('core', $GLOBALS)){
+		public static function init()
+		{
+			if (array_key_exists('core', $GLOBALS)) {
 				return $GLOBALS['core'];
-			}else{
-				global $core;
-				$core = new self();
-				return $core;
 			}
+
+			global $core;
+			$core = new self();
+			return $core;
 		}
 	}

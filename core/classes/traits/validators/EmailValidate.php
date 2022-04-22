@@ -2,11 +2,14 @@
 
 	namespace traits\validators;
 
-	trait emailValidate
+	trait EmailValidate
 	{
+		/**
+		 * @throws ExceptionValidate
+		 */
 		public static function emailValidate($value)
 		{
-			$value = trip_tags($value);
+			$value = strip_tags($value);
 			if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
 				throw new ExceptionValidate('invalid email');
 			}

@@ -3,11 +3,11 @@
 	namespace model\cli;
 
 	use model\main\Core;
-	use traits\Utilities;
+	use model\main\Utilities;
+
 
 	class Make
 	{
-		use Utilities;
 
 		public static function makeAjax($name, $type = 'any')
 		{
@@ -91,7 +91,7 @@ PHP;
 
 		public static function name2class($name, &$class = '', &$namespace = '')
 		{
-			$n0        = explode(":::", self::pathNormalize($name, ':::'));
+			$n0        = explode(":::", Utilities::pathNormalize($name, ':::'));
 			$class     = array_pop($n0);
 			$namespace = '\\' . implode('\\', $n0);
 

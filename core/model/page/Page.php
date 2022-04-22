@@ -2,24 +2,29 @@
 
 	namespace model\page;
 
+	use Exception;
 	use model\main\Core;
 	use model\main\CoreObject;
 	use model\main\Err;
 	use model\main\ErrorPage;
-	use Exception;
+
+	use model\main\Utilities;
 	use SmartyBC;
-	use traits\Utilities;
 
 	/**
 	 * Класс для Страницы
 	 */
 	abstract class Page extends CoreObject implements ErrorPage
 	{
-		use Utilities;
+		
 
 		public $alias;
 		public $title;
 		public $data = NULL;
+		/**
+		 * @var mixed|string
+		 */
+		private mixed $source;
 
 		public function __construct(Core $core, $data = [])
 		{
@@ -46,7 +51,7 @@
 			}
 			if (!$this->title) {
 
-				$this->title = self::basename($this->alias) ?: $this->alias;
+				$this->title = Utilities::basename($this->alias) ?: $this->alias;
 			}
 			$this->smarty = new SmartyBC();
 			$this->init();
@@ -112,7 +117,7 @@
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (strpos($this->source, 'string:') !== 0 and strpos($this->source, 'eval:') !== 0) {
-				$this->source = self::pathNormalize($this->source);
+				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
 					Err::fatal('can`t load: "' . $this->source . '"', __LINE__, __FILE__);
 					return FALSE;

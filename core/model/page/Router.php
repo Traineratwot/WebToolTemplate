@@ -6,11 +6,12 @@
 	use model\main\Cache;
 	use model\main\Core;
 	use model\main\Err;
-	use traits\Utilities;
+	use model\main\Utilities;
+
 
 	class Router
 	{
-		use Utilities;
+		
 
 		private $isAjax;
 		private $alias;
@@ -92,7 +93,7 @@
 		private function advancedRoute()
 		{
 			$this->isAdvanced = TRUE;
-			$router_path      = self::findPath(WT_CORE_PATH . "router.php");
+			$router_path      = Utilities::findPath(WT_CORE_PATH . "router.php");
 			$router           = include $router_path;
 			if (!empty($router)) {
 				$switcher = new \Bramus\Router\Router();
@@ -125,7 +126,7 @@
 		private function launchPage($data = [])
 		{
 			$page = WT_VIEWS_PATH . $this->alias . '.php';
-			$page = self::findPath($page);
+			$page = Utilities::findPath($page);
 			if ($page) {
 				$class = include $page;
 				if (!class_exists($class)) {
@@ -144,7 +145,7 @@
 				Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
 			} else {
 				$page = WT_PAGES_PATH . $this->alias . '.tpl';
-				$page = self::findPath($page);
+				$page = Utilities::findPath($page);
 				if ($page) {
 					$result = new TmpPage($this->core, $this->alias, $data);
 					$result->render();
@@ -165,7 +166,7 @@
 		private function launchAjax($data = [])
 		{
 			$ajax = WT_AJAX_PATH . $this->alias . '.php';
-			$ajax = self::findPath($ajax);
+			$ajax = Utilities::findPath($ajax);
 			if ($ajax) {
 				$class = include $ajax;
 				if (!class_exists($class)) {

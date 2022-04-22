@@ -2,10 +2,15 @@
 
 	namespace traits\validators;
 
+	use DOMDocument;
+	use DOMXPath;
 	use function __;
 
 	trait htmlValidate
 	{
+		/**
+		 * @throws ExceptionValidate
+		 */
 		public static function htmlValidate($string)
 		{
 			if (is_string($string)) {

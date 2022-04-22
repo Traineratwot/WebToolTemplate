@@ -33,6 +33,15 @@
 				'noop',
 				'noop__',
 			];
+		public   $translations;
+		/**
+		 * @var mixed|string
+		 */
+		public mixed $domain;
+		/**
+		 * @var string[]
+		 */
+		public array $commentsPrefixes;
 
 		public function __construct(Translations ...$allTranslations)
 		{

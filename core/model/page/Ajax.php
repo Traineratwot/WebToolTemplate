@@ -7,17 +7,13 @@
 	use model\main\Core;
 	use model\main\CoreObject;
 	use model\main\Err;
-	use traits\Utilities;
-	use traits\validators\jsonValidate;
+	use model\main\Utilities;
 
 	/**
 	 * Класс для работы ajax запросами
 	 */
 	abstract class Ajax extends CoreObject
 	{
-		use Utilities;
-		use jsonValidate;
-
 		/**
 		 * @var array
 		 */
@@ -53,7 +49,8 @@
 		/**
 		 * @var array|mixed
 		 */
-		public $data;
+		public  $data;
+		private $FILES;
 
 		public function __construct(Core $core, $data = [])
 		{
@@ -61,15 +58,15 @@
 			if (!empty($data)) {
 				$this->data = $data;
 			}
-			$this->ip               = self::getIp();
+			$this->ip               = Utilities::getIp();
 			$this->GET              = $_GET;
 			$this->httpResponseCode = 200;
 			$this->POST             = $_POST;
 			$this->PUT              = file_get_contents('php://input');
-			$this->HEADERS          = self::getRequestHeaders();
+			$this->HEADERS          = Utilities::getRequestHeaders();
 			$this->REQUEST          = array_merge($_GET, $_POST);
 			try {
-				if ($put = self::jsonValidate($this->PUT)) {
+				if ($put = Utilities::jsonValidate($this->PUT)) {
 					$this->PUT = $put;
 				}
 			} catch (Exception $e) {
@@ -101,17 +98,16 @@
 				header("$key: $value");
 			}
 			if (is_array($o) or is_object($o)) {
-				self::headerJson();
+				Utilities::headerJson();
 				$o = json_encode($o, 256);
 			}
-			return (string)$o;
+			return $o;
 		}
 
 		public function initialize()
 		{
 			return TRUE;
 		}
-
 
 		public function process()
 		{
@@ -140,38 +136,47 @@
 
 		public function GET()
 		{
+			return '';
 		}
 
 		public function POST()
 		{
+			return '';
 		}
 
 		public function PUT()
 		{
+			return '';
 		}
 
 		public function DELETE()
 		{
+			return '';
 		}
 
 		public function PATH()
 		{
+			return '';
 		}
 
 		public function CONNECT()
 		{
+			return '';
 		}
 
 		public function HEAD()
 		{
+			return '';
 		}
 
 		public function OPTIONS()
 		{
+			return '';
 		}
 
 		public function TRACE()
 		{
+			return '';
 		}
 
 		public function success($msg = '', $object = NULL)

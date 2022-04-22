@@ -1,6 +1,9 @@
 <?php
 
 	namespace model\main;
+	use Exception;
+	use Peast\Syntax\Node\Function_;
+
 	if (!defined('WT_CACHE_PATH')) {
 		define('WT_CACHE_PATH', './');
 	}
@@ -16,11 +19,12 @@
 		 * Сохраняет результат выполнения callback функции в кеш или возвращает уже за кешированное значение
 		 *
 		 * @param mixed    $key
-		 * @param function $function Callback function
+		 * @param Callback $function function
 		 * @param int      $expire   Время жизни
 		 * @param string   $category папка кеша
 		 * @param mixed    ...$args
 		 * @return mixed|null
+		 * @throws Exception
 		 */
 		public static function call($key, $function, $expire = 600, $category = '', ...$args)
 		{

@@ -30,8 +30,10 @@
 		public static function pretty($data = [])
 		{
 			foreach ($data as $key => $v) {
-				$v                               = is_array($v) ? json_encode($v, 256) : $v;
-				$v                               = is_resource($v) ? 'resource id: ' . get_resource_id($v) : $v;
+				$v = is_array($v) ? json_encode($v, 256) : $v;
+				if (is_resource($v) && function_exists('get_resource_id')) {
+					$v = 'resource id: ' . get_resource_id($v);
+				}
 				$replace_pairs['+' . $key . '+'] = $v;
 			}
 			return strtr(self::template, $replace_pairs);

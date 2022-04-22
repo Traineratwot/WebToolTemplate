@@ -23,7 +23,6 @@
 		public function execute($input_parameters = NULL)
 		{
 			$this->connection->query_count_increment();
-			$this->queryString;
 			$this->pool[] = $this->interpolateQuery($this->queryString, $input_parameters);
 			return $this;
 		}

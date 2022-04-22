@@ -2,8 +2,10 @@
 
 	namespace model\main;
 
+	use Exception;
 	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
+	use PDOException;
 	use PHPSQLParser\PHPSQLParser;
 	use const WT_TYPE_DB;
 

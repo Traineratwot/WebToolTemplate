@@ -1,6 +1,7 @@
 <?php
 
-	use model\Console;
+
+	use model\cli\Console;
 
 	Console::info('sleep 60');
 	sleep(60);

@@ -8,21 +8,23 @@
 
 	class Login extends Ajax
 	{
+		private string $email;
+		private string $password;
+
 		public function initialize()
 		{
 			$this->email    = strip_tags($_REQUEST['email']);
 			$this->password = strip_tags($_REQUEST['password']);
 			if ($this->email and $this->password) {
 				return TRUE;
-			} else {
-				return 'пустой адрес электронной почты или пароль';
 			}
+
+			return 'пустой адрес электронной почты или пароль';
 		}
 
 		public function post()
 		{
 			try {
-				/** @var Users $User */
 				$User = $this->core->getUser(['email' => $this->email]);
 				if (!$User->isNew()) {
 					if (!$User->verifyPassword($this->password)) {

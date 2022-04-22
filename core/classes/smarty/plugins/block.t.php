@@ -110,7 +110,7 @@
 			// use specified textdomain if available
 			if (isset($domain) && isset($context)) {
 
-				if (WT_USE_GETTEXT) {
+				if (WT_USE_GETTEXT && function_exists('dnpgettext')) {
 					$text = dnpgettext($domain, $context, $text, $plural, $count);
 				} else {
 					$text = dnp__($domain, $context, $text, $plural, $count);
@@ -123,7 +123,7 @@
 				}
 
 			} elseif (isset($context)) {
-				if (WT_USE_GETTEXT) {
+				if (WT_USE_GETTEXT && function_exists('npgettext')) {
 					$text = npgettext($context, $text, $plural, $count);
 				} else {
 					$text = np__($context, $text, $plural, $count);
@@ -139,7 +139,7 @@
 		} else {
 			// use specified textdomain if available
 			if (isset($domain) && isset($context)) {
-				if (WT_USE_GETTEXT) {
+				if (WT_USE_GETTEXT && function_exists('dpgettext')) {
 					$text = dpgettext($domain, $context, $text);
 				} else {
 					$text = dp__($domain, $context, $text);
@@ -151,7 +151,7 @@
 					$text = d__($domain, $text);
 				}
 			} elseif (isset($context)) {
-				if (WT_USE_GETTEXT) {
+				if (WT_USE_GETTEXT && function_exists('pgettext')) {
 					$text = pgettext($context, $text);
 				} else {
 					$text = p__($context, $text);

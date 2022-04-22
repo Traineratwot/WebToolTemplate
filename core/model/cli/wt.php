@@ -2,6 +2,7 @@
 <?php
 namespace model\cli;
 
+use Exception;
 use model\locale\PoUpdate;
 use model\main\Core;
 

@@ -4,7 +4,8 @@
 
 	use model\main\BdObject;
 	use model\main\Err;
-	use traits\Utilities;
+	use model\main\Utilities;
+
 
 	/**
 	 * Класс для работы с таблицей `users`
@@ -12,7 +13,7 @@
 	 */
 	class Users extends BdObject
 	{
-		use Utilities;
+
 
 		public $table      = 'users';
 		public $primaryKey = 'id';
@@ -25,10 +26,9 @@
 		/**
 		 * Get either a Gravatar URL or complete image tag for a specified email address.
 		 *
-		 * @param string $email The email address
-		 * @param string $s     Size in pixels, defaults to 80px [ 1 - 2048 ]
-		 * @param string $d     Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
-		 * @param string $r     Maximum rating (inclusive) [ g | pg | r | x ]
+		 * @param int    $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+		 * @param string $d Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
+		 * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
 		 * @return String containing either just a URL or a complete image tag
 		 * @source https://gravatar.com/site/implement/images/php/
 		 */
@@ -49,7 +49,7 @@
 		{
 			WT_RESTART_SESSION_FUNCTION();
 			$_SESSION['authKey'] = $this->get('authKey');
-			$_SESSION['ip']      = self::getIp();
+			$_SESSION['ip']      = Utilities::getIp();
 			$hash                = hash('sha256', $_SESSION['authKey'] . $_SESSION['ip']);
 			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
 			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
@@ -64,7 +64,7 @@
 		{
 			if ($this->isNew()) {
 				if (!$password) {
-					$password = self::id(8);
+					$password = Utilities::id(8);
 				}
 				if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 					Err::fatal('Please enter a valid email', __FILE__, __FILE__);
@@ -85,11 +85,12 @@
 					return TRUE;
 				}
 			}
+			return TRUE;
 		}
 
 		public function setPassword($password)
 		{
-			$salt = self::id(8);
+			$salt = Utilities::id(8);
 			$this->set('salt', $salt);
 			$password .= $salt;
 			$this->set('password', password_hash($password, PASSWORD_DEFAULT));
