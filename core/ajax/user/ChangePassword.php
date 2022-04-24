@@ -2,12 +2,12 @@
 
 	namespace ajax\user;
 
-	
+
 	use model\page\Ajax;
 
 	class ChangePassword extends Ajax
 	{
-		
+
 
 		private string $password;
 

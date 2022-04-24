@@ -65,26 +65,6 @@
 			return FALSE;
 		}
 
-		public function success($msg, $object = [])
-		{
-			return json_encode([
-								   'success' => TRUE,
-								   'message' => $msg,
-								   'object'  => $object,
-							   ], 256);
-
-		}
-
-		public function failure($msg, $object = [])
-		{
-			return json_encode([
-								   'success' => FALSE,
-								   'message' => $msg,
-								   'object'  => $object,
-							   ], 256);
-
-		}
-
 		public static function setCookie($name, $value, $time = 0)
 		{
 			$expire = $time ?: time() + 31556926;
@@ -241,26 +221,6 @@
 			return hash($algo, $data);
 		}
 
-		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
-		{
-			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
-			if (file_exists($path)) {
-				if (is_dir($path)) {
-					if (WT_TYPE_SYSTEM === 'nix') {
-						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
-					} else {
-						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
-					}
-				} elseif (WT_TYPE_SYSTEM === 'nix') {
-					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
-				} else {
-					$path = trim($path, $DIRECTORY_SEPARATOR);
-				}
-				return $path;
-			}
-			return $path;
-		}
-
 		/**
 		 * Находит файл независимо от регистра и возвращает его абсолютный
 		 * путь в случаи неудаче вернет null
@@ -316,6 +276,26 @@
 				},
 				600,
 				'filePaths');
+		}
+
+		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
+		{
+			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
+			if (file_exists($path)) {
+				if (is_dir($path)) {
+					if (WT_TYPE_SYSTEM === 'nix') {
+						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
+					} else {
+						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
+					}
+				} elseif (WT_TYPE_SYSTEM === 'nix') {
+					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
+				} else {
+					$path = trim($path, $DIRECTORY_SEPARATOR);
+				}
+				return $path;
+			}
+			return $path;
 		}
 
 		public static function dateFormat($inputFormat, $date, $outputFormat = 'U', $modify = '')
@@ -398,5 +378,25 @@
 					break;
 			}
 			return $size;
+		}
+
+		public function success($msg, $object = [])
+		{
+			return json_encode([
+								   'success' => TRUE,
+								   'message' => $msg,
+								   'object'  => $object,
+							   ], 256);
+
+		}
+
+		public function failure($msg, $object = [])
+		{
+			return json_encode([
+								   'success' => FALSE,
+								   'message' => $msg,
+								   'object'  => $object,
+							   ], 256);
+
 		}
 	}

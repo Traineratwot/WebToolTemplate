@@ -8,20 +8,20 @@
 	use Gettext\Scanner\JsScanner;
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
-	use model\cli\Console;
+	use Traineratwot\PhpCli\Console;
 
-	include_once WT_MODEL_PATH . 'smartyScan.php';
+
+	include_once WT_MODEL_PATH . 'locale/SmartyScanner.php';
 
 	class PoUpdate
 	{
+		public $strategy = 0;
 		/**
 		 * @var bool|Translations
 		 */
-		private        $old = FALSE;
-		private string $domain;
-		private        $lang;
-
-		public $strategy = 0;
+		private $old = FALSE;
+		private $domain;
+		private $lang;
 
 		public function __construct()
 		{
@@ -63,20 +63,6 @@
 				$new = $this->old->mergeWith($new, Merge::TRANSLATIONS_THEIRS);
 				$generator->generateFile($new, $oldFile,);
 			}
-		}
-
-		function poEdit()
-		{
-			global $argv;
-			$o         = $argv[1];
-			$f         = $argv[2];
-			$poLoader  = new PoLoader();
-			$this->old = $poLoader->loadFile($o);
-			$generator = new PoGenerator();
-			$new       = $this->phpScan($this->old, $f);
-			$new       = $this->jsScan($new, $f);
-			$new       = $this->SmartyScan($new, $f);
-			$generator->generateFile($new, $o);
 		}
 
 		function phpScan(Translations $old, $file = NULL)
@@ -195,5 +181,19 @@
 				$old = $old->mergeWith($translations, $this->strategy);
 			}
 			return $old;
+		}
+
+		function poEdit()
+		{
+			global $argv;
+			$o         = $argv[1];
+			$f         = $argv[2];
+			$poLoader  = new PoLoader();
+			$this->old = $poLoader->loadFile($o);
+			$generator = new PoGenerator();
+			$new       = $this->phpScan($this->old, $f);
+			$new       = $this->jsScan($new, $f);
+			$new       = $this->SmartyScan($new, $f);
+			$generator->generateFile($new, $o);
 		}
 	}

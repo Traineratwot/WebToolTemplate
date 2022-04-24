@@ -2,7 +2,7 @@
 
 	namespace page\user;
 
-	
+
 	use model\main\Utilities;
 	use model\page\Page;
 
@@ -10,7 +10,6 @@
 	{
 		public $title = 'ChangePassword';
 
-		
 
 		public function beforeRender()
 		{

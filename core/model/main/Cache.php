@@ -1,6 +1,7 @@
 <?php
 
 	namespace model\main;
+
 	use Exception;
 
 	if (!defined('WT_CACHE_PATH')) {
@@ -46,6 +47,43 @@
 		}
 
 		/**
+		 * Возвращает значение из кеша
+		 * @param mixed  $key      ключ
+		 * @param string $category папка кеша
+		 * @return mixed|null значение
+		 */
+		public static function getCache($key, $category = '')
+		{
+			if ($category != 'table') {
+				//если установлен заголовок отключить кеш отключаем кеш
+				if (function_exists('getallheaders')) {
+					$headers = getallheaders();
+					if ($headers['Cache-Control'] == 'no-cache') {
+						return NULL;
+					}
+				}
+			}
+			$name = self::getKey($key) . '.cache.php';
+			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
+				return include WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
+			}
+			return NULL;
+		}
+
+		/**
+		 * Превратить ключ кеша в строку
+		 * @param mixed $a
+		 * @return string
+		 */
+		public static function getKey($a)
+		{
+			if (is_string($a) && strlen($a) < 32 && preg_match('@\w{1,32}@', $a)) {
+				return $a;
+			}
+			return md5(serialize($a));
+		}
+
+		/**
 		 * Сохраняет значение в кеш
 		 * @param mixed  $key      ключ
 		 * @param mixed  $value    значение
@@ -74,43 +112,6 @@ PHP;
 				file_put_contents($concurrentDirectory . $name, $body);
 			}
 			return $value;
-		}
-
-		/**
-		 * Превратить ключ кеша в строку
-		 * @param mixed $a
-		 * @return string
-		 */
-		public static function getKey($a)
-		{
-			if (is_string($a) && strlen($a) < 32 && preg_match('@\w{1,32}@', $a)) {
-				return $a;
-			}
-			return md5(serialize($a));
-		}
-
-		/**
-		 * Возвращает значение из кеша
-		 * @param mixed  $key      ключ
-		 * @param string $category папка кеша
-		 * @return mixed|null значение
-		 */
-		public static function getCache($key, $category = '')
-		{
-			if ($category != 'table') {
-				//если установлен заголовок отключить кеш отключаем кеш
-				if (function_exists('getallheaders')) {
-					$headers = getallheaders();
-					if ($headers['Cache-Control'] == 'no-cache') {
-						return NULL;
-					}
-				}
-			}
-			$name = self::getKey($key) . '.cache.php';
-			if (file_exists(WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name)) {
-				return include WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR . $name;
-			}
-			return NULL;
 		}
 
 		/**

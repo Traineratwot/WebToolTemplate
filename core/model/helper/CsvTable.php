@@ -15,12 +15,13 @@
 		public $currentRow  = -1;
 		public $clearRegexp = '@[^[:ascii:]A-я]+@u';
 		public $currentCol  = -1;
+		/* @var array */
+		public $matrix = [];
+		public  $limit = FALSE;
 		/* @var string output csv string */
 		protected $csv;
 		/* @var string output html string */
 		protected $html;
-		/* @var array */
-		public $matrix = [];
 		/* @var array */
 		protected $head       = [];
 		protected $_head      = [];
@@ -32,7 +33,6 @@
 		 * @var bool|mixed|string
 		 */
 		private $mode;
-
 		/**
 		 * @var bool|mixed|resource
 		 */
@@ -49,7 +49,6 @@
 				'l' => ['min' => 30, 'max' => 60],
 				's' => ['min' => 80, 'max' => 100],
 			];
-		public  $limit = FALSE;
 		private $output;
 
 		/**
@@ -138,6 +137,33 @@
 			}
 
 			return $this;
+		}
+
+		function isEmpty($var)
+		{
+			switch (gettype($var)) {
+				case "array":
+					if (count($var) == 0) {
+						return 0;
+					}
+					break;
+				case "string":
+					return (trim($var) == '') ? 0 : 1;
+				case "NULL":
+				case "resource (closed)":
+					return 0;
+				case "boolean":
+				case "integer":
+				case "resource":
+					return 1;
+				default:
+					return (int)!empty($var);
+			}
+			$score = 0;
+			foreach ($var as $k => $v) {
+				$score += $this->isEmpty($v);
+			}
+			return !$score;
 		}
 
 		/**
@@ -305,6 +331,24 @@
 			$this->html .= '</table>';
 		}
 
+		private function matrixFix()
+		{
+			$lenCol[] = count($this->head);
+			if (is_array($this->matrix)) {
+				foreach ($this->matrix as $row) {
+					$lenCol[] = count($row);
+				}
+				$lenCol = max($lenCol);
+				foreach ($this->matrix as $k => $row) {
+					for ($i = 0; $lenCol > $i; $i++) {
+						if (!isset($row[$i])) {
+							$this->matrix[$k][$i] = NULL;
+						}
+					}
+				}
+			}
+		}
+
 		private function sort()
 		{
 			ksort($this->head);
@@ -406,27 +450,6 @@
 
 		}
 
-		public function rgb2hex(&$R, &$G, &$B)
-		{
-
-			$R = dechex($R);
-			if (strlen($R) < 2) {
-				$R = '0' . $R;
-			}
-
-			$G = dechex($G);
-			if (strlen($G) < 2) {
-				$G = '0' . $G;
-			}
-
-			$B = dechex($B);
-			if (strlen($B) < 2) {
-				$B = '0' . $B;
-			}
-
-			return '#' . $R . $G . $B;
-		}
-
 		/**
 		 * @param $rH
 		 * @param $gS
@@ -471,6 +494,27 @@
 			$bL = floor(($b + $m) * 255);
 
 			return [$rH, $gS, $bL];
+		}
+
+		public function rgb2hex(&$R, &$G, &$B)
+		{
+
+			$R = dechex($R);
+			if (strlen($R) < 2) {
+				$R = '0' . $R;
+			}
+
+			$G = dechex($G);
+			if (strlen($G) < 2) {
+				$G = '0' . $G;
+			}
+
+			$B = dechex($B);
+			if (strlen($B) < 2) {
+				$B = '0' . $B;
+			}
+
+			return '#' . $R . $G . $B;
 		}
 
 		/**
@@ -839,92 +883,6 @@
 		}
 
 		/**
-		 * add row to csv
-		 * @return $this|bool
-		 * @throws Exception
-		 */
-		public function addRow()
-		{
-
-			if (!$this->appendType && !$this->isEmpty(($this->matrix))) {
-				$this->appendType = 'row';
-			}
-
-			if ($this->appendType != 'row') {
-				return FALSE;
-			}
-			$args = func_get_args();
-
-			if (empty($this->_head)) {
-				return $this->setHead(...$args);
-			}
-
-			if (count($args) == 1 && is_array($args[0])) {
-				$args = $args[0];
-			}
-
-			$head = array_flip($this->_head);
-
-			$isAssoc = Utilities::isAssoc($args);
-			$args_   = [];
-
-			foreach ($args as $k => $art) {
-				$k   = $this->clearString($k);
-				$art = $this->clearString($art);
-				if ($isAssoc) {
-					if (!is_string($art) && !is_numeric($art)) {
-						$args_[$head[$k]] = NULL;
-					} else {
-						$args_[$head[$k]] = $art;
-					}
-				} elseif (!is_string($art) && !is_numeric($art)) {
-					$args_[$k] = NULL;
-				} else {
-					$args_[$k] = $art;
-				}
-			}
-			if ($this->mode == 'fast') {
-				ksort($args_);
-				foreach ($args_ as $i => $v) {
-					$args_[$i] = $this->escape . $v . $this->escape;
-				}
-				$text = implode($this->str_delimiter, $args_) . $this->line_delimiter;
-				$this->writeFile($text);
-			} else {
-				$this->matrix[] = $args_;
-			}
-
-			return $this;
-		}
-
-		function isEmpty($var)
-		{
-			switch (gettype($var)) {
-				case "array":
-					if (count($var) == 0) {
-						return 0;
-					}
-					break;
-				case "string":
-					return (trim($var) == '') ? 0 : 1;
-				case "NULL":
-				case "resource (closed)":
-					return 0;
-				case "boolean":
-				case "integer":
-				case "resource":
-					return 1;
-				default:
-					return (int)!empty($var);
-			}
-			$score = 0;
-			foreach ($var as $k => $v) {
-				$score += $this->isEmpty($v);
-			}
-			return !$score;
-		}
-
-		/**
 		 * add header for csv
 		 * @return $this
 		 * @throws Exception
@@ -982,24 +940,64 @@
 			}
 		}
 
-		private function matrixFix()
+		/**
+		 * add row to csv
+		 * @return $this|bool
+		 * @throws Exception
+		 */
+		public function addRow()
 		{
-			$lenCol[] = count($this->head);
-			if (is_array($this->matrix)) {
-				foreach ($this->matrix as $row) {
-					$lenCol[] = count($row);
-				}
-				$lenCol = max($lenCol);
-				foreach ($this->matrix as $k => $row) {
-					for ($i = 0; $lenCol > $i; $i++) {
-						if (!isset($row[$i])) {
-							$this->matrix[$k][$i] = NULL;
-						}
+
+			if (!$this->appendType && !$this->isEmpty(($this->matrix))) {
+				$this->appendType = 'row';
+			}
+
+			if ($this->appendType != 'row') {
+				return FALSE;
+			}
+			$args = func_get_args();
+
+			if (empty($this->_head)) {
+				return $this->setHead(...$args);
+			}
+
+			if (count($args) == 1 && is_array($args[0])) {
+				$args = $args[0];
+			}
+
+			$head = array_flip($this->_head);
+
+			$isAssoc = Utilities::isAssoc($args);
+			$args_   = [];
+
+			foreach ($args as $k => $art) {
+				$k   = $this->clearString($k);
+				$art = $this->clearString($art);
+				if ($isAssoc) {
+					if (!is_string($art) && !is_numeric($art)) {
+						$args_[$head[$k]] = NULL;
+					} else {
+						$args_[$head[$k]] = $art;
 					}
+				} elseif (!is_string($art) && !is_numeric($art)) {
+					$args_[$k] = NULL;
+				} else {
+					$args_[$k] = $art;
 				}
 			}
-		}
+			if ($this->mode == 'fast') {
+				ksort($args_);
+				foreach ($args_ as $i => $v) {
+					$args_[$i] = $this->escape . $v . $this->escape;
+				}
+				$text = implode($this->str_delimiter, $args_) . $this->line_delimiter;
+				$this->writeFile($text);
+			} else {
+				$this->matrix[] = $args_;
+			}
 
+			return $this;
+		}
 
 		/**
 		 * @param string $source

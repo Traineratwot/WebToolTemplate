@@ -29,7 +29,6 @@
 
 		public    $db;
 		public    $user;
-		protected $_cache = [];
 		/**
 		 * @var SmartyBC
 		 */
@@ -44,6 +43,7 @@
 		 * @var mixed
 		 */
 		public $translation;
+		protected $_cache = [];
 
 		public function __construct()
 		{
@@ -86,21 +86,41 @@
 		}
 
 		/**
-		 * Simple work with csv table
-		 * @return CsvTable
-		 */
-		public function newTable()
-		{
-			return new CsvTable();
-		}
-
-		/**
 		 * @param $where
 		 * @return Users
 		 */
 		public function getUser($where = [])
 		{
 			return new Users($this, $where);
+		}
+
+		public static function __set_state($arr)
+		{
+			global $core;
+			return $core;
+		}
+
+		/**
+		 * @return self
+		 */
+		public static function init()
+		{
+			if (array_key_exists('core', $GLOBALS)) {
+				return $GLOBALS['core'];
+			}
+
+			global $core;
+			$core = new self();
+			return $core;
+		}
+
+		/**
+		 * Simple work with csv table
+		 * @return CsvTable
+		 */
+		public function newTable()
+		{
+			return new CsvTable();
 		}
 
 		/**
@@ -174,20 +194,6 @@
 			}
 		}
 
-		public static function getClass($class)
-		{
-			if (class_exists($class)) {
-				return $class;
-			}
-
-			$class = "tables\\$class";
-			if (class_exists($class)) {
-				return $class;
-			}
-
-			Err::fatal($class . " not exists", __LINE__, __FILE__);
-		}
-
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T> $class
@@ -207,6 +213,20 @@
 				$this->_cache[$class][$key] = new $class($this, $where);
 			}
 			return $this->_cache[$class][$key];
+		}
+
+		public static function getClass($class)
+		{
+			if (class_exists($class)) {
+				return $class;
+			}
+
+			$class = "tables\\$class";
+			if (class_exists($class)) {
+				return $class;
+			}
+
+			Err::fatal($class . " not exists", __LINE__, __FILE__);
 		}
 
 		/**
@@ -320,12 +340,6 @@
 			return $lang;
 		}
 
-		public static function __set_state($arr)
-		{
-			global $core;
-			return $core;
-		}
-
 		public function errorPage($code = 404, $msg = 'Not Found')
 		{
 			header("HTTP/1.1 $code $msg");
@@ -344,19 +358,5 @@
 				readfile(WT_PAGES_PATH . 'errors/' . '404.html');
 			}
 			exit;
-		}
-
-		/**
-		 * @return self
-		 */
-		public static function init()
-		{
-			if (array_key_exists('core', $GLOBALS)) {
-				return $GLOBALS['core'];
-			}
-
-			global $core;
-			$core = new self();
-			return $core;
 		}
 	}

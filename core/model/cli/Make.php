@@ -48,47 +48,6 @@ PHP;
 PHP;
 		}
 
-		public static function makePageTpl($name, $template = 'base')
-		{
-			if (!$template) {
-				$template = 'base.tpl';
-			} else {
-				$template .= '.tpl';
-			}
-			return <<<TPL
-{extends file='{$template}'}
-{block name="head"}
-
-{/block}
-{block name='content'}
-	
-{/block}
-TPL;
-		}
-
-		public static function makePageClass($name, $template = 'base')
-		{
-			self::name2class($name,$class, $namespace);
-			return <<<PHP
-<?php
-
-	namespace page{$namespace};
-
-	use model\page\Page;
-
-	class {$class} extends Page
-	{
-		public \$title = '$name';
-
-		public function beforeRender(){
-
-		}
-	}
-
-	return {$class}::class;
-PHP;
-		}
-
 		public static function name2class($name, &$class = '', &$namespace = '')
 		{
 			$n0        = explode(":::", Utilities::pathNormalize($name, ':::'));
@@ -113,6 +72,47 @@ PHP;
 			}
 
 			return ucfirst(implode('', $n2));
+		}
+
+		public static function makePageTpl($name, $template = 'base')
+		{
+			if (!$template) {
+				$template = 'base.tpl';
+			} else {
+				$template .= '.tpl';
+			}
+			return <<<TPL
+{extends file='{$template}'}
+{block name="head"}
+
+{/block}
+{block name='content'}
+	
+{/block}
+TPL;
+		}
+
+		public static function makePageClass($name, $template = 'base')
+		{
+			self::name2class($name, $class, $namespace);
+			return <<<PHP
+<?php
+
+	namespace page{$namespace};
+
+	use model\page\Page;
+
+	class {$class} extends Page
+	{
+		public \$title = '$name';
+
+		public function beforeRender(){
+
+		}
+	}
+
+	return {$class}::class;
+PHP;
 		}
 
 		public static function makeTable($name, $primaryKey = 'id')

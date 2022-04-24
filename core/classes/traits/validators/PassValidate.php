@@ -1,4 +1,5 @@
 <?php
+
 	namespace traits\validators;
 
 	trait PassValidate

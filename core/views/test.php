@@ -12,10 +12,12 @@
 		public $alias = 'test';
 		public $title = 'test';
 
-		public function beforeRender(){
+		public function beforeRender()
+		{
 			echo '<pre>';
 			var_dump($this->data);
-			var_dump('I am page', $this->data ); die;
+			var_dump('I am page', $this->data);
+			die;
 
 		}
 	}

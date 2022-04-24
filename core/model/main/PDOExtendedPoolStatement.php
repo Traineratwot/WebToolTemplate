@@ -6,12 +6,19 @@
 
 	class PDOExtendedPoolStatement extends PDOStatement
 	{
-		protected $connection;
 		public    $pool;
+		protected $connection;
 
 		protected function __construct(PDOExtended $connection)
 		{
 			$this->connection = $connection;
+		}
+
+		static function filter(&$v, $k)
+		{
+			if (!is_numeric($v) && $v != "NULL") {
+				$v = "\'" . $v . "\'";
+			}
 		}
 
 		/**
@@ -24,28 +31,6 @@
 			$this->connection->queryCountIncrement();
 			$this->pool[] = $this->interpolateQuery($this->queryString, $input_parameters);
 			return $this;
-		}
-
-		/**
-		 * execute queries pool
-		 *
-		 * sqlite cannot execute more than one query at a time
-		 * @param int $limit //count of query from chunk; default 10
-		 * @return Array<PDOExtendedStatement>
-		 */
-		public function run($limit = 10)
-		{
-			//sqlite cannot execute more than one query at a time
-			if ($this->connection->dsn['driver'] == "sqlite") {
-				$limit = 1;
-			}
-			$pools   = array_chunk($this->pool, $limit);
-			$queries = [];
-			foreach ($pools as $pool) {
-				$query     = implode(";", $pool) . ';';
-				$queries[] = $this->connection->query($query);
-			}
-			return $queries;
 		}
 
 		public function interpolateQuery($query, $params)
@@ -96,7 +81,25 @@
 			return trim(trim($query), ';');
 		}
 
-		static function filter(&$v, $k){
-			if (!is_numeric($v) && $v!="NULL") $v = "\'".$v."\'";
+		/**
+		 * execute queries pool
+		 *
+		 * sqlite cannot execute more than one query at a time
+		 * @param int $limit //count of query from chunk; default 10
+		 * @return Array<PDOExtendedStatement>
+		 */
+		public function run($limit = 10)
+		{
+			//sqlite cannot execute more than one query at a time
+			if ($this->connection->dsn['driver'] == "sqlite") {
+				$limit = 1;
+			}
+			$pools   = array_chunk($this->pool, $limit);
+			$queries = [];
+			foreach ($pools as $pool) {
+				$query     = implode(";", $pool) . ';';
+				$queries[] = $this->connection->query($query);
+			}
+			return $queries;
 		}
 	}

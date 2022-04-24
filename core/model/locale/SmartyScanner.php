@@ -10,16 +10,7 @@
 	 */
 	class SmartyScanner
 	{
-		public function __construct(Translations ...$allTranslations)
-		{
-			foreach ($allTranslations as $translations) {
-				$domain                      = $translations->getDomain();
-				$this->translations[$domain] = $translations;
-			}
-		}
-
 		public $trans = [];
-
 		protected $functions
 			= [
 				'gettext',
@@ -42,6 +33,14 @@
 				'noop',
 				'noop__',
 			];
+
+		public function __construct(Translations ...$allTranslations)
+		{
+			foreach ($allTranslations as $translations) {
+				$domain                      = $translations->getDomain();
+				$this->translations[$domain] = $translations;
+			}
+		}
 
 		public function setDefaultDomain($domain)
 		{

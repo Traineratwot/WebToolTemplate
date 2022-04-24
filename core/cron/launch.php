@@ -1,8 +1,9 @@
 <?php
 
-	use model\cli\Console;
+	
 	use model\main\Core;
 	use model\main\Utilities;
+	use Traineratwot\PhpCli\Console;
 
 	if (!file_exists(realpath(dirname(__DIR__) . '/config.php'))) {
 		echo 'Please check your configuration; ' . __FILE__ . ':7';

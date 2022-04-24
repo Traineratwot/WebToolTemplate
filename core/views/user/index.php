@@ -8,7 +8,8 @@
 	{
 		public $title = 'user/index';
 
-		public function beforeRender(){
+		public function beforeRender()
+		{
 		}
 	}
 

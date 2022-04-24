@@ -54,6 +54,31 @@
 			}
 		}
 
+		private function selectLanguage($lang)
+		{
+			if ($lang) {
+				$newLang = Cache::getCache('locale_' . $lang, 'locales');
+				if (!$newLang) {
+					$locales = scandir(WT_LOCALE_PATH);
+					$index   = [
+						-1 => $lang,
+					];
+					foreach ($locales as $locale) {
+						if (stripos($locale, $lang) !== FALSE || stripos($lang, $locale) !== FALSE) {
+							$sim         = similar_text($lang, $locale);
+							$index[$sim] = $locale;
+						}
+					}
+					ksort($index, SORT_NUMERIC);
+					$newLang = end($index);
+					Cache::setCache('locale_' . $lang, $newLang, 600, 'locales');
+				}
+				$this->core->setLocale($newLang, TRUE);
+			}
+		}
+
+		//устнавливает языковой модуль
+
 		/**
 		 * @throws RouterException
 		 * @throws Exception
@@ -87,62 +112,37 @@
 			}
 		}
 
-		//устнавливает языковой модуль
-		private function selectLanguage($lang)
-		{
-			if ($lang) {
-				$newLang = Cache::getCache('locale_' . $lang, 'locales');
-				if (!$newLang) {
-					$locales = scandir(WT_LOCALE_PATH);
-					$index   = [
-						-1 => $lang,
-					];
-					foreach ($locales as $locale) {
-						if (stripos($locale, $lang) !== FALSE || stripos($lang, $locale) !== FALSE) {
-							$sim         = similar_text($lang, $locale);
-							$index[$sim] = $locale;
-						}
-					}
-					ksort($index, SORT_NUMERIC);
-					$newLang = end($index);
-					Cache::setCache('locale_' . $lang, $newLang, 600, 'locales');
-				}
-				$this->core->setLocale($newLang, TRUE);
-			}
-		}
-
 		/**
-		 * Запускает страницу или REST на основе шаблона в ./core/router.php
+		 * Запускает REST controller
+		 * @throws RouterException
 		 * @throws Exception
 		 */
-		private function advancedRoute()
+		private function launchAjax($ajax, $data = [])
 		{
-			$this->isAdvanced = TRUE;
-			$router_path      = Utilities::findPath(WT_CORE_PATH . "router.php");
-			$router           = include $router_path;
-			if (!empty($router)) {
-				$switcher = new \Bramus\Router\Router();
-				$self     = $this;
-
-				foreach ($router['ajax'] as $pattern => $alias) {
-					$switcher->all($pattern, function () use ($alias, $self) {
-						$data         = func_get_args();
-						$self->isAjax = TRUE;
-						$self->alias  = $alias;
-						$self->_route($data);
-						exit();
-					});
+			$class = include $ajax;
+			if (!class_exists($class)) {
+				$class = 'ajax\\' . $class;
+				if (!class_exists($class)) {
+					Err::fatal("class '$class' is not define");
 				}
-				foreach ($router['page'] as $pattern => $alias) {
-					$switcher->all($pattern, function () use ($alias, $self) {
-						$data        = func_get_args();
-						$self->alias = $alias;
-						$self->_route($data);
-						exit();
-					});
-				}
-				$switcher->run();
 			}
+			/** @var Ajax $result */
+			$result = new $class($this->core, $data);
+			try {
+				if ($result instanceof Ajax) {
+					try {
+						$response = $result->run();
+					} catch (Exception $e) {
+						Err::error($e->getMessage, __LINE__, __FILE__);
+					}
+				} else {
+					Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+				}
+			} catch (Exception $e) {
+				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+				$response = json_encode($result, 256);
+			}
+			exit($response);
 		}
 
 		/**
@@ -189,36 +189,37 @@
 		}
 
 		/**
-		 * Запускает REST controller
-		 * @throws RouterException
+		 * Запускает страницу или REST на основе шаблона в ./core/router.php
 		 * @throws Exception
 		 */
-		private function launchAjax($ajax, $data = [])
+		private function advancedRoute()
 		{
-			$class = include $ajax;
-			if (!class_exists($class)) {
-				$class = 'ajax\\' . $class;
-				if (!class_exists($class)) {
-					Err::fatal("class '$class' is not define");
+			$this->isAdvanced = TRUE;
+			$router_path      = Utilities::findPath(WT_CORE_PATH . "router.php");
+			$router           = include $router_path;
+			if (!empty($router)) {
+				$switcher = new \Bramus\Router\Router();
+				$self     = $this;
+
+				foreach ($router['ajax'] as $pattern => $alias) {
+					$switcher->all($pattern, function () use ($alias, $self) {
+						$data         = func_get_args();
+						$self->isAjax = TRUE;
+						$self->alias  = $alias;
+						$self->_route($data);
+						exit();
+					});
 				}
-			}
-			/** @var Ajax $result */
-			$result = new $class($this->core, $data);
-			try {
-				if ($result instanceof Ajax) {
-					try {
-						$response = $result->run();
-					} catch (Exception $e) {
-						Err::error($e->getMessage, __LINE__, __FILE__);
-					}
-				} else {
-					Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+				foreach ($router['page'] as $pattern => $alias) {
+					$switcher->all($pattern, function () use ($alias, $self) {
+						$data        = func_get_args();
+						$self->alias = $alias;
+						$self->_route($data);
+						exit();
+					});
 				}
-			} catch (Exception $e) {
-				Err::fatal($e->getMessage(), __LINE__, __FILE__);
-				$response = json_encode($result, 256);
+				$switcher->run();
 			}
-			exit($response);
 		}
 	}
 

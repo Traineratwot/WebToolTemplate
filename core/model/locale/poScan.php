@@ -11,6 +11,15 @@
 	class PoScanner
 	{
 		public    $trans = [];
+		public    $translations;
+		/**
+		 * @var mixed|string
+		 */
+		public mixed $domain;
+		/**
+		 * @var string[]
+		 */
+		public array $commentsPrefixes;
 		protected $functions
 						 = [
 				'gettext',
@@ -33,15 +42,6 @@
 				'noop',
 				'noop__',
 			];
-		public   $translations;
-		/**
-		 * @var mixed|string
-		 */
-		public mixed $domain;
-		/**
-		 * @var string[]
-		 */
-		public array $commentsPrefixes;
 
 		public function __construct(Translations ...$allTranslations)
 		{
@@ -95,7 +95,7 @@
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
 			$translation = $this->trans[$name] ?? $this->trans[$name] = Translation::create(NULL, $name);
-			$f = str_replace(WT_BASE_PATH, '', $this->FileName);
+			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {
 				$translation->translate($translate);

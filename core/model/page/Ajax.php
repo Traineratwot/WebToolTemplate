@@ -109,6 +109,17 @@
 			return TRUE;
 		}
 
+		public function failure($msg = '', $object = NULL, $error = [])
+		{
+			return [
+				'success' => FALSE,
+				'message' => $msg,
+				'object'  => $object,
+				'errors'  => $error,
+				'code'    => $this->httpResponseCode,
+			];
+		}
+
 		public function process()
 		{
 			switch ($_SERVER['REQUEST_METHOD']) {
@@ -185,17 +196,6 @@
 				'success' => TRUE,
 				'message' => $msg,
 				'object'  => $object,
-				'code'    => $this->httpResponseCode,
-			];
-		}
-
-		public function failure($msg = '', $object = NULL, $error = [])
-		{
-			return [
-				'success' => FALSE,
-				'message' => $msg,
-				'object'  => $object,
-				'errors'  => $error,
 				'code'    => $this->httpResponseCode,
 			];
 		}

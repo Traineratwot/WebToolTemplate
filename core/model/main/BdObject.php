@@ -20,11 +20,12 @@
 		public  $primaryKey = '';
 		public  $isNew      = TRUE;
 		public  $schema     = [];
+		public  $_fields    = [];
 		private $update     = [];
 		private $data       = [];
-		public  $_fields    = [];
 
 		//--------------------------------------------------------
+
 		public function __construct(Core &$core, $where = [])
 		{
 			parent::__construct($core);
@@ -148,7 +149,8 @@
 				$builder = new GenericBuilder();
 				$query   = $builder->select()
 								   ->setTable($this->table)
-								   ->where();
+								   ->where()
+				;
 				foreach ($where as $key => $value) {
 					$query->equals($key, $value);
 				}
@@ -192,11 +194,12 @@ SQL;
 			]);
 		}
 
-		public function toArray()
-		{
-			return $this->data;
-		}
-
+		/**
+		 * @param $data
+		 * @param $isNew
+		 * @param $update
+		 * @return BdObject
+		 */
 		public function fromArray($data, $isNew = TRUE, $update = TRUE)
 		{
 			$this->data = array_merge($this->data, $data);
@@ -207,25 +210,6 @@ SQL;
 				$this->isNew = FALSE;
 			}
 			$this->repair();
-			return $this;
-		}
-
-		//--------------------------------------------------------
-
-		public function set($key, $value = NULL)
-		{
-			if (is_null($value) && !$this->schema[$key]['null']) {
-				$value = $this->schema[$key]['default'];
-			}
-			if (is_array($value)) {
-				$value = json_encode($value, 256);
-			}
-			if ($this->data[$key] != $value) {
-				$this->update[$key] = $value;
-			}
-			$this->data[$key] = $value;
-			$this->repair();
-			$this->validate();
 			return $this;
 		}
 
@@ -247,6 +231,43 @@ SQL;
 					$this->update[$key] = NULL;
 				}
 			}
+		}
+
+		//--------------------------------------------------------
+
+		/**
+		 * @param $array
+		 * @return BdObject
+		 */
+		public static function __set_state($array)
+		{
+			global $core;
+			$a   = get_called_class();
+			$obj = new $a($core);
+			$obj->fromArray($array['data'], FALSE);
+			return $obj;
+		}
+
+		public function toArray()
+		{
+			return $this->data;
+		}
+
+		public function set($key, $value = NULL)
+		{
+			if (is_null($value) && !$this->schema[$key]['null']) {
+				$value = $this->schema[$key]['default'];
+			}
+			if (is_array($value)) {
+				$value = json_encode($value, 256);
+			}
+			if ($this->data[$key] != $value) {
+				$this->update[$key] = $value;
+			}
+			$this->data[$key] = $value;
+			$this->repair();
+			$this->validate();
+			return $this;
 		}
 
 		private function validate()
@@ -273,7 +294,8 @@ SQL;
 				if ($this->isNew()) {
 					$query = $builder->insert()
 									 ->setTable($this->table)
-									 ->setValues($this->update);
+									 ->setValues($this->update)
+					;
 
 					$sql    = $builder->write($query);
 					$values = $builder->getValues();
@@ -283,7 +305,8 @@ SQL;
 									 ->setValues($this->update)
 									 ->where()
 									 ->equals($this->primaryKey, $this->data[$this->primaryKey])
-									 ->end();
+									 ->end()
+					;
 
 					$sql    = $builder->write($query);
 					$values = $builder->getValues();
@@ -333,6 +356,8 @@ SQL;
 			return $this;
 		}
 
+		/** @noinspection MagicMethodsValidityInspection */
+
 		public function get($key, $default = NULL)
 		{
 			$this->repair();
@@ -340,15 +365,5 @@ SQL;
 				$default = $this->schema[$key]['null'] ? NULL : $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;
-		}
-
-		/** @noinspection MagicMethodsValidityInspection */
-		public static function __set_state($array)
-		{
-			global $core;
-			$a   = get_called_class();
-			$obj = new $a($core);
-			$obj->fromArray($array['data'], FALSE);
-			return $obj;
 		}
 	}

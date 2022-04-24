@@ -15,18 +15,18 @@
 			$('#login').on('success', function(e, d) {
 				console.log(arguments)
 				PNotify.success({
-					title: 'Готово',
-					text: d['message'],
-					icon: 'fa fa-envelope'
-				})
+									title: 'Готово',
+									text : d['message'],
+									icon : 'fa fa-envelope'
+								})
 			})
 			$('#login').on('failure', function(e, d) {
 				console.log(arguments)
 				PNotify.error({
-					title: 'Ошибка',
-					text: d['message'],
-					icon: 'fa fa-envelope'
-				})
+								  title: 'Ошибка',
+								  text : d['message'],
+								  icon : 'fa fa-envelope'
+							  })
 			})
 		</script>
 	</form>

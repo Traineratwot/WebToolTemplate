@@ -10,7 +10,7 @@
 	 * -------------------------------------------------------------
 	 */
 	$WT_GETTEXT = NULL;
-	function smarty_modifier_config($text='', $arr = [])
+	function smarty_modifier_config($text = '', $arr = [])
 	{
 		if (defined($text)) {
 			return constant($text);

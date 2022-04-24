@@ -1,6 +1,7 @@
 <?php
 
 	namespace model\page;
+
 	use model\main\Core;
 
 	/**

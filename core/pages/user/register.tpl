@@ -22,10 +22,10 @@
 		$('#reg').on('success', function() {
 			console.log(arguments)
 			PNotify.success({
-				title: 'Готово',
-				text: 'You has been registered',
-				icon: 'fa fa-envelope'
-			})
+								title: 'Готово',
+								text : 'You has been registered',
+								icon : 'fa fa-envelope'
+							})
 			setTimeout(function() {
 				document.location.href = '/user/profile'
 			}, 1000)
@@ -33,10 +33,10 @@
 		$('#reg').on('failure', function(e, d) {
 			console.log(arguments)
 			PNotify.error({
-				title: 'Ошибка',
-				text: d['message'],
-				icon: 'fa fa-envelope'
-			})
+							  title: 'Ошибка',
+							  text : d['message'],
+							  icon : 'fa fa-envelope'
+						  })
 		})
 	</script>
 {/block}

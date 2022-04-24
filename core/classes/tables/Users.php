@@ -45,16 +45,6 @@
 			return $this->get('email');
 		}
 
-		public function login()
-		{
-			WT_RESTART_SESSION_FUNCTION();
-			$_SESSION['authKey'] = $this->get('authKey');
-			$_SESSION['ip']      = Utilities::getIp();
-			$hash                = hash('sha256', $_SESSION['authKey'] . $_SESSION['ip']);
-			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
-			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
-		}
-
 		public function logout()
 		{
 			WT_RESTART_SESSION_FUNCTION();
@@ -94,6 +84,16 @@
 			$this->set('salt', $salt);
 			$password .= $salt;
 			$this->set('password', password_hash($password, PASSWORD_DEFAULT));
+		}
+
+		public function login()
+		{
+			WT_RESTART_SESSION_FUNCTION();
+			$_SESSION['authKey'] = $this->get('authKey');
+			$_SESSION['ip']      = Utilities::getIp();
+			$hash                = hash('sha256', $_SESSION['authKey'] . $_SESSION['ip']);
+			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
+			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
 		}
 
 		public function verifyPassword($password)
