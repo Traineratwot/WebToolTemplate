@@ -2,7 +2,11 @@
 
 	namespace model\main;
 
-	use Exception;
+	use FilesystemIterator;
+	use RecursiveDirectoryIterator;
+	use RecursiveIteratorIterator;
+	use RuntimeException;
+	use SplFileInfo;
 
 	if (!defined('WT_CACHE_PATH')) {
 		define('WT_CACHE_PATH', './');
@@ -24,7 +28,7 @@
 		 * @param string   $category папка кеша
 		 * @param mixed    ...$args
 		 * @return mixed|null
-		 * @throws Exception
+		 * @throws RuntimeException
 		 */
 		public static function call($key, $function, $expire = 600, $category = '', ...$args)
 		{
@@ -35,15 +39,13 @@
 			if (is_callable($function)) {
 				$args   = func_get_args();
 				$args   = array_slice($args, 4);
-				$result = call_user_func($function, ...$args);
+				$result = $function(...$args);
 				if ($result !== NULL) {
 					return self::setCache($key, $result, $expire, $category);
 				}
 				return NULL;
-			} else {
-				throw new Exception("Is not a function");
 			}
-			return NULL;
+			throw new RuntimeException("Is not a function");
 		}
 
 		/**
@@ -54,13 +56,11 @@
 		 */
 		public static function getCache($key, $category = '')
 		{
-			if ($category != 'table') {
-				//если установлен заголовок отключить кеш отключаем кеш
-				if (function_exists('getallheaders')) {
-					$headers = getallheaders();
-					if ($headers['Cache-Control'] == 'no-cache') {
-						return NULL;
-					}
+			//если установлен заголовок отключить кеш отключаем кеш
+			if (($category !== 'table') && function_exists('getallheaders')) {
+				$headers = getallheaders();
+				if ($headers['Cache-Control'] === 'no-cache') {
+					return NULL;
 				}
 			}
 			$name = self::getKey($key) . '.cache.php';
@@ -105,7 +105,7 @@ PHP;
 			$concurrentDirectory = WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR;
 			if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
 				if (!mkdir($concurrentDirectory, 0777, TRUE) && !is_dir($concurrentDirectory)) {
-					throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+					throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 				}
 			}
 			if (is_dir($concurrentDirectory)) {
@@ -129,8 +129,28 @@ PHP;
 			return !file_exists(WT_CACHE_PATH . $name);
 		}
 
-		public static function __set_state($arr)
+		public static function autoRemove()
 		{
-			return new Cache();
+			$dirs     = new RecursiveDirectoryIterator(WT_CACHE_PATH, FilesystemIterator::SKIP_DOTS);
+			$Iterator = new RecursiveIteratorIterator($dirs);
+			/** @var SplFileInfo $file */
+			foreach ($Iterator as $file) {
+				if (strpos($file->getFilename(), '.cache.php') !== FALSE) {
+					include $file->getPathname();
+				}
+			}
+		}
+
+		public static function removeAll($dir = WT_CACHE_PATH)
+		{
+			if (strpos($dir, WT_CACHE_PATH) === FALSE) {
+				throw new RuntimeException();
+			}
+			if ($objs = glob($dir . '/*')) {
+				foreach ($objs as $obj) {
+					is_dir($obj) ? self::removeAll($obj) : unlink($obj);
+				}
+			}
+			rmdir($dir);
 		}
 	}

@@ -7,7 +7,7 @@
 			<input
 					name="email" type="email" class="form-control" id="exampleFormControlInput1"
 					placeholder="email@example.com"
-					oninput="$(forgot_password).attr('href','/user/forgot_password?email='+this.value)"
+					oninput="$('#forgotPassword').attr('href','/user/forgotPassword?email='+this.value)"
 			>
 		</div>
 		<div class="mb-3">
@@ -18,7 +18,7 @@
 			>
 		</div>
 		<button type="submit" class="btn btn-primary">{t}submit{/t}</button>
-		<a id="forgot_password" href="/user/ForgotPassword">{t}forgot_password{/t}?</a>
+		<a id="forgotPassword" href="/user/ForgotPassword">{t}forgotPassword{/t}?</a>
 		<script>
 			$('#login').on('success', function() {
 				console.log(arguments)

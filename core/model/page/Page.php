@@ -127,7 +127,7 @@
 			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
 				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
-					Err::fatal('can`t load: "' . $this->source . '"', __LINE__, __FILE__);
+					Err::fatal('can`t load: "' . $this->source . '"');
 					return FALSE;
 				}
 			}

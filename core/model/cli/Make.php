@@ -8,28 +8,27 @@
 
 	class Make
 	{
-
 		public static function makeAjax($name, $type = 'any')
 		{
 			$method = '';
 			switch ($type) {
 				case 'post':
 					$method = <<<PHP
-	function POST(){
+	public function POST(){
 		//TODO YOU CODE
 	}
 PHP;
 					break;
 				case 'get':
 					$method = <<<PHP
-	function GET(){
+	public function GET(){
 		//TODO YOU CODE
 	}
 PHP;
 					break;
 				default:
 					$method = <<<PHP
-	function process(){
+	public function process(){
 		//TODO YOU CODE
 	}
 PHP;
@@ -82,6 +81,7 @@ PHP;
 				$template .= '.tpl';
 			}
 			return <<<TPL
+{*$name*}
 {extends file='{$template}'}
 {block name="head"}
 
@@ -92,7 +92,7 @@ PHP;
 TPL;
 		}
 
-		public static function makePageClass($name, $template = 'base')
+		public static function makePageClass($name)
 		{
 			self::name2class($name, $class, $namespace);
 			return <<<PHP
@@ -118,7 +118,7 @@ PHP;
 		public static function makeTable($name, $primaryKey = 'id')
 		{
 			$primaryKey = $primaryKey ?: 'id';
-			$class      = self::name2class($name);
+			$class      = self::name2class($name, $class);
 			return <<<PHP
 <?php
 	namespace tables;
@@ -126,7 +126,7 @@ PHP;
 
 	/**
 	 * Класс для работы с таблицей `$name`
-	 * вызывается Core::getObject('$class')
+	 * вызывается Core::getObject($class::class)
 	 */
 	class $class extends BdObject
 	{
@@ -148,8 +148,7 @@ PHP;
 	use model\\CoreObject;
 
 	/**
-	 * Класс для работы с таблицей `$name`
-	 * вызывается Core::getObject('$class')
+	 * вызывается Core::init()->getObject($class::class)
 	 */
 	class $class extends CoreObject
 	{
@@ -165,17 +164,15 @@ PHP;
 			return <<<PHP
 <?php
 	namespace cron;
-	/** @var Core \$core */
 	use model\main\Core;
 	use model\main\CoreObject;
 	class $class extends CoreObject
 	{
-	
 		function process(){
 			//TODO: process
 		}
 	}
-
+	\$core = Core::init();
 	(new $class(\$core))->process();
 PHP;
 		}

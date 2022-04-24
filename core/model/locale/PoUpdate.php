@@ -8,6 +8,7 @@
 	use Gettext\Scanner\JsScanner;
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
+	use RuntimeException;
 	use Traineratwot\PhpCli\Console;
 
 
@@ -30,7 +31,7 @@
 			}
 		}
 
-		function run($lang)
+		public function run($lang)
 		{
 			$this->domain = WT_LOCALE_DOMAIN;
 			$this->lang   = $lang;
@@ -39,15 +40,11 @@
 				$poLoader  = new PoLoader();
 				$generator = new PoGenerator();
 				$dir       = WT_LOCALE_PATH . $lang . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR;
-				if (!is_dir($dir)) {
-					if (!mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-					}
+				if (!is_dir($dir) && !mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
+					throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
 				}
 				$oldFile = $dir . WT_LOCALE_DOMAIN . '.po';
-				if (file_exists($oldFile)) {
-					$this->old = $poLoader->loadFile($oldFile);
-				} else {
+				if (!file_exists($oldFile)) {
 					$translations = Translations::create(WT_LOCALE_DOMAIN);
 					$locale       = explode('.', $lang);
 					$translations->getHeaders()
@@ -55,12 +52,12 @@
 								 ->set('Content-Type:', 'text/plain; charset=UTF-8')
 					;
 					$generator->generateFile($translations, $oldFile);
-					$this->old = $poLoader->loadFile($oldFile);
 				}
-				$new = $this->phpScan(Translations::create(WT_LOCALE_DOMAIN));
-				$new = $this->jsScan($new);
-				$new = $this->SmartyScan($new);
-				$new = $this->old->mergeWith($new, Merge::TRANSLATIONS_THEIRS);
+				$this->old = $poLoader->loadFile($oldFile);
+				$new       = $this->phpScan(Translations::create(WT_LOCALE_DOMAIN));
+				$new       = $this->jsScan($new);
+				$new       = $this->SmartyScan($new);
+				$new       = $this->old->mergeWith($new, Merge::TRANSLATIONS_THEIRS);
 				$generator->generateFile($new, $oldFile,);
 			}
 		}

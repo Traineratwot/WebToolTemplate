@@ -12,11 +12,10 @@
 	class Router
 	{
 
-
 		private $isAjax;
 		private $alias;
 		private $core;
-		private $isAdvanced = FALSE;
+		public  $isAdvanced = FALSE;
 
 		public function __construct()
 		{
@@ -46,10 +45,12 @@
 			try {
 				$this->_route();
 				$this->advancedRoute();
+				$this->core->errorPage();
 			} catch (RouterException $e) {
+				Err::error($e->getMessage());
 				$this->core->errorPage();
 			} catch (Exception $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+				Err::error($e->getMessage());
 				$this->core->errorPage(500, 'route ErrorPage');
 			}
 		}
@@ -133,13 +134,13 @@
 					try {
 						$response = $result->run();
 					} catch (Exception $e) {
-						Err::error($e->getMessage, __LINE__, __FILE__);
+						Err::error($e->getMessage());
 					}
 				} else {
-					Err::fatal("Ajax class '$class' must be extended 'Ajax'", __LINE__, __FILE__);
+					Err::fatal("Ajax class '$class' must be extended 'Ajax'");
 				}
 			} catch (Exception $e) {
-				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+				Err::fatal($e->getMessage());
 				$response = json_encode($result, 256);
 			}
 			exit($response);
@@ -156,7 +157,6 @@
 			if (!class_exists($class)) {
 				$class = 'page\\' . $class;
 				if (!class_exists($class)) {
-					$this->launchAjax();
 					return;
 				}
 			}
@@ -166,11 +166,11 @@
 				try {
 					$result->render();
 				} catch (Exception $e) {
-					Err::error($e->getMessage, __LINE__, __FILE__);
+					Err::error($e->getMessage());
 				}
 				exit();
 			}
-			Err::fatal("Page class '$class' must be extended 'Page'", __LINE__, __FILE__);
+			Err::fatal("Page class '$class' must be extended 'Page'");
 		}
 
 		/**
@@ -183,7 +183,7 @@
 			try {
 				$result->render();
 			} catch (Exception $e) {
-				Err::error($e->getMessage, __LINE__, __FILE__);
+				Err::error($e->getMessage());
 			}
 			exit();
 		}
@@ -227,5 +227,5 @@
 	try {
 		$r->route();
 	} catch (Exception $e) {
-		Err::Fatal($e->getMessage(), __LINE__, __FILE__);
+		Err::Fatal($e->getMessage());
 	}

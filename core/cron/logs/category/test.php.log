@@ -1,8 +1,8 @@
 [0;36mSleep 5[0m
 
 ------STATS------
-Time:            0.215 ms
+Time:            0.035 ms
 SQL Queries:     3
-Memory used:     783,7 Kb
-Memory max used: 860,2 Kb
-Date:            2022-04-22 14:01:17
+Memory used:     851,5 Kb
+Memory max used: 930,9 Kb
+Date:            2022-04-24 15:43:49

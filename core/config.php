@@ -7,15 +7,15 @@
 	define('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
 	define('WT_CACHE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
 	define('WT_MODEL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
-	define('WT_VENDOR_PATH', realpath(dirname(__DIR__)) . 'vendor' . DIRECTORY_SEPARATOR);
+	define('WT_VENDOR_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR);
 	define('WT_PAGES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR);
 	define('WT_VIEWS_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR);
 	define('WT_CLASSES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR);
 	define('WT_TEMPLATES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
 	define('WT_AJAX_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR);
 	define('WT_CRON_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR);
-	define('WT_ASSETS_PATH', realpath(dirname(__DIR__)) . 'assets' . DIRECTORY_SEPARATOR);
-	define('WT_IMAGES_PATH', realpath(dirname(__DIR__)) . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR);
+	define('WT_ASSETS_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR);
+	define('WT_IMAGES_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR);
 	//настройка Cron
 	define('WT_PHP_EXEC_CMD', "php"); //команда запуска php скрипта
 	//Внешний url
@@ -73,12 +73,10 @@
 			if (!isset($math[1])) {
 				if (class_exists('\Locale')) {
 					return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-				} else {
-					return 'en';
 				}
-			} else {
-				return $math[1];
+				return 'en';
 			}
+			return $math[1];
 		}
 	}
 	//настройка системы

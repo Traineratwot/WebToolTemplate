@@ -17,7 +17,6 @@
 		"gettext/php-scanner"           :"^1.3",
 		"gettext/json"                  :"^1.0",
 		"gettext/translator"            :"^1.0",
-		"splitbrain/php-cli"            :"^1.1",
 		"traineratwot/php-cli"          :"^1.0"
 	},
 	"require-dev":{

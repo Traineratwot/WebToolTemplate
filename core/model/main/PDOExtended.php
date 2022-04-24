@@ -21,8 +21,8 @@
 		/**
 		 * @var array|false
 		 */
-		public $dsn_info;
-		public $dsn;
+		public  $dsn_info;
+		public  $dsn;
 		private $query_count = 0;
 
 		public function __construct($dsn, $username = NULL, $password = NULL, $driverOptions = [])
@@ -102,16 +102,29 @@
 		}
 
 		/**
-		 * Проверяет существование таблицы в базе
+		 * Проверяет существование таблицы в базе. возврящет ее правильное название с учетом регистра | FALSE
 		 * @param string $table
-		 * @return bool
+		 * @return FALSE|string
 		 */
 		public function tableExists($table)
 		{
-			if ($this->dsn_info['driver'] === 'sqlite') {
-				return (bool)(int)$this->query("SELECT name FROM sqlite_master WHERE type='table' && name='$table'")->fetchAll(PDO::FETCH_NUM);
+			$list = $this->getAllTables();
+			$find = FALSE;
+			foreach ($list as $t) {
+				if (mb_strtolower($t) === mb_strtolower($table)) {
+					$find = TRUE;
+					break;
+				}
 			}
-			return (bool)(int)$this->query("SHOW TABLES LIKE '$table'")->fetchAll(PDO::FETCH_NUM);
+			return $find ? $t : FALSE;
+		}
+
+		public function getAllTables()
+		{
+			if ($this->dsn_info['driver'] === 'sqlite') {
+				return $this->query("SELECT name FROM sqlite_master WHERE type='table'")->fetchAll(PDO::FETCH_COLUMN);
+			}
+			return $this->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
 		}
 
 		/**

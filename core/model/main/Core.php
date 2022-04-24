@@ -25,12 +25,10 @@
 	 */
 	final class Core implements ErrorPage
 	{
-
-
-		public    $db;
-		public    $user;
+		public $db;
+		public $user;
 		/**
-		 * @var SmartyBC
+		 * @var SmartyBC|null
 		 */
 		public $smarty;
 		public $isAuthenticated = FALSE;
@@ -40,17 +38,17 @@
 		public $cache;
 		/**
 		 * Переводы текущей локали
-		 * @var mixed
+		 * @var mixed|null
 		 */
-		public $translation;
-		protected $_cache = [];
+		public  $translation;
+		private $_cache = [];
 
 		public function __construct()
 		{
 			try {
 				$this->db = new PDOExtended(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
 			} catch (PDOException $e) {
-				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+				Err::fatal($e->getMessage());
 			}
 			$this->auth();
 			$this->cache = new Cache();
@@ -62,7 +60,7 @@
 		 */
 		public function auth()
 		{
-			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] == Utilities::getIp()) {
+			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] === Utilities::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
@@ -73,12 +71,12 @@
 				$authKey = strip_tags($_COOKIE['authKey']);
 				$id      = (int)$_COOKIE['userId'];
 				$u       = $this->getUser($id);
-				if (!$u->isNew && $authKey == hash('sha256', $u->get('authKey') . Utilities::getIp())) {
+				if (!$u->isNew && $authKey === hash('sha256', $u->get('authKey') . Utilities::getIp())) {
 					$this->user = &$u;
 					$this->user->login();
 				}
 			}
-			if ($this->user == NULL) {
+			if ($this->user === NULL) {
 				$this->isAuthenticated = FALSE;
 			} else {
 				$this->isAuthenticated = TRUE;
@@ -190,6 +188,7 @@
 				$mail->send();
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
+				Err::error($e->getMessage());
 				return $mail->ErrorInfo;
 			}
 		}
@@ -209,7 +208,7 @@
 				return new $class($this, $where);
 			}
 			$key = Utilities::hash($where);
-			if (!isset($this->_cache[$class]) || !isset($this->_cache[$class][$key])) {
+			if (!isset($this->_cache[$class][$key])) {
 				$this->_cache[$class][$key] = new $class($this, $where);
 			}
 			return $this->_cache[$class][$key];
@@ -220,13 +219,12 @@
 			if (class_exists($class)) {
 				return $class;
 			}
-
 			$class = "tables\\$class";
 			if (class_exists($class)) {
 				return $class;
 			}
-
-			Err::fatal($class . " not exists", __LINE__, __FILE__);
+			Err::fatal($class . " not exists");
+			return $class;
 		}
 
 		/**
@@ -285,7 +283,7 @@
 			putenv("LANG_FOLDER=$_lang");
 			$lang = setlocale(LC_ALL, $_lang);
 			if ($lang === FALSE) {
-				Err::error("Can't set locale to '{$_lang}'", __LINE__, __FILE__);
+				Err::error("Can't set locale to '{$_lang}'");
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
 			if ($_gt && $lang) {
@@ -340,6 +338,9 @@
 			return $lang;
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public function errorPage($code = 404, $msg = 'Not Found')
 		{
 			header("HTTP/1.1 $code $msg");

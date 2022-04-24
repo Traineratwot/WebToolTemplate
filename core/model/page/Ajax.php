@@ -78,7 +78,7 @@
 				try {
 					$this->FILES = new PostFiles();
 				} catch (Exception $e) {
-					Err::error($e->getMessage(), __LINE__, __FILE__);
+					Err::error($e->getMessage());
 				}
 			}
 		}

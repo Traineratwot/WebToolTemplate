@@ -32,7 +32,7 @@
 			try {
 				$this->getSchema();
 			} catch (Exception $e) {
-				Err::fatal($e->getMessage(), __LINE__, __FILE__);
+				Err::fatal($e->getMessage());
 			}
 			try {
 				if (!empty($where)) {
@@ -47,7 +47,7 @@
 					}
 				}
 			} catch (PDOException $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+				Err::error($e->getMessage());
 			}
 			foreach ($this->_fields as $k => $v) {
 				$this->data[$k] = $this->data[$k] ?: NULL;
@@ -76,9 +76,9 @@
 
 		private function getColumnNames($table)
 		{
-			if (WT_TYPE_DB == 'sqlite') {
+			if (WT_TYPE_DB === 'sqlite') {
 				$parser = new PHPSQLParser();
-				$sql    = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' && type ='table'";
+				$sql    = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' and type ='table'";
 				$stmt   = $this->core->db->query($sql);
 				if ($stmt) {
 					$output = [];
@@ -219,7 +219,7 @@ SQL;
 				if (is_numeric($value)) {
 					$this->data[$key] = (float)$value;
 				}
-				if ($this->data[$key] == 'NULL') {
+				if ($this->data[$key] === 'NULL') {
 					$this->data[$key] = NULL;
 				}
 			}
@@ -227,7 +227,7 @@ SQL;
 				if (is_numeric($value)) {
 					$this->update[$key] = (float)$value;
 				}
-				if (stripos($value, 'NULL') === 0 && strlen($value) == 4) {
+				if (stripos($value, 'NULL') === 0 && strlen($value) === 4) {
 					$this->update[$key] = NULL;
 				}
 			}
@@ -315,7 +315,7 @@ SQL;
 					$values = $this->prepareBinds($values);
 					$sql    = $this->prepareSql($sql, $this->table);
 					$sql    = strtr($sql, $values);
-					//Err::info($sql, __LINE__, __FILE__);
+					//Err::info($sql);
 					$q = $this->core->db->exec($sql);
 					if ($q !== FALSE && $this->isNew()) {
 						$lastID = $this->core->db->lastInsertId();
@@ -324,12 +324,12 @@ SQL;
 						}
 						$this->isNew = FALSE;
 					} else {
-						Err::error($sql, __LINE__, __FILE__);
+						Err::error($sql);
 					}
 				}
 				$this->update([$this->primaryKey => $this->data[$this->primaryKey]]);
 			} catch (PDOException $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+				Err::error($e->getMessage());
 			}
 
 			return $this;
@@ -351,7 +351,7 @@ SQL;
 					$q   = $this->core->db->exec($sql);
 				}
 			} catch (PDOException $e) {
-				Err::error($e->getMessage(), __LINE__, __FILE__);
+				Err::error($e->getMessage());
 			}
 			return $this;
 		}

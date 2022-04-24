@@ -7,7 +7,9 @@
 	use FilesystemIterator;
 	use PDO;
 	use RecursiveDirectoryIterator;
+	use RecursiveIteratorIterator;
 	use RuntimeException;
+	use SplFileInfo;
 	use traits\validators\jsonValidate;
 
 	/**
@@ -181,15 +183,24 @@
 		 */
 		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
 		{
-			$dirs       = new RecursiveDirectoryIterator($baseDir, FilesystemIterator::SKIP_DOTS);
-			$fileList   = [];
-			$fileList[] = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
+			$IteratorDirs = new RecursiveDirectoryIterator($baseDir, FilesystemIterator::SKIP_DOTS);
+			$Iterator     = new RecursiveIteratorIterator($IteratorDirs);
+			$fileList     = [];
+			$fileList[]   = glob($baseDir . DIRECTORY_SEPARATOR . $pattern, $flags);
+			/** @var SplFileInfo $dir */
+			$dirs = [];
+			foreach ($Iterator as $dir) {
+				$dirs[] = dirname($dir->getPathname());
+			}
+			$dirs = array_unique($dirs);
 			foreach ($dirs as $dir) {
-				$fileList[] = glob(rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $pattern, $flags);
+				if (is_dir($dir)) {
+					$fileList[] = glob(self::pathNormalize($dir) . $pattern, $flags);
+				}
 			}
 			$fileList = array_unique(array_merge(...$fileList));
 			foreach ($fileList as $k => $file) {
-				$fileList[$k] = realpath($file);
+				$fileList[$k] = self::pathNormalize($file);
 			}
 			return $fileList;
 		}
@@ -376,11 +387,17 @@
 				case 2:
 					$size .= ' Mb';
 					break;
+				case 3:
+					$size .= ' Gb';
+					break;
+				case 4:
+					$size .= ' Tb';
+					break;
 			}
 			return $size;
 		}
 
-		public function success($msg, $object = [])
+		public static function success($msg, $object = [])
 		{
 			return json_encode([
 								   'success' => TRUE,
@@ -390,7 +407,7 @@
 
 		}
 
-		public function failure($msg, $object = [])
+		public static function failure($msg, $object = [])
 		{
 			return json_encode([
 								   'success' => FALSE,
@@ -398,5 +415,19 @@
 								   'object'  => $object,
 							   ], 256);
 
+		}
+
+		public static function writeFile($path, $content)
+		{
+			if (!is_dir(dirname($path))) {
+				$concurrentDirectory = dirname($path);
+				if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
+					if (!mkdir($concurrentDirectory, 0777, 1) && !is_dir($concurrentDirectory)) {
+						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+					}
+				}
+			}
+			file_put_contents($path, $content);
+			return file_exists($path);
 		}
 	}
