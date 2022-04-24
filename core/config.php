@@ -5,17 +5,17 @@
 	//определяем основные пути
 	define('WT_BASE_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR);
 	define('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
-	define('WT_CACHE_PATH', WT_CORE_PATH . 'cache' . DIRECTORY_SEPARATOR);
-	define('WT_MODEL_PATH', WT_CORE_PATH . 'model' . DIRECTORY_SEPARATOR);
-	define('WT_VENDOR_PATH', WT_BASE_PATH . 'vendor' . DIRECTORY_SEPARATOR);
-	define('WT_PAGES_PATH', WT_CORE_PATH . 'pages' . DIRECTORY_SEPARATOR);
-	define('WT_VIEWS_PATH', WT_CORE_PATH . 'views' . DIRECTORY_SEPARATOR);
-	define('WT_CLASSES_PATH', WT_CORE_PATH . 'classes' . DIRECTORY_SEPARATOR);
-	define('WT_TEMPLATES_PATH', WT_CORE_PATH . 'templates' . DIRECTORY_SEPARATOR);
-	define('WT_AJAX_PATH', WT_CORE_PATH . 'ajax' . DIRECTORY_SEPARATOR);
-	define('WT_CRON_PATH', WT_CORE_PATH . 'cron' . DIRECTORY_SEPARATOR);
-	define('WT_ASSETS_PATH', WT_BASE_PATH . 'assets' . DIRECTORY_SEPARATOR);
-	define('WT_IMAGES_PATH', WT_ASSETS_PATH . 'images' . DIRECTORY_SEPARATOR);
+	define('WT_CACHE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
+	define('WT_MODEL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
+	define('WT_VENDOR_PATH', realpath(dirname(__DIR__)) . 'vendor' . DIRECTORY_SEPARATOR);
+	define('WT_PAGES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR);
+	define('WT_VIEWS_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR);
+	define('WT_CLASSES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR);
+	define('WT_TEMPLATES_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
+	define('WT_AJAX_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR);
+	define('WT_CRON_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR);
+	define('WT_ASSETS_PATH', realpath(dirname(__DIR__)) . 'assets' . DIRECTORY_SEPARATOR);
+	define('WT_IMAGES_PATH', realpath(dirname(__DIR__)) . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR);
 	//настройка Cron
 	define('WT_PHP_EXEC_CMD', "php"); //команда запуска php скрипта
 	//Внешний url
@@ -89,9 +89,6 @@
 			if (strpos($sys, 'windows') !== FALSE) {
 				return 'win';
 			}
-			if (strpos($sys, 'linux') !== FALSE) {
-				return 'nix';
-			}
 			return 'nix';
 		}
 	}
@@ -105,8 +102,8 @@
 
 		function WT_RESTART_SESSION_FUNCTION()
 		{
-			setcookie('authKey',null);
-			setcookie('userId',null);
+			setcookie('authKey', NULL);
+			setcookie('userId', NULL);
 			session_unset();
 			WT_START_SESSION_FUNCTION();
 		}

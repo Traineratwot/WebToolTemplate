@@ -6,7 +6,7 @@
 	use Gettext\Translations;
 
 	/**
-	 * Class to scan PHP files and get gettext translations
+	 * Class to scan PHP files && get gettext translations
 	 */
 	class SmartyScanner
 	{
@@ -90,18 +90,18 @@
 						$currentTBlock->startChar = $start;
 					}
 				}
-				if (!is_null($currentTBlock) and $currentTBlock instanceof Tblock) {
+				if (!is_null($currentTBlock) && $currentTBlock instanceof Tblock) {
 
 					$startEnd = stripos($str, Tblock::startEnd);
-					if ($startEnd !== FALSE and $currentTBlock->startEndLine < 0 and $currentTBlock->startChar < $startEnd) {
+					if ($startEnd !== FALSE && $currentTBlock->startEndLine < 0 && $currentTBlock->startChar < $startEnd) {
 						$currentTBlock->startEndLine = $line;
 						$currentTBlock->startEndChar = $startEnd;
 					}
-					if ($currentTBlock->startEndLine <= $line and $currentTBlock->start >= 0) {
+					if ($currentTBlock->startEndLine <= $line && $currentTBlock->start >= 0) {
 						$re = '/((\b\w+\b)=((("|\')(.+?)("|\'))|((\b)(.+?)(\b))))/';
 						preg_match_all($re, $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, 0);
 						foreach ($matches as $match) {
-							if ($match[0][1] >= $start and $match[0][1] <= $startEnd) {
+							if ($match[0][1] >= $start && $match[0][1] <= $startEnd) {
 
 								if (isset($match[8])) {
 									$currentTBlock->addArg($match[2][0], $match[8][0]);
@@ -114,7 +114,7 @@
 				}
 				$end = stripos($str, Tblock::end);
 
-				if ($end !== FALSE and $currentTBlock->endLine < 0) {
+				if ($end !== FALSE && $currentTBlock->endLine < 0) {
 					$currentTBlock->endLine = $line;
 					$currentTBlock->endChar = $end;
 					$TBlocks[]              = $currentTBlock;
@@ -122,7 +122,7 @@
 				}
 			}
 			foreach ($TBlocks as $bl) {
-				if ($bl->startLine >= 0 and $bl->startEndLine >= 0 and $bl->startEndLine >= 0) {
+				if ($bl->startLine >= 0 && $bl->startEndLine >= 0 && $bl->startEndLine >= 0) {
 					foreach ($lines as $line => $str) {
 						$line++;
 						if ($line === $bl->startEndLine) {
@@ -139,7 +139,7 @@
 								$bl->text .= substr($str, 0, $bl->endChar - 1);
 								break;
 							} else {
-								if ($line > $bl->startEndLine and $line < $bl->endLine) {
+								if ($line > $bl->startEndLine && $line < $bl->endLine) {
 									$bl->text .= $str;
 									break;
 								}

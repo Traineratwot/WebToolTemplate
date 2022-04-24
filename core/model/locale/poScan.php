@@ -6,7 +6,7 @@
 	use Gettext\Translations;
 
 	/**
-	 * Class to scan PHP files and get gettext translations
+	 * Class to scan PHP files && get gettext translations
 	 */
 	class PoScanner
 	{

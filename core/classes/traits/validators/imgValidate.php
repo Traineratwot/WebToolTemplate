@@ -16,7 +16,7 @@
 				if (!$maxH) {
 					$maxH = $maxW;
 				}
-				if ($width > $maxW or $height > $maxH) {
+				if ($width > $maxW || $height > $maxH) {
 					throw new ExceptionValidate('image too big');
 				}
 			}
@@ -24,7 +24,7 @@
 				if (!$minH) {
 					$minH = $minW;
 				}
-				if ($width < $minW or $height < $minH) {
+				if ($width < $minW || $height < $minH) {
 					throw new ExceptionValidate('image too small');
 				}
 			}

@@ -36,7 +36,7 @@
 			try {
 				if (!empty($where)) {
 					if (!is_array($where)) {
-						if (is_int($where) or is_numeric($where)) {
+						if (is_int($where) || is_numeric($where)) {
 							$this->update([$this->primaryKey => $where]);
 						} else {
 							$this->update($where, 1);
@@ -77,7 +77,7 @@
 		{
 			if (WT_TYPE_DB == 'sqlite') {
 				$parser = new PHPSQLParser();
-				$sql    = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' and type ='table'";
+				$sql    = "SELECT `name`, `sql` FROM sqlite_master WHERE tbl_name='$table' && type ='table'";
 				$stmt   = $this->core->db->query($sql);
 				if ($stmt) {
 					$output = [];
@@ -94,7 +94,7 @@
 									}
 								}
 							}
-							$default = (!isset($data['default']) or strtolower($data['default']) === 'null') ? NULL : trim($data['default'], '()');
+							$default = (!isset($data['default']) || strtolower($data['default']) === 'null') ? NULL : trim($data['default'], '()');
 							if (is_numeric($default)) {
 								$default = (float)$default;
 							}
@@ -105,8 +105,8 @@
 								'type'      => $data['data-type']['base_expr'] ?: '',
 								'maxLength' => (int)($data['data-type']['length']) ?: NULL,
 								'null'      => $data['nullable'] ? TRUE : FALSE,
-								'primary'   => (isset($data['unique']) and $data['unique']) ? TRUE : FALSE,
-								'unique'    => (isset($data['default']) and $data['default']) ? TRUE : FALSE,
+								'primary'   => (isset($data['unique']) && $data['unique']) ? TRUE : FALSE,
+								'unique'    => (isset($data['default']) && $data['default']) ? TRUE : FALSE,
 							];
 						}
 					}
@@ -166,7 +166,7 @@ SQL;
 			$q = $this->core->db->query($sql);
 			if ($q) {
 				$data = $q->fetch(PDO::FETCH_ASSOC);
-				if ($data and !empty($data)) {
+				if ($data && !empty($data)) {
 					$this->fromArray($data, FALSE);
 				}
 			} else {
@@ -178,7 +178,7 @@ SQL;
 		public static function prepareBinds($values)
 		{
 			foreach ($values as $k => $v) {
-				if (!is_null($v) and mb_strtolower($v) != 'null' and !empty($v) and !is_numeric($v)) {
+				if (!is_null($v) && mb_strtolower($v) != 'null' && !empty($v) && !is_numeric($v)) {
 					$values[$k] = json_encode($v, 256);
 				}
 			}
@@ -214,7 +214,7 @@ SQL;
 
 		public function set($key, $value = NULL)
 		{
-			if (is_null($value) and !$this->schema[$key]['null']) {
+			if (is_null($value) && !$this->schema[$key]['null']) {
 				$value = $this->schema[$key]['default'];
 			}
 			if (is_array($value)) {
@@ -243,7 +243,7 @@ SQL;
 				if (is_numeric($value)) {
 					$this->update[$key] = (float)$value;
 				}
-				if (stripos($value, 'NULL') === 0 and strlen($value) == 4) {
+				if (stripos($value, 'NULL') === 0 && strlen($value) == 4) {
 					$this->update[$key] = NULL;
 				}
 			}
@@ -294,7 +294,7 @@ SQL;
 					$sql    = strtr($sql, $values);
 					//Err::info($sql, __LINE__, __FILE__);
 					$q = $this->core->db->exec($sql);
-					if ($q !== FALSE and $this->isNew()) {
+					if ($q !== FALSE && $this->isNew()) {
 						$lastID = $this->core->db->lastInsertId();
 						if ($lastID) {
 							$this->data[$this->primaryKey] = $lastID;
@@ -336,7 +336,7 @@ SQL;
 		public function get($key, $default = NULL)
 		{
 			$this->repair();
-			if (is_null($default) and isset($this->schema[$key])) {
+			if (is_null($default) && isset($this->schema[$key])) {
 				$default = $this->schema[$key]['null'] ? NULL : $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;

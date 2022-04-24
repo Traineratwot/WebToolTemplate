@@ -32,7 +32,7 @@
 			$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [PDOExtendedStatement::class, [$this]]);
 		}
 
-		protected function ParseDsn($dsn, $username, $password)
+		private function ParseDsn($dsn, $username, $password)
 		{
 			$result = [
 				'driver'   => '',
@@ -42,7 +42,7 @@
 				'port'     => 3306,
 				'database' => '',
 			];
-			if ($dsn == '') {
+			if ($dsn === '') {
 				return FALSE;
 			}
 			$a = explode(':', $dsn);
@@ -88,7 +88,7 @@
 
 		public function __isset($name)
 		{
-			return $name == 'query_count';
+			return $name === 'query_count';
 		}
 
 		/**
@@ -128,11 +128,10 @@
 		 */
 		public function tableExists($table)
 		{
-			if ($this->dsn_info['driver'] == 'sqlite') {
-				return (bool)(int)$this->query("SELECT name FROM sqlite_master WHERE type='table' AND name='{$table}'")->fetchAll(PDO::FETCH_NUM);
+			if ($this->dsn_info['driver'] === 'sqlite') {
+				return (bool)(int)$this->query("SELECT name FROM sqlite_master WHERE type='table' && name='$table'")->fetchAll(PDO::FETCH_NUM);
 			}
-
-			return (bool)(int)$this->query("SHOW TABLES LIKE '{$table}'")->fetchAll(PDO::FETCH_NUM);
+			return (bool)(int)$this->query("SHOW TABLES LIKE '$table'")->fetchAll(PDO::FETCH_NUM);
 		}
 
 		/**

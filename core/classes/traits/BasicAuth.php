@@ -31,7 +31,7 @@
 					!in_array($password, $_SERVER['PHP_AUTH_PW'])
 				) {
 					header('HTTP/1.0 401 Unauthorized');
-					return 'Wrong username or password';
+					return 'Wrong username || password';
 				}
 				return TRUE;
 			}

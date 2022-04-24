@@ -37,8 +37,8 @@ class PostFile
 	public function __construct($data)
 	{
 		$this->data = $data;
-		if (!isset($data['name']) or !isset($data['tmp_name'])) {
-			throw new Exception('name or path not found');
+		if (!isset($data['name']) || !isset($data['tmp_name'])) {
+			throw new Exception('name || path not found');
 		}
 
 		if ($data['error'] != UPLOAD_ERR_OK) {
@@ -62,7 +62,7 @@ class PostFile
 	 */
 	public function save($path = '', $overwrite = FALSE)
 	{
-		if ($path and !$this->saved) {
+		if ($path && !$this->saved) {
 			if (!is_dir(dirname($path)) && !mkdir($concurrentDirectory = dirname($path), 0777, TRUE) && !is_dir($concurrentDirectory)) {
 				throw new Exception(sprintf('Directory "%s" was not created', $concurrentDirectory));
 				return 'can`t create directory';
@@ -75,11 +75,11 @@ class PostFile
 				'{type}'     => $this->type,
 			];
 			$path      = strtr($path, $converter);
-			if (!$overwrite and file_exists($path)) {
+			if (!$overwrite && file_exists($path)) {
 				throw new Exception('file already exist');
 				return 'file already exist';
 			}
-			if (move_uploaded_file($this->path, $path) and file_exists($path) and filesize($path) > 0) {
+			if (move_uploaded_file($this->path, $path) && file_exists($path) && filesize($path) > 0) {
 				$this->saved = TRUE;
 				$this->path  = $path;
 				return TRUE;
@@ -89,8 +89,8 @@ class PostFile
 			return 'can`t save file';
 		}
 
-		throw new Exception('empty path or this already saved');
-		return 'empty path or this already saved';
+		throw new Exception('empty path || this already saved');
+		return 'empty path || this already saved';
 	}
 
 	/**
@@ -103,7 +103,7 @@ class PostFile
 		$metaData    = stream_get_meta_data($f);
 		$tmpFilename = $metaData['uri'];
 		if (!$this->saved) {
-			if (move_uploaded_file($this->path, $tmpFilename) and file_exists($tmpFilename) and filesize($tmpFilename) > 0) {
+			if (move_uploaded_file($this->path, $tmpFilename) && file_exists($tmpFilename) && filesize($tmpFilename) > 0) {
 				return $f;
 			}
 
@@ -111,7 +111,7 @@ class PostFile
 			return 'can`t save file';
 		}
 
-		if (copy($this->path, $tmpFilename) and file_exists($tmpFilename) and filesize($tmpFilename) > 0) {
+		if (copy($this->path, $tmpFilename) && file_exists($tmpFilename) && filesize($tmpFilename) > 0) {
 			return $f;
 		}
 

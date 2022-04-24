@@ -38,9 +38,9 @@
 				$this->alias = $_GET['q'];
 			}
 			if (!$this->source) {
-				if (strpos($this->alias, 'string:') === 0 or strpos($this->alias, 'eval:') === 0) {
+				if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
 					$this->source = $this->alias;
-				} elseif (strpos($this->alias, 'chunk:') === 0 or strpos($this->alias, 'file:') === 0) {
+				} elseif (strpos($this->alias, 'chunk:') === 0 || strpos($this->alias, 'file:') === 0) {
 					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
 					if (!file_exists($this->source)) {
 						$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
@@ -124,7 +124,7 @@
 			}
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
-			if (strpos($this->source, 'string:') !== 0 and strpos($this->source, 'eval:') !== 0) {
+			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
 				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
 					Err::fatal('can`t load: "' . $this->source . '"', __LINE__, __FILE__);

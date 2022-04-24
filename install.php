@@ -1,6 +1,13 @@
 <?php
+
+	namespace install;
+
+	use Exception;
+	use model\main\Core;
+	use RuntimeException;
+
 	error_reporting(0);
-	require_once realpath(__DIR__ . '/core/config.php');
+	require_once __DIR__ . '/core/config.php';
 	$log = [];
 	function installLinux()
 	{
@@ -24,18 +31,18 @@
 	$myConfig = [];
 	foreach ($config as $v => $i) {
 		if (stripos($v, 'WT_') === 0) {
-			$i = json_encode($i);
+			$i          = json_encode($i);
 			$myConfig[] = "if(!defined('$v')){define('$v',$i);}";
 		}
 	}
-	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'controllers', 0777) && !is_dir($concurrentDirectory)) {
-		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'controllers', 0777, 1) && !is_dir($concurrentDirectory)) {
+		throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 	}
-	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'locks', 0777) && !is_dir($concurrentDirectory)) {
-		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'locks', 0777, 1) && !is_dir($concurrentDirectory)) {
+		throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 	}
-	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'logs', 0777) && !is_dir($concurrentDirectory)) {
-		throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+	if (!mkdir($concurrentDirectory = WT_CRON_PATH . 'logs', 0777, 1) && !is_dir($concurrentDirectory)) {
+		throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 	}
 	$log[] = 'Folders created';
 //	file_put_contents(WT_CORE_PATH . '__config.php', "<?php\n# file for IDE highlight. not use this file \n".implode("\n", $myConfig));
@@ -54,14 +61,14 @@
 		$log[] = "Failed to install composer\n";
 	} else {
 		$log[] = 'composer updated';
-		require_once realpath(WT_MODEL_PATH . 'engine.php');
+		require_once WT_MODEL_PATH . 'engine.php';
 		try {
-			$core = Core::init();
+			$core        = Core::init();
 			$needInstall = !($core->db->tableExists("users"));
-		if ($needInstall) {
-			$log[] = 'install Database';
-			if($core->db->dsn_info['driver'] == 'sqlite'){
-				$core->db->exec(<<<SQL
+			if ($needInstall) {
+				$log[] = 'install Database';
+				if ($core->db->dsn_info['driver'] === 'sqlite') {
+					$core->db->exec(<<<SQL
 CREATE TABLE users
 (
 	id       INTEGER
@@ -74,16 +81,17 @@ CREATE TABLE users
 	authKey  VARCHAR(64),
 	salt     INTEGER(11) DEFAULT 0
 );
-SQL);
-			}else{
-				$core->db->exec(<<<SQL
+SQL
+					);
+				} else {
+					$core->db->exec(<<<SQL
 CREATE TABLE `users` (
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`email` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
 	`password` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
 	`authKey` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
 	`salt` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`time_create` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+	`time_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
 	PRIMARY KEY (`id`) USING BTREE,
 	UNIQUE INDEX `email` (`email`) USING BTREE,
 	UNIQUE INDEX `authKey` (`authKey`) USING BTREE
@@ -92,11 +100,12 @@ COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=2314
 ;
-SQL);
+SQL
+					);
+				}
 			}
-		}
 
-		}catch (Exception $e){
+		} catch (Exception $e) {
 
 		}
 	}

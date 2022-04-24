@@ -14,7 +14,7 @@
 	{
 		if (defined($text)) {
 			return constant($text);
-		} elseif (!empty($arr) and isset($arr[$text])) {
+		} elseif (!empty($arr) && isset($arr[$text])) {
 			return $arr[$text];
 		} else {
 			return NULL;

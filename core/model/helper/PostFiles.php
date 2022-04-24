@@ -28,7 +28,7 @@
 			$this->_FILES  = $_FILES;
 			$this->_fields = array_keys($this->_FILES);
 			if (is_array($this->_FILES[$this->_fields[0]])) {
-				if (array_key_exists('name', $this->_FILES[$this->_fields[0]]) and array_key_exists('tmp_name', $this->_FILES[$this->_fields[0]]) and array_key_exists('type', $this->_FILES[$this->_fields[0]])) {
+				if (array_key_exists('name', $this->_FILES[$this->_fields[0]]) && array_key_exists('tmp_name', $this->_FILES[$this->_fields[0]]) && array_key_exists('type', $this->_FILES[$this->_fields[0]])) {
 					$this->_FILES = $this->multiplyFiles($this->_FILES);
 				} else {
 					$this->_FILES = $this->defaultFiles($this->_FILES);

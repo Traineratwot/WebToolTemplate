@@ -14,7 +14,7 @@
 
 		public function beforeRender()
 		{
-			if ($_GET['action'] == 'resume' and !empty($_GET['authKey'])) {
+			if ($_GET['action'] == 'resume' && !empty($_GET['authKey'])) {
 				$authKey = $_GET['authKey'];
 				$User    = $this->core->getUser(['authKey' => $authKey]);
 				if (!$User->isNew()) {

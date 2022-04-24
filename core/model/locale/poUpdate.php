@@ -92,7 +92,7 @@
 					}
 				} else {
 					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
-						if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+						if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
 							$phpScanner->scanFile($_file);
 							Console::success($_file);
 						}
@@ -113,7 +113,7 @@
 					}
 				} else {
 					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
-						if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+						if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
 							$phpScanner->scanFile($_file);
 							Console::success($_file);
 						}
@@ -160,7 +160,7 @@
 					}
 				} else {
 					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.js', GLOB_BRACE) as $_file) {
-						if (stripos($_file, 'node_modules') === FALSE and stripos($_file, 'highlight') === FALSE) {
+						if (stripos($_file, 'node_modules') === FALSE && stripos($_file, 'highlight') === FALSE) {
 							$phpScanner->scanFile($_file);
 							Console::success($_file);
 						}
@@ -185,7 +185,7 @@
 				}
 			} else {
 				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.tpl', GLOB_BRACE) as $_file) {
-					if (stripos($_file, 'vendor') === FALSE and stripos($_file, 'cache') === FALSE) {
+					if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
 						$phpScanner->scanFile($_file);
 						Console::success($_file);
 					}

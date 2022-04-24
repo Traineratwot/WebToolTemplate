@@ -81,7 +81,7 @@
 			$this->output_file    = $param['output_file'] ?? NULL;
 			$this->mode           = array_key_exists('mode', $param) ? $param['mode'] : 'default';
 
-			if (($this->mode == 'fast') && $this->output_file and $this->utf8bom) {
+			if (($this->mode == 'fast') && $this->output_file && $this->utf8bom) {
 				fwrite($this->output_file, $this->utf8bom);
 			}
 
@@ -94,7 +94,7 @@
 		public function reset(&$param = [])
 		{
 			$this->inputCharset   = $param['inputCharset'] ?? $this->inputCharset;
-			$this->utf8bom        = (isset($param['woBom']) and $param['woBom'] = TRUE) ? NULL : $this->utf8bom;
+			$this->utf8bom        = (isset($param['woBom']) && $param['woBom'] = TRUE) ? NULL : $this->utf8bom;
 			$this->str_delimiter  = $param['delimiter'] ?? $this->str_delimiter;
 			$this->line_delimiter = $param['line_delimiter'] ?? $this->line_delimiter;
 			$this->csv            = NULL;
@@ -111,7 +111,7 @@
 		 */
 		public function addCol()
 		{
-			if (!$this->appendType or !$this->isEmpty(($this->matrix))) {
+			if (!$this->appendType || !$this->isEmpty(($this->matrix))) {
 				$this->appendType = 'column';
 			}
 			if ($this->appendType != 'column') {
@@ -119,13 +119,13 @@
 			}
 			$args = func_get_args();
 
-			if (count($args) == 1 and is_array($args[0])) {
+			if (count($args) == 1 && is_array($args[0])) {
 				$args = $args[0];
 			}
 			$head    = array_flip($this->_head);
 			$isAssoc = Utilities::isAssoc($args);
 			foreach ($args as $k => $art) {
-				if (!is_string($art) and !is_numeric($art)) {
+				if (!is_string($art) && !is_numeric($art)) {
 					$art = NULL;
 				} else {
 					$art = (string)$art;
@@ -210,7 +210,7 @@
 			}
 			$x = (int)$x;
 			$y = (int)$y;
-			if (isset($this->matrix[$y]) and isset($this->matrix[$y][$x])) {
+			if (isset($this->matrix[$y]) && isset($this->matrix[$y][$x])) {
 				return $this->matrix[$y][$x];
 			}
 			return FALSE;
@@ -271,7 +271,7 @@
 					$this->html .= "</tr>";
 				} else {
 					foreach ($this->head as $k => $h) {
-						if (isset($this->matrix[$k]) and is_array($this->matrix[$k])) {
+						if (isset($this->matrix[$k]) && is_array($this->matrix[$k])) {
 							array_unshift($this->matrix[$k], $h);
 						}
 					}
@@ -293,7 +293,7 @@
 						$i++;
 						$_r = strip_tags($r);
 						$_k = strip_tags($k);
-						if ($this->head and $this->appendType == 'column' and $i == 1) {
+						if ($this->head && $this->appendType == 'column' && $i == 1) {
 							$this->html .= "<th data-key='$_k' data-value='$_r' $style>$r</th>";
 						} else {
 							$this->html .= "<td data-key='$_k' data-value='$_r' $style>$r</td>";
@@ -543,7 +543,7 @@
 							$style = 'style="color:' . $this->randomColor(['salt' => $k, 'limits' => $this->limits]) . ';"';
 						}
 						$i++;
-						if ($this->head and $this->appendType == 'column' and $i == 1) {
+						if ($this->head && $this->appendType == 'column' && $i == 1) {
 							$this->html .= "<strong $style>$r</strong>" . $delimiter;
 						} else {
 							$this->html .= "<span $style>$r</span>" . $delimiter;
@@ -770,7 +770,7 @@
 		{
 			switch (gettype($source)) {
 				case 'string':
-					if (!$this->strTest($source, "\n", [$this->line_delimiter, $this->str_delimiter]) and file_exists($source)) {
+					if (!$this->strTest($source, "\n", [$this->line_delimiter, $this->str_delimiter]) && file_exists($source)) {
 						$source = @fopen($source, 'rb');
 						return $this->_readCsvResource($source, $limit);
 					}
@@ -859,7 +859,7 @@
 				return $this->setHead(...$args);
 			}
 
-			if (count($args) == 1 and is_array($args[0])) {
+			if (count($args) == 1 && is_array($args[0])) {
 				$args = $args[0];
 			}
 
@@ -872,12 +872,12 @@
 				$k   = $this->clearString($k);
 				$art = $this->clearString($art);
 				if ($isAssoc) {
-					if (!is_string($art) and !is_numeric($art)) {
+					if (!is_string($art) && !is_numeric($art)) {
 						$args_[$head[$k]] = NULL;
 					} else {
 						$args_[$head[$k]] = $art;
 					}
-				} elseif (!is_string($art) and !is_numeric($art)) {
+				} elseif (!is_string($art) && !is_numeric($art)) {
 					$args_[$k] = NULL;
 				} else {
 					$args_[$k] = $art;
@@ -932,14 +932,14 @@
 		public function setHead()
 		{
 			$args = func_get_args();
-			if (count($args) == 1 and is_array($args[0])) {
+			if (count($args) == 1 && is_array($args[0])) {
 				$args = $args[0];
 			}
 			$_args = [];
 			foreach ($args as $k => $art) {
 				$k   = $this->clearString($k);
 				$art = $this->clearString($art);
-				if (!is_string($art) and !is_numeric($art)) {
+				if (!is_string($art) && !is_numeric($art)) {
 					$args[$k]  = NULL;
 					$_args[$k] = NULL;
 				} else {

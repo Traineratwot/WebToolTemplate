@@ -117,7 +117,7 @@
 				if (isset(self::BACKGROUND_COLORS[$background_color])) {
 					$colored_string .= "\033[" . self::BACKGROUND_COLORS[$background_color] . "m";
 				}
-				// Add string and end coloring
+				// Add string && end coloring
 				$colored_string .= $string . "\033[0m";
 				return $colored_string;
 			}

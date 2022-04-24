@@ -16,10 +16,18 @@
 	class Utilities
 	{
 		use JsonValidate;
+
+		/**
+		 * @param $host
+		 * @param $useSocket
+		 * @param $timeout
+		 * @param $port
+		 * @return bool
+		 */
 		public static function ping($host = '', $useSocket = FALSE, $timeout = 2, $port = 80)
 		{
 			$args = func_get_args();
-			if (count($args) === 1 and is_array($args[0])) {
+			if (count($args) === 1 && is_array($args[0])) {
 				extract($args[0], EXTR_OVERWRITE);
 			}
 			if ($host) {
@@ -28,7 +36,7 @@
 					$sock = @fsockopen($host, $port, $errno, $errStr, $timeout);
 				}
 				if (!$sock) {
-					if (!$useSocket or $errStr === 'Unable to find the socket transport "https" - did you forget to enable it when you configured PHP?') {
+					if (!$useSocket || $errStr === 'Unable to find the socket transport "https" - did you forget to enable it when you configured PHP?') {
 						$opts = [
 							'http'  => [
 								'timeout' => $timeout,
@@ -48,7 +56,7 @@
 							$headers = @get_headers($host, 1); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 						}
 						preg_match('@HTTP/\d+.\d+\s([2-3]\d+)?\s@', $headers[0], $math);
-						return isset($math[1]) and $math[1];
+						return isset($math[1]) && $math[1];
 					}
 				} else {
 					return TRUE;
@@ -172,7 +180,7 @@
 
 		public static function getSetOption($table = '', $column = '')
 		{
-			if (empty($table) or empty($column)) {
+			if (empty($table) || empty($column)) {
 				return FALSE;
 			}
 			$core = Core::init();
@@ -217,7 +225,7 @@
 
 		public static function mkDirs($path)
 		{
-			if (!file_exists($path) or !is_dir($path)) {
+			if (!file_exists($path) || !is_dir($path)) {
 				if (!mkdir($path, 0777, TRUE) && !is_dir($path)) {
 					throw new RuntimeException(sprintf('Directory "%s" was not created', $path));
 				}
@@ -301,7 +309,7 @@
 						}
 					}
 					//проверяю что путь найден путем сравнения количество необходимых с количеством найденный частей путя
-					if (($s === $k and $k === 0) && file_exists($p)) {
+					if (($s === $k && $k === 0) && file_exists($p)) {
 						return realpath($p);
 					}
 					return NULL;
@@ -359,7 +367,7 @@
 			if (is_array($arr)) {
 				$c = count($arr);
 				if ($c > 10) {
-					return !(array_key_exists(0, $arr) and array_key_exists(random_int(0, $c - 1), $arr) and array_key_exists($c - 1, $arr));
+					return !(array_key_exists(0, $arr) && array_key_exists(random_int(0, $c - 1), $arr) && array_key_exists($c - 1, $arr));
 				}
 
 				if ($c > 0) {
@@ -367,5 +375,28 @@
 				}
 			}
 			return FALSE;
+		}
+
+		public static function convertBytes($size)
+		{
+			$i = 0;
+			while (floor($size / 1024) > 0) {
+				++$i;
+				$size /= 1024;
+			}
+
+			$size = str_replace('.', ',', round($size, 1));
+			switch ($i) {
+				case 0:
+					$size .= ' bytes';
+					break;
+				case 1:
+					$size .= ' Kb';
+					break;
+				case 2:
+					$size .= ' Mb';
+					break;
+			}
+			return $size;
 		}
 	}

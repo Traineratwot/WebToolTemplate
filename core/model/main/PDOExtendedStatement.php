@@ -2,7 +2,6 @@
 
 	namespace model\main;
 
-	use PDO;
 	use PDOStatement;
 
 	class PDOExtendedStatement extends PDOStatement

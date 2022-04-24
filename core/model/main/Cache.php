@@ -65,7 +65,7 @@
 ?>
 PHP;
 			$concurrentDirectory = WT_CACHE_PATH . $category . DIRECTORY_SEPARATOR;
-			if (!file_exists($concurrentDirectory) or !is_dir($concurrentDirectory)) {
+			if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
 				if (!mkdir($concurrentDirectory, 0777, TRUE) && !is_dir($concurrentDirectory)) {
 					throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 				}
@@ -83,7 +83,7 @@ PHP;
 		 */
 		public static function getKey($a)
 		{
-			if (is_string($a) and strlen($a) < 32 and preg_match('@\w{1,32}@', $a)) {
+			if (is_string($a) && strlen($a) < 32 && preg_match('@\w{1,32}@', $a)) {
 				return $a;
 			}
 			return md5(serialize($a));

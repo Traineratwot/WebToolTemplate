@@ -116,7 +116,7 @@ if (PHP_SAPI === 'cli') {
 	{
 		if (!is_dir(dirname($path))) {
 			$concurrentDirectory = dirname($path);
-			if (!file_exists($concurrentDirectory) or !is_dir($concurrentDirectory)) {
+			if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
 				if (!mkdir($concurrentDirectory, 0777, 1) && !is_dir($concurrentDirectory)) {
 					throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 				}
@@ -149,7 +149,7 @@ if (PHP_SAPI === 'cli') {
 					}
 					break;
 				case 'error':
-					if (isset($argv[2]) and $argv[2] == 'clear') {
+					if (isset($argv[2]) && $argv[2] == 'clear') {
 						unlink(WT_CACHE_PATH . 'error.log');
 					} else {
 						$f = fopen(WT_CACHE_PATH . 'error.log', 'r');
@@ -177,7 +177,7 @@ if (PHP_SAPI === 'cli') {
 						if (WT_TYPE_SYSTEM == 'win') {
 							system('RD /s/q "' . WT_CACHE_PATH . '"');
 						} else {
-							if ($argv[3] == 'sudo' or $argv[2] == 'sudo') {
+							if ($argv[3] == 'sudo' || $argv[2] == 'sudo') {
 								system('sudo rm -rf "' . WT_CACHE_PATH . '"');
 							} else {
 								system('rm -rf "' . WT_CACHE_PATH . '"');
@@ -196,11 +196,11 @@ if (PHP_SAPI === 'cli') {
 					break;
 				case '?':
 				case 'help':
-					Console::info('make {ajax|table|page|class} {...args}; generate template for ajax, table class, or page');
-					Console::info('error {?clear}; --- get error log or clear');
+					Console::info('make {ajax|table|page|class} {...args}; generate template for ajax, table class, || page');
+					Console::info('error {?clear}; --- get error log || clear');
 					Console::info('cache {clear}; --- exterminate cache folder');
-					Console::info('lang {lang code} e.g.: lang ru_RU.utf8; --- generate .po and .mo files in locale folder');
-					Console::info('cron {path} {?run} e.g.: .cron category/test.php run; --- generate command to run cron or launch cron');
+					Console::info('lang {lang code} e.g.: lang ru_RU.utf8; --- generate .po && .mo files in locale folder');
+					Console::info('cron {path} {?run} e.g.: .cron category/test.php run; --- generate command to run cron || launch cron');
 					break;
 				case 'lang':
 				case 'locale':
@@ -219,7 +219,7 @@ if (PHP_SAPI === 'cli') {
 							if (WT_TYPE_SYSTEM == 'win') {
 								system('RD /s/q "' . $dir . '"');
 							} else {
-								if ($argv[3] == 'sudo' or $argv[2] == 'sudo') {
+								if ($argv[3] == 'sudo' || $argv[2] == 'sudo') {
 									system('sudo rm -rf "' . $dir . '"');
 								} else {
 									system('rm -rf "' . $dir . '"');
@@ -295,7 +295,7 @@ if (PHP_SAPI === 'cli') {
 								'\\' => DIRECTORY_SEPARATOR,
 						]);
 						$cron  = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
-						if ($cron and file_exists($cron)) {
+						if ($cron && file_exists($cron)) {
 							$cmd = ' php ' . WT_CRON_PATH . 'launch.php -f"' . $alias . '"';
 							if ($argv[4] == 'dev') {
 								$cmd .= ' -d true';

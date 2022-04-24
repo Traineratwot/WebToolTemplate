@@ -97,7 +97,7 @@
 			foreach ($this->headers as $key => $value) {
 				header("$key: $value");
 			}
-			if (is_array($o) or is_object($o)) {
+			if (is_array($o) || is_object($o)) {
 				Utilities::headerJson();
 				$o = json_encode($o, 256);
 			}

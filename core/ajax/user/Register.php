@@ -14,11 +14,11 @@
 		{
 			$this->email    = strip_tags($_REQUEST['email']);
 			$this->password = strip_tags($_REQUEST['password']);
-			if ($this->email and $this->password) {
+			if ($this->email && $this->password) {
 				return TRUE;
 			}
 
-			return 'empty email or password';
+			return 'empty email || password';
 		}
 
 		public function process()

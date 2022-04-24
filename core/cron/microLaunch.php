@@ -8,15 +8,14 @@
 		echo 'Please check your configuration; ' . __FILE__ . ':7';
 		die;
 	}
-	require_once realpath(dirname(__DIR__) . '/config.php');
-	require_once realpath(WT_MODEL_PATH . 'engine.php');
-	$core      = Core::init();
+	require_once dirname(__DIR__) . '/config.php';
+	require_once WT_MODEL_PATH . 'engine.php';
 	$options   = getopt("f:d:");
 	$alias     = $options['f'];
-	$cron      = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
 	$key       = md5($alias);
-	$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
-	if ($cron and file_exists($cron)) {
+	$cron      = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
+	if ($cron && file_exists($cron)) {
+		$core      = Core::init();
 		ob_start();
 		include $cron;
 		ob_end_flush();

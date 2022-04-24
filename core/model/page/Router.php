@@ -98,7 +98,7 @@
 						-1 => $lang,
 					];
 					foreach ($locales as $locale) {
-						if (stripos($locale, $lang) !== FALSE or stripos($lang, $locale) !== FALSE) {
+						if (stripos($locale, $lang) !== FALSE || stripos($lang, $locale) !== FALSE) {
 							$sim         = similar_text($lang, $locale);
 							$index[$sim] = $locale;
 						}

@@ -1,4 +1,7 @@
 <?php
+	/** @noinspection ForgottenDebugOutputInspection */
+
+	/** @noinspection ForgottenDebugOutputInspection */
 
 	namespace page;
 

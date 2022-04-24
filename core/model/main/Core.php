@@ -62,7 +62,7 @@
 		 */
 		public function auth()
 		{
-			if (isset($_SESSION['authKey']) and $_SESSION['authKey'] and $_SESSION['ip'] == Utilities::getIp()) {
+			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] == Utilities::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
@@ -199,11 +199,11 @@
 		public function getObject($class, $where = [], $cache = TRUE)
 		{
 			$class = self::getClass($class);
-			if (!$cache or empty($where)) {
+			if (!$cache || empty($where)) {
 				return new $class($this, $where);
 			}
 			$key = Utilities::hash($where);
-			if (!isset($this->_cache[$class]) or !isset($this->_cache[$class][$key])) {
+			if (!isset($this->_cache[$class]) || !isset($this->_cache[$class][$key])) {
 				$this->_cache[$class][$key] = new $class($this, $where);
 			}
 			return $this->_cache[$class][$key];
@@ -268,7 +268,7 @@
 				Err::error("Can't set locale to '{$_lang}'", __LINE__, __FILE__);
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
-			if ($_gt and $lang) {
+			if ($_gt && $lang) {
 				$domain = WT_LOCALE_DOMAIN;
 				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
 				if (file_exists($po)) {

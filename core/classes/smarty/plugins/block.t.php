@@ -7,8 +7,8 @@
 	 * @license GNU Lesser General Public License, version 2.1
 	 * @see https://github.com/smarty-gettext/smarty-gettext/
 	 *
-	 * For the full copyright and license information,
-	 * please see the LICENSE and AUTHORS files
+	 * For the full copyright && license information,
+	 * please see the LICENSE && AUTHORS files
 	 * that were distributed with this source code.
 	 */
 
@@ -17,7 +17,7 @@
 	 * Arguments are represented by % followed by their number.
 	 *
 	 * @param string $str Source string
-	 * @param mixed mixed Arguments, can be passed in an array or through single variables.
+	 * @param mixed mixed Arguments, can be passed in an array || through single variables.
 	 * @return string Modified string
 	 */
 	function smarty_gettext_strarg($str/*, $varargs... */)
@@ -77,7 +77,7 @@
 			$escape = 'html';
 		}
 
-		// set plural parameters 'plural' and 'count'.
+		// set plural parameters 'plural' && 'count'.
 		if (isset($params['plural'])) {
 			$plural = $params['plural'];
 			unset($params['plural']);
