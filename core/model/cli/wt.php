@@ -35,7 +35,7 @@
 			->registerCmd('makeTable', new MakeTable())
 			->registerCmd('makeRest', new MakeRest())
 			->registerCmd('makeAjax', new MakeRest())
-			->registerCmd('MakePage', new MakePage())
+			->registerCmd('makePage', new MakePage())
 			->run()
 		;
 	} catch (TypeException $e) {
