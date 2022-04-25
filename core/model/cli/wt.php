@@ -16,14 +16,8 @@
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\TypeException;
 
-
-	class wt extends CLI
-	{
-
-	}
-
 	try {
-		(new wt())
+		(new CLI())
 			->registerCmd('cache', new CacheCmd())
 			->registerCmd('cron', new CronCmd())
 			->registerCmd('error', new ErrorCmd())
