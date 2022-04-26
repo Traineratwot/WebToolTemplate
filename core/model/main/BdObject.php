@@ -26,7 +26,7 @@
 
 		//--------------------------------------------------------
 
-		public function __construct(Core &$core, $where = [])
+		public function __construct(Core $core, $where = [])
 		{
 			parent::__construct($core);
 			try {
@@ -54,17 +54,15 @@
 			}
 		}
 
-		private function getSchema($catch = TRUE)
+		/**
+		 * @param Boolean $cache
+		 * @return void
+		 */
+		private function getSchema()
 		{
-			if ($catch) {
-				$data = Cache::getCache($this->table, 'table');
-				if (!$data) {
-					$data = $this->getColumnNames($this->table);
-					Cache::setCache($this->table, $data, 0, 'table');
-				}
-			} else {
-				$data = $this->getColumnNames($this->table);
-			}
+			$data = Cache::call($this->table, function () {
+				return $this->getColumnNames($this->table);
+			},                  600, 'table');
 			if (!empty($data)) {
 				foreach ($data as $k => $v) {
 					$this->_fields[$v['name']] = $k;
@@ -74,6 +72,10 @@
 			}
 		}
 
+		/**
+		 * @param $table
+		 * @return array
+		 */
 		private function getColumnNames($table)
 		{
 			if (WT_TYPE_DB === 'sqlite') {
@@ -89,10 +91,8 @@
 							$name = $column['sub_tree'][0]['base_expr'];
 							$data = $column['sub_tree'][1];
 							foreach ($data['sub_tree'] as $param) {
-								if (is_array($param)) {
-									if ($param['expr_type'] == 'data-type') {
-										$data['data-type'] = $param;
-									}
+								if (is_array($param) && $param['expr_type'] == 'data-type') {
+									$data['data-type'] = $param;
 								}
 							}
 							$default = (!isset($data['default']) || strtolower($data['default']) === 'null') ? NULL : trim($data['default'], '()');
@@ -105,9 +105,9 @@
 								'comment'   => '',
 								'type'      => $data['data-type']['base_expr'] ?: '',
 								'maxLength' => (int)($data['data-type']['length']) ?: NULL,
-								'null'      => $data['nullable'] ? TRUE : FALSE,
-								'primary'   => (isset($data['unique']) && $data['unique']) ? TRUE : FALSE,
-								'unique'    => (isset($data['default']) && $data['default']) ? TRUE : FALSE,
+								'null'      => (bool)$data['nullable'],
+								'primary'   => isset($data['unique']) && $data['unique'],
+								'unique'    => isset($data['default']) && $data['default'],
 							];
 						}
 					}
@@ -129,7 +129,7 @@
 									'comment'   => $row['COLUMN_COMMENT'] ?: '',
 									'type'      => $row['DATA_TYPE'] ?: '',
 									'maxLength' => (int)$row['COLUMN_MAXIMUM_LENGTH'] ?: NULL,
-									'null'      => $row['IS_NULLABLE'] == "YES" ? TRUE : FALSE,
+									'null'      => $row['IS_NULLABLE'] == "YES",
 									'primary'   => strtolower($row['COLUMN_KEY']) == "pri",
 									'unique'    => strtolower($row['COLUMN_KEY']) == "uni",
 								];
@@ -141,8 +141,14 @@
 					Err::error($e->getMessage());
 				}
 			}
+			return [];
 		}
 
+		/**
+		 * @param $where
+		 * @param $type
+		 * @return $this
+		 */
 		private function update($where, $type = 0)
 		{
 			if (!$type) {
@@ -157,8 +163,8 @@
 				$query  = $query->end();
 				$sql    = $builder->write($query);
 				$values = $builder->getValues();
-				$values = $this->prepareBinds($values);
-				$sql    = $this->prepareSql($sql, $this->table);
+				$values = self::prepareBinds($values);
+				$sql    = self::prepareSql($sql, $this->table);
 				$sql    = strtr($sql, $values);
 			} else {
 				$sql = <<<SQL
@@ -168,11 +174,11 @@ SQL;
 			$q = $this->core->db->query($sql);
 			if ($q) {
 				$data = $q->fetch(PDO::FETCH_ASSOC);
-				if ($data && !empty($data)) {
+				if (!empty($data)) {
 					$this->fromArray($data, FALSE);
 				}
 			} else {
-//				Err::warning("invalid sql string: ".$sql);
+				Err::warning("invalid sql string: " . $sql);
 			}
 			return $this;
 		}
@@ -195,9 +201,9 @@ SQL;
 		}
 
 		/**
-		 * @param $data
-		 * @param $isNew
-		 * @param $update
+		 * @param      $data
+		 * @param bool $isNew
+		 * @param bool $update
 		 * @return BdObject
 		 */
 		public function fromArray($data, $isNew = TRUE, $update = TRUE)
@@ -208,6 +214,35 @@ SQL;
 			}
 			if ($isNew === FALSE) {
 				$this->isNew = FALSE;
+			}
+			$this->repair();
+			return $this;
+		}
+
+		/**
+		 * @param array    $data
+		 * @param string[] $where
+		 * @return $this
+		 */
+		public function createFromArray($data, $where = [])
+		{
+			if (!empty($where)) {
+				$where2 = [];
+				foreach ($where as $key) {
+					if ($data[$key]) {
+						$where2[$key] = $data[$key];
+					}
+				}
+				if ($where2) {
+					$this->update($where2);
+				} else {
+					Err::fatal('Cannot create ' . self::class . ' from array');
+				}
+			} elseif (isset($this->data[$this->primaryKey]) && $this->data[$this->primaryKey]) {
+				$this->update($this->data[$this->primaryKey]);
+			}
+			foreach ($data as $key => $val) {
+				$this->set($key, $val);
 			}
 			$this->repair();
 			return $this;
@@ -236,13 +271,14 @@ SQL;
 		//--------------------------------------------------------
 
 		/**
+		 * @noinspection MagicMethodsValidityInspectio
 		 * @param $array
 		 * @return BdObject
 		 */
 		public static function __set_state($array)
 		{
 			global $core;
-			$a   = get_called_class();
+			$a   = static::class;
 			$obj = new $a($core);
 			$obj->fromArray($array['data'], FALSE);
 			return $obj;
@@ -312,11 +348,11 @@ SQL;
 					$values = $builder->getValues();
 				}
 				if ($sql) {
-					$values = $this->prepareBinds($values);
-					$sql    = $this->prepareSql($sql, $this->table);
+					$values = self::prepareBinds($values);
+					$sql    = self::prepareSql($sql, $this->table);
 					$sql    = strtr($sql, $values);
 					//Err::info($sql);
-					$q = $this->core->db->exec($sql);
+					$this->core->db->exec($sql);
 					if ($q !== FALSE && $this->isNew()) {
 						$lastID = $this->core->db->lastInsertId();
 						if ($lastID) {
@@ -348,7 +384,7 @@ SQL;
 					$sql = <<<SQL
 DELETE FROM `{$this->table}` where `{$this->primaryKey}` = {$id}
 SQL;
-					$q   = $this->core->db->exec($sql);
+					$this->core->db->exec($sql);
 				}
 			} catch (PDOException $e) {
 				Err::error($e->getMessage());
@@ -356,7 +392,6 @@ SQL;
 			return $this;
 		}
 
-		/** @noinspection MagicMethodsValidityInspection */
 
 		public function get($key, $default = NULL)
 		{
