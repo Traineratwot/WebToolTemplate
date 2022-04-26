@@ -1,8 +1,22 @@
 [0;36mSleep 5[0m
+C:\OpenServer\domains5\WebToolTemplate.ru\core\cron\controllers\category\test.php:10:
+array(3) {
+  'g' =>
+  string(5) "dfgdf"
+  'j' =>
+  NULL
+  'k' =>
+  NULL
+}
+C:\OpenServer\domains5\WebToolTemplate.ru\core\cron\controllers\category\test.php:11:
+array(1) {
+  [0] =>
+  string(67) "C:\OpenServer\domains5\WebToolTemplate.ru\core\cron\microLaunch.php"
+}
 
 ------STATS------
-Time:            0.035 ms
-SQL Queries:     3
-Memory used:     851,5 Kb
-Memory max used: 930,9 Kb
-Date:            2022-04-24 15:43:49
+Time:            0.176 ms
+SQL Queries:     0
+Memory used:     863,4 Kb
+Memory max used: 946 Kb
+Date:            2022-04-26 16:12:29

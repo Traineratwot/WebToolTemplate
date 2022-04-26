@@ -7,6 +7,5 @@
 
 	Console::info('sleep 5');
 	$core = Core::init();
-	$core->db->query('SELECT * FROM users');
-	$core->db->query('SELECT * FROM users');
-	$core->db->query('SELECT * FROM users');
+	var_dump(Console::getOpt($a));
+	var_dump($a);

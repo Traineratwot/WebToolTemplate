@@ -1,6 +1,6 @@
 <?php
 
-	
+
 	use model\main\Core;
 	use model\main\Utilities;
 	use Traineratwot\PhpCli\Console;
@@ -18,7 +18,7 @@
 	ob_start();
 	$key       = md5($alias);
 	$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
-	//проверка запущен ли еще предидущий крон
+	//проверка запущен ли еще предыдущий крон
 	if (file_exists($lock_path)) {
 		if (!isset($options['d']) || $options['d'] !== "true") {
 			Console::failure('Already launched');
@@ -36,7 +36,16 @@
 	//запуск крона как дочерний процесс что-бы избежать любых остановок/ошибок во время выполнения
 	//таким образом что-бы ни произошло, лог будет записан, а блокирующий файл удален
 	$start = microtime(TRUE);
-	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\"", $output);
+	if (function_exists('pcntl_exec')) {
+		pcntl_exec(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\"", $argv, $output);
+	} else {
+		$a    = [];
+		$args = array_slice($argv, 2);
+		foreach ($args as $val) {
+			$a[] = escapeshellcmd($val);
+		}
+		system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\" " . implode(" ", $a), $output);
+	}
 	$end = microtime(TRUE);
 	//Вывод статистики
 	echo PHP_EOL . '------STATS------' . PHP_EOL;

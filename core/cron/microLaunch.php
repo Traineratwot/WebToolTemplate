@@ -21,5 +21,4 @@
 		ob_end_flush();
 		exit($core->db->queryCount());
 	}
-
 	die("Could not find file: '" . $cron . "'");

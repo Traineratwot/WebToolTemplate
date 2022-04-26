@@ -3,6 +3,7 @@
 	namespace model\page;
 
 	use Exception;
+	use JetBrains\PhpStorm\NoReturn;
 	use model\main\Cache;
 	use model\main\Core;
 	use model\main\Err;
@@ -78,7 +79,7 @@
 			}
 		}
 
-		//устнавливает языковой модуль
+		//устанавливает языковой модуль
 
 		/**
 		 * @throws RouterException
@@ -118,6 +119,7 @@
 		 * @throws RouterException
 		 * @throws Exception
 		 */
+		#[NoReturn]
 		private function launchAjax($ajax, $data = [])
 		{
 			$class = include $ajax;
@@ -151,6 +153,7 @@
 		 * @throws RouterException
 		 * @throws Exception
 		 */
+		#[NoReturn]
 		private function launchPage($page, $data = [])
 		{
 			$class = include $page;
@@ -177,6 +180,7 @@
 		 * запускает старницу из файла .tpl
 		 * @throws Exception
 		 */
+		#[NoReturn]
 		private function launchPageTpl($page, $data = [])
 		{
 			$result = new TmpPage($this->core, $this->alias, $data, $page);
