@@ -22,7 +22,10 @@
 		public function run()
 		{
 			$cron = $this->getArg('cron');
-			$p    = Utilities::pathNormalize(WT_CRON_PATH . 'controllers/' . $cron . '.php');
+			if (strpos($cron, '.php') === FALSE) {
+				$cron .= '.php';
+			}
+			$p = Utilities::pathNormalize(WT_CRON_PATH . 'controllers/' . $cron);
 			if (!file_exists($p)) {
 				Utilities::writeFile($p, Make::makeCron($cron));
 				Console::success('ok: ' . $p);
