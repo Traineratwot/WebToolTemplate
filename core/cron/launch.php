@@ -36,16 +36,13 @@
 	//запуск крона как дочерний процесс что-бы избежать любых остановок/ошибок во время выполнения
 	//таким образом что-бы ни произошло, лог будет записан, а блокирующий файл удален
 	$start = microtime(TRUE);
-	if (function_exists('pcntl_exec')) {
-		pcntl_exec(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\"", $argv, $output);
-	} else {
-		$a    = [];
-		$args = array_slice($argv, 2);
-		foreach ($args as $val) {
-			$a[] = escapeshellcmd($val);
-		}
-		system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\" " . implode(" ", $a), $output);
+
+	$a    = [];
+	$args = array_slice($argv, 2);
+	foreach ($args as $val) {
+		$a[] = escapeshellcmd($val);
 	}
+	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\" " . implode(" ", $a), $output);
 	$end = microtime(TRUE);
 	//Вывод статистики
 	echo PHP_EOL . '------STATS------' . PHP_EOL;
