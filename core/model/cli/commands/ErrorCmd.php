@@ -5,7 +5,6 @@
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\types\TBool;
-	use function model\cli\note;
 
 	class ErrorCmd extends Cmd
 	{
