@@ -112,7 +112,7 @@
 		 */
 		public static function chunk($alias, $values = [])
 		{
-			global $core;
+			$core = Core::init();
 			return (new Chunk($core, $alias, $values))->render(TRUE);
 		}
 
