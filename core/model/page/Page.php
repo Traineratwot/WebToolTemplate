@@ -38,22 +38,7 @@
 				$this->alias = $_GET['q'];
 			}
 			if (!$this->source) {
-				if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
-					$this->source = $this->alias;
-				} elseif (strpos($this->alias, 'chunk:') === 0 || strpos($this->alias, 'file:') === 0) {
-					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
-					if (!file_exists($this->source)) {
-						$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
-						if (!file_exists($this->source)) {
-							throw new Exception('Chunk error: "' . $this->source . '" file not found ');
-						}
-					}
-				} else {
-					$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
-					if (!$this->source && is_dir(WT_PAGES_PATH . $this->alias)) {
-						$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
-					}
-				}
+				$this->prepareAlias();
 			}
 			if (!$this->title) {
 
@@ -61,6 +46,35 @@
 			}
 			$this->smarty = new SmartyBC();
 			$this->init();
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		public function setAlias($alias)
+		{
+			$this->alias = $alias;
+			$this->prepareAlias();
+		}
+
+		public function prepareAlias()
+		{
+			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
+				$this->source = $this->alias;
+			} elseif (strpos($this->alias, 'chunk:') === 0 || strpos($this->alias, 'file:') === 0) {
+				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
+				if (!file_exists($this->source)) {
+					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
+					if (!file_exists($this->source)) {
+						throw new Exception('Chunk error: "' . $this->source . '" file not found ');
+					}
+				}
+			} else {
+				$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
+				if (!$this->source && is_dir(WT_PAGES_PATH . $this->alias)) {
+					$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
+				}
+			}
 		}
 
 		public function init()
