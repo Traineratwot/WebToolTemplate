@@ -7,6 +7,7 @@
 			"email":"41589091+Traineratwot@users.noreply.github.com"
 		}
 	],
+	"license"    :"GPL-3.0-or-later",
 	"type"       :"project",
 	"scripts"    :{
 		"up:release":"gh release create \"3.0.0\" --generate-notes"
