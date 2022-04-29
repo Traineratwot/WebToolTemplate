@@ -1,5 +1,6 @@
 {
-	"version"    :"3.0",
+	"name"       :"traineratwot/web-tool-template",
+	"version"    :"3.0.0",
 	"authors"    :[
 		{
 			"name" :"Kirill",
@@ -8,6 +9,7 @@
 	],
 	"type"       :"project",
 	"scripts"    :{
+		"up:release":"gh release create \"3.0.0\" --generate-notes"
 	},
 	"require"    :{
 		"nilportugues/sql-query-builder":"^1.8",
