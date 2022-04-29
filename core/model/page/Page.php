@@ -48,15 +48,6 @@
 			$this->init();
 		}
 
-		/**
-		 * @throws Exception
-		 */
-		public function setAlias($alias)
-		{
-			$this->alias = $alias;
-			$this->prepareAlias();
-		}
-
 		public function prepareAlias()
 		{
 			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
@@ -155,6 +146,15 @@
 		public function beforeRender()
 		{
 
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		public function setAlias($alias)
+		{
+			$this->alias = $alias;
+			$this->prepareAlias();
 		}
 
 		public function forward($alias)

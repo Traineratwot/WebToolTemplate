@@ -219,6 +219,42 @@ SQL;
 			return $this;
 		}
 
+		private function repair()
+		{
+			foreach ($this->data as $key => $value) {
+				if (is_numeric($value)) {
+					$this->data[$key] = (float)$value;
+				}
+				if ($this->data[$key] === 'NULL') {
+					$this->data[$key] = NULL;
+				}
+			}
+			foreach ($this->update as $key => $value) {
+				if (is_numeric($value)) {
+					$this->update[$key] = (float)$value;
+				}
+				if (stripos($value, 'NULL') === 0 && strlen($value) === 4) {
+					$this->update[$key] = NULL;
+				}
+			}
+		}
+
+		/**
+		 * @noinspection MagicMethodsValidityInspectio
+		 * @param $array
+		 * @return BdObject
+		 */
+		public static function __set_state($array)
+		{
+			global $core;
+			$a   = static::class;
+			$obj = new $a($core);
+			$obj->fromArray($array['data'], FALSE);
+			return $obj;
+		}
+
+		//--------------------------------------------------------
+
 		/**
 		 * @param array    $data
 		 * @param string[] $where
@@ -246,47 +282,6 @@ SQL;
 			}
 			$this->repair();
 			return $this;
-		}
-
-		private function repair()
-		{
-			foreach ($this->data as $key => $value) {
-				if (is_numeric($value)) {
-					$this->data[$key] = (float)$value;
-				}
-				if ($this->data[$key] === 'NULL') {
-					$this->data[$key] = NULL;
-				}
-			}
-			foreach ($this->update as $key => $value) {
-				if (is_numeric($value)) {
-					$this->update[$key] = (float)$value;
-				}
-				if (stripos($value, 'NULL') === 0 && strlen($value) === 4) {
-					$this->update[$key] = NULL;
-				}
-			}
-		}
-
-		//--------------------------------------------------------
-
-		/**
-		 * @noinspection MagicMethodsValidityInspectio
-		 * @param $array
-		 * @return BdObject
-		 */
-		public static function __set_state($array)
-		{
-			global $core;
-			$a   = static::class;
-			$obj = new $a($core);
-			$obj->fromArray($array['data'], FALSE);
-			return $obj;
-		}
-
-		public function toArray()
-		{
-			return $this->data;
 		}
 
 		public function set($key, $value = NULL)
@@ -319,6 +314,11 @@ SQL;
 				}
 			}
 			return $this;
+		}
+
+		public function toArray()
+		{
+			return $this->data;
 		}
 
 		public function save()

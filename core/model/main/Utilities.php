@@ -205,6 +205,26 @@
 			return $fileList;
 		}
 
+		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
+		{
+			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
+			if (file_exists($path)) {
+				if (is_dir($path)) {
+					if (WT_TYPE_SYSTEM === 'nix') {
+						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
+					} else {
+						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
+					}
+				} elseif (WT_TYPE_SYSTEM === 'nix') {
+					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
+				} else {
+					$path = trim($path, $DIRECTORY_SEPARATOR);
+				}
+				return $path;
+			}
+			return $path;
+		}
+
 		public static function arrayToSqlIn($arr = [])
 		{
 			$dop = array_fill(0, count($arr), 256);
@@ -287,26 +307,6 @@
 				},
 				600,
 				'filePaths');
-		}
-
-		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
-		{
-			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
-			if (file_exists($path)) {
-				if (is_dir($path)) {
-					if (WT_TYPE_SYSTEM === 'nix') {
-						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
-					} else {
-						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
-					}
-				} elseif (WT_TYPE_SYSTEM === 'nix') {
-					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
-				} else {
-					$path = trim($path, $DIRECTORY_SEPARATOR);
-				}
-				return $path;
-			}
-			return $path;
 		}
 
 		public static function dateFormat($inputFormat, $date, $outputFormat = 'U', $modify = '')

@@ -10,8 +10,8 @@
 	 */
 	class PoScanner
 	{
-		public    $trans = [];
-		public    $translations;
+		public $trans = [];
+		public $translations;
 		/**
 		 * @var mixed|string
 		 */
@@ -20,8 +20,8 @@
 		 * @var string[]
 		 */
 		public array $commentsPrefixes;
-		protected $functions
-						 = [
+		protected    $functions
+			= [
 				'gettext',
 				'_',
 				'__',

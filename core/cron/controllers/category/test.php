@@ -1,7 +1,6 @@
 <?php
 
 
-	
 	use model\main\Core;
 	use Traineratwot\PhpCli\Console;
 

@@ -16,6 +16,17 @@
 			self::error($msg, $line, $file);
 		}
 
+		public static function getTrace($fn)
+		{
+			$debug = debug_backtrace();
+			foreach ($debug as $d) {
+				if ($d['function'] === $fn) {
+					return $d;
+				}
+			}
+			return [];
+		}
+
 		public static function error($msg, $line = NULL, $file = NULL)
 		{
 			$d    = self::getTrace(__FUNCTION__);
@@ -28,6 +39,31 @@
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
+		}
+
+		public static function save($str)
+		{
+			if (!is_dir(WT_CACHE_PATH) && !mkdir($concurrentDirectory = WT_CACHE_PATH, 0777, 1) && !is_dir($concurrentDirectory)) {
+				throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+			}
+			file_put_contents(WT_CACHE_PATH . 'error.log', $str . PHP_EOL, FILE_APPEND);
+		}
+
+		public static function pretty($data = [])
+		{
+			$replace_pairs = [
+				"\n" => " ",
+				"\r" => " ",
+			];
+			foreach ($data as $key => $v) {
+				$v = is_array($v) ? json_encode($v, 256) : $v;
+				if (is_resource($v) && function_exists('get_resource_id')) {
+					$v = 'resource id: ' . get_resource_id($v);
+				}
+				$replace_pairs['+' . $key . '+'] = $v;
+			}
+			return strtr(self::template, $replace_pairs);
+
 		}
 
 		public static function warning($msg, $line = NULL, $file = NULL)
@@ -68,41 +104,5 @@
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
-		}
-
-		public static function save($str)
-		{
-			if (!is_dir(WT_CACHE_PATH) && !mkdir($concurrentDirectory = WT_CACHE_PATH, 0777, 1) && !is_dir($concurrentDirectory)) {
-				throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-			}
-			file_put_contents(WT_CACHE_PATH . 'error.log', $str . PHP_EOL, FILE_APPEND);
-		}
-
-		public static function getTrace($fn)
-		{
-			$debug = debug_backtrace();
-			foreach ($debug as $d) {
-				if ($d['function'] === $fn) {
-					return $d;
-				}
-			}
-			return [];
-		}
-
-		public static function pretty($data = [])
-		{
-			$replace_pairs = [
-				"\n" => " ",
-				"\r" => " ",
-			];
-			foreach ($data as $key => $v) {
-				$v = is_array($v) ? json_encode($v, 256) : $v;
-				if (is_resource($v) && function_exists('get_resource_id')) {
-					$v = 'resource id: ' . get_resource_id($v);
-				}
-				$replace_pairs['+' . $key . '+'] = $v;
-			}
-			return strtr(self::template, $replace_pairs);
-
 		}
 	}

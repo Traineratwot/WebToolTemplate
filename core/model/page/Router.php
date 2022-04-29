@@ -12,10 +12,10 @@
 	class Router
 	{
 
+		public  $isAdvanced = FALSE;
 		private $isAjax;
 		private $alias;
 		private $core;
-		public  $isAdvanced = FALSE;
 
 		public function __construct()
 		{

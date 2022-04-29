@@ -22,13 +22,13 @@
 
 		public function run()
 		{
-			$url = $this->getArg('url');
+			$url  = $this->getArg('url');
 			$type = $this->getArg('type');
 			if (strpos($url, '.php') === FALSE) {
 				$path = $url . '.php';
 			} else {
 				$path = $url;
-				$url = substr($url, 0, -4);
+				$url  = substr($url, 0, -4);
 			}
 			$path = Utilities::pathNormalize(WT_AJAX_PATH . $path);
 			if (!file_exists($path)) {

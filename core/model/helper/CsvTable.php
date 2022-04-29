@@ -17,7 +17,7 @@
 		public $currentCol  = -1;
 		/* @var array */
 		public $matrix = [];
-		public  $limit = FALSE;
+		public $limit  = FALSE;
 		/* @var string output csv string */
 		protected $csv;
 		/* @var string output html string */
@@ -45,7 +45,7 @@
 		 * @var array|bool
 		 */
 		private $limits
-					   = [
+			= [
 				'l' => ['min' => 30, 'max' => 60],
 				's' => ['min' => 80, 'max' => 100],
 			];

@@ -10,9 +10,9 @@
 	 */
 	class SmartyScanner
 	{
-		public $trans = [];
+		public    $trans = [];
 		protected $functions
-			= [
+						 = [
 				'gettext',
 				'_',
 				'__',

@@ -40,7 +40,7 @@
 			}
 			if ($action === 'update') {
 				$lang = $this->getArg('lang');
-				if(!$lang){
+				if (!$lang) {
 					throw new TypeException("missing lang");
 				}
 				if (WT_TYPE_SYSTEM === 'nix') {

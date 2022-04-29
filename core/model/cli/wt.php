@@ -24,7 +24,6 @@
 			->registerCmd('err', new ErrorCmd())
 			->registerCmd('lang', new localeCmd())
 			->registerCmd('locale', new localeCmd())
-
 			->registerCmd('makeCron', new MakeCron())
 			->registerCmd('makeTable', new MakeTable())
 			->registerCmd('makeRest', new MakeRest())
