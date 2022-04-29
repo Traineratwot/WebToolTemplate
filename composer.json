@@ -10,7 +10,7 @@
 	"license"    :"GPL-3.0-or-later",
 	"type"       :"project",
 	"scripts"    :{
-		"up:release":"gh release create \"3.0.1\" --generate-notes"
+		"up:release":"gh release create \"3.0.2\" --generate-notes"
 	},
 	"require"    :{
 		"nilportugues/sql-query-builder":"^1.8",
@@ -37,12 +37,12 @@
 			"core/model/main/Cache.php"
 		],
 		"psr-4":{
-			"classes\\":"core/classes/",
-			"model\\"  :"core/model/",
 			"tables\\" :"core/classes/tables/",
 			"traits\\" :"core/classes/traits/",
-			"ajax\\"   :"core/ajax/",
-			"page\\"   :"core/views/"
+			"classes\\":"core/classes/",
+			"model\\"  :"core/model/",
+			"page\\"   :"core/views/",
+			"ajax\\"   :"core/ajax/"
 		}
 	}
 }
