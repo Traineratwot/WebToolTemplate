@@ -83,7 +83,7 @@
 	if (!function_exists('getSystem')) {
 		function getSystem()
 		{
-			$sys = mb_strtolower(php_uname('s'));
+			$sys = strtolower(php_uname('s'));
 			if (strpos($sys, 'windows') !== FALSE) {
 				return 'win';
 			}
