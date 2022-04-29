@@ -8,7 +8,6 @@
 	],
 	"type"       :"project",
 	"scripts"    :{
-		"wt": "php core/model/cli/wt.php"
 	},
 	"require"    :{
 		"nilportugues/sql-query-builder":"^1.8",
