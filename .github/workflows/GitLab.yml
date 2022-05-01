@@ -10,7 +10,7 @@ jobs:
     - name: Mirror + trigger CI
       uses: SvanBoxel/gitlab-mirror-and-ci-action@master
       with:
-        args: "https://gitlab.com/Traineratwot/WebToolTemplate"
+        args: "gitlab.traineratwot.site/Traineratwot/WebToolTemplate"
       env:
         GITLAB_HOSTNAME: "gitlab.traineratwot.site"
         GITLAB_USERNAME: "traineratwot"
