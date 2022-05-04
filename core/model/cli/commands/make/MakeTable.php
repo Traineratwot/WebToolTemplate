@@ -31,7 +31,7 @@
 			$table    = $this->getArg('table');
 			$keyField = $this->getArg('keyField');
 			if ($table) {
-				$list = $core->db->getAllTables();
+				$list = $core->db->getTablesList();
 				$find = FALSE;
 				foreach ($list as $t) {
 					if (mb_strtolower($t) === mb_strtolower($table)) {

@@ -12,19 +12,25 @@
 	use Gettext\TranslatorFunctions;
 	use model\helper\CsvTable;
 	use model\page\TmpPage;
-	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
-	use PDOException;
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\SMTP;
 	use SmartyBC;
 	use tables\Users;
+	use Traineratwot\PDOExtended\Dsn;
+	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
+	use Traineratwot\PDOExtended\PDOE;
 
 	/**
 	 * Основной класс
 	 */
+//	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB.";charset=". WT_CHARSET_DB);
+
 	final class Core implements ErrorPage
 	{
+		/**
+		 * @var PDOE
+		 */
 		public $db;
 		public $user;
 		/**
@@ -46,11 +52,22 @@
 		public function __construct()
 		{
 			try {
-				$this->db = new PDOExtended(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
-			} catch (PDOException $e) {
-				Err::fatal($e->getMessage());
+				$dsn = new Dsn();
+				$dsn->setDriver(WT_TYPE_DB);
+				$dsn->setDatabase(WT_DATABASE_DB);
+				if(WT_CHARSET_DB) {
+					$dsn->setCharset(WT_CHARSET_DB);
+				}
+				$dsn->setHost(WT_HOST_DB);
+				$dsn->setPort((int)WT_PORT_DB);
+				$dsn->setPassword(WT_PASS_DB);
+				$dsn->setUsername(WT_USER_DB);
+				$this->db = new PDOE($dsn);
+				$this->db->logOn();
+				$this->auth();
+			} catch (Exception $e) {
+				Err::error($e->getMessage(), 0, 0);
 			}
-			$this->auth();
 			$this->cache = new Cache();
 		}
 
@@ -234,6 +251,7 @@
 		 * @param null            $order_by
 		 * @param string          $order_dir
 		 * @return array [T]
+		 * @throws SqlBuildException
 		 */
 		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
 		{
@@ -244,21 +262,15 @@
 			if (empty($where)) {
 				$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
 			} else {
-				$builder = new GenericBuilder();
+				$builder = $this->db->table($cls->table);
 				$query   = $builder->select()
-								   ->setTable($cls->table)
-								   ->orderBy($order_by, $order_dir)
+								   ->orderBy([$order_by => $order_dir])
 								   ->where()
 				;
 				foreach ($where as $key => $value) {
-					$query->equals($key, $value);
+					$query->eq($key, $value);
 				}
-				$query  = $query->end();
-				$sql    = $builder->write($query);
-				$values = $builder->getValues();
-				$values = BdObject::prepareBinds($values);
-				$sql    = BdObject::prepareSql($sql, $cls->table);
-				$sql    = strtr($sql, $values);
+				$sql = $query->end()->toSql();
 			}
 			$q = $this->db->query($sql);
 			if ($q) {

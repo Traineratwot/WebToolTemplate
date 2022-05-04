@@ -3,6 +3,7 @@
 	namespace model\main;
 
 	use RuntimeException;
+	use Throwable;
 
 	class Err
 	{
@@ -80,7 +81,14 @@
 									]));
 		}
 
-		public static function fatal($msg, $line = NULL, $file = NULL)
+		/**
+		 * @param           $msg
+		 * @param           $line
+		 * @param           $file
+		 * @param Throwable $previous = null
+		 * @return mixed
+		 */
+		public static function fatal($msg, $line = NULL, $file = NULL, $previous = NULL)
 		{
 			$d    = self::getTrace(__FUNCTION__);
 			$line = $line ?: $d['line'];
@@ -92,11 +100,17 @@
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
+			if ($previous instanceof Throwable) {
+				throw new RuntimeException($msg, $previous->getCode(), $previous);
+			}
 			throw new RuntimeException($msg);
 		}
 
 		public static function info($msg, $line = NULL, $file = NULL)
 		{
+			$d    = self::getTrace(__FUNCTION__);
+			$line = $line ?: $d['line'];
+			$file = $file ?: $d['file'];
 			self::save(self::pretty([
 										'lvl'      => 'info',
 										'datetime' => date('Y-m-d H:i:s'),

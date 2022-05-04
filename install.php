@@ -5,6 +5,7 @@
 	use Exception;
 	use model\main\Core;
 	use RuntimeException;
+	use Traineratwot\Cache\Cache;
 
 	error_reporting(0);
 	require_once __DIR__ . '/core/config.php';
@@ -64,22 +65,25 @@
 		require_once WT_MODEL_PATH . 'engine.php';
 		try {
 			$core        = Core::init();
+			Cache::removeAll();
 			$needInstall = !($core->db->tableExists("users"));
 			if ($needInstall) {
 				$log[] = 'install Database';
-				if ($core->db->dsn_info['driver'] === 'sqlite') {
+				if ($core->db->dsn->getDriver() === 'sqlite') {
+					if (!file_exists(WT_HOST_DB)) {
+						file_put_contents(WT_HOST_DB, '');
+					}
 					$core->db->exec(<<<SQL
 CREATE TABLE users
 (
 	id       INTEGER
-		PRIMARY KEY AUTOINCREMENT
-		ON CONFLICT FAIL,
+		PRIMARY KEY AUTOINCREMENT,
 	email    VARCHAR(64)
 		UNIQUE
 			ON CONFLICT FAIL,
 	password VARCHAR(64),
 	authKey  VARCHAR(64),
-	salt     INTEGER(11) DEFAULT 0
+	salt     VARCHAR(64) DEFAULT 0
 );
 SQL
 					);
@@ -98,7 +102,7 @@ CREATE TABLE `users` (
 )
 COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
-AUTO_INCREMENT=2314
+AUTO_INCREMENT=0
 ;
 SQL
 					);
@@ -106,6 +110,8 @@ SQL
 			}
 
 		} catch (Exception $e) {
+echo '<pre>'; 
+var_dump($e); die;
 
 		}
 	}
