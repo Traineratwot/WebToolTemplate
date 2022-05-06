@@ -9,8 +9,8 @@
 		echo 'Please check your configuration; ' . __FILE__ . ':7';
 		die;
 	}
-	require_once dirname(__DIR__) . '/config.php';
-	require_once WT_MODEL_PATH . 'engine.php';
+	require_once dirname(__DIR__,2).'/vendor/autoload.php';
+	Core::init();
 	$core    = Core::init();
 	$options = getopt("f:d:");
 	$alias   = $options['f'];

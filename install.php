@@ -62,7 +62,8 @@
 		$log[] = "Failed to install composer\n";
 	} else {
 		$log[] = 'composer updated';
-		require_once WT_MODEL_PATH . 'engine.php';
+		require_once __DIR__.'/vendor/autoload.php';
+	Core::init();
 		try {
 			$core        = Core::init();
 			Cache::removeAll();

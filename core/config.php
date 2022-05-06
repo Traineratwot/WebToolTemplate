@@ -1,5 +1,7 @@
 <?php
 	//включаем ошибки
+	use Traineratwot\cc\Config;
+
 	ini_set('display_errors', 1);
 	error_reporting(E_ERROR);
 	//определяем основные пути
@@ -106,4 +108,57 @@
 	}
 
 	define('WT_TYPE_SYSTEM', getSystem());
+
+	Config::set('WT_BASE_PATH', WT_BASE_PATH);
+	Config::set('WT_CORE_PATH', WT_CORE_PATH);
+	Config::set('WT_CACHE_PATH', WT_CACHE_PATH);
+	Config::set('WT_MODEL_PATH', WT_MODEL_PATH);
+	Config::set('WT_VENDOR_PATH', WT_VENDOR_PATH);
+	Config::set('WT_PAGES_PATH', WT_PAGES_PATH);
+	Config::set('WT_VIEWS_PATH', WT_VIEWS_PATH);
+	Config::set('WT_CLASSES_PATH', WT_CLASSES_PATH);
+	Config::set('WT_TEMPLATES_PATH', WT_TEMPLATES_PATH);
+	Config::set('WT_AJAX_PATH', WT_AJAX_PATH);
+	Config::set('WT_CRON_PATH', WT_CRON_PATH);
+	Config::set('WT_ASSETS_PATH', WT_ASSETS_PATH);
+	Config::set('WT_IMAGES_PATH', WT_IMAGES_PATH);
+	Config::set('WT_PHP_EXEC_CMD', WT_PHP_EXEC_CMD);
+	Config::set('WT_DOMAIN_URL', WT_DOMAIN_URL);
+	Config::set('WT_NODE_URL', WT_NODE_URL);
+	Config::set('WT_HOST_DB', WT_HOST_DB);
+	Config::set('WT_PORT_DB', WT_PORT_DB);
+	Config::set('WT_DATABASE_DB', WT_DATABASE_DB);
+	Config::set('WT_TYPE_DB', WT_TYPE_DB);
+	Config::set('WT_USER_DB', WT_USER_DB);
+	Config::set('WT_PASS_DB', WT_PASS_DB);
+	Config::set('WT_CHARSET_DB', WT_CHARSET_DB);
+	Config::set('WT_HOST_DB', WT_HOST_DB);
+	Config::set('WT_PORT_DB', WT_PORT_DB);
+	Config::set('WT_DATABASE_DB', WT_DATABASE_DB);
+	Config::set('WT_TYPE_DB', WT_TYPE_DB);
+	Config::set('WT_USER_DB', WT_USER_DB);
+	Config::set('WT_PASS_DB', WT_PASS_DB);
+	Config::set('WT_CHARSET_DB', WT_CHARSET_DB);
+	Config::set('WT_SMARTY_TEMPLATE_PATH', WT_SMARTY_TEMPLATE_PATH);
+	Config::set('WT_SMARTY_COMPILE_PATH', WT_SMARTY_COMPILE_PATH);
+	Config::set('WT_SMARTY_CONFIG_PATH', WT_SMARTY_CONFIG_PATH);
+	Config::set('WT_SMARTY_CACHE_PATH', WT_SMARTY_CACHE_PATH);
+	Config::set('WT_SMARTY_PLUGINS_PATH', WT_SMARTY_PLUGINS_PATH);
+	Config::set('WT_FROM_EMAIL_MAIL', WT_FROM_EMAIL_MAIL);
+	Config::set('WT_FROM_NAME_MAIL', WT_FROM_NAME_MAIL);
+	Config::set('WT_SMTP_MAIL', WT_SMTP_MAIL);
+	Config::set('WT_HOST_MAIL', WT_HOST_MAIL);
+	Config::set('WT_AUTH_MAIL', WT_AUTH_MAIL);
+	Config::set('WT_USERNAME_MAIL', WT_USERNAME_MAIL);
+	Config::set('WT_PASSWORD_MAIL', WT_PASSWORD_MAIL);
+	Config::set('WT_SECURE_MAIL', WT_SECURE_MAIL);
+	Config::set('WT_PORT_MAIL', WT_PORT_MAIL);
+	Config::set('WT_LOCALE_DOMAIN', WT_LOCALE_DOMAIN);
+	Config::set('WT_LOCALE_PATH', WT_LOCALE_PATH);
+	Config::set('WT_USE_GETTEXT', WT_USE_GETTEXT);
+	Config::set('WT_TYPE_SYSTEM', WT_TYPE_SYSTEM);
+
+	Config::set('CACHE_PATH', WT_CACHE_PATH);
+	Config::set('CACHE_EXPIRATION', 'PDOE', 600);
+
 

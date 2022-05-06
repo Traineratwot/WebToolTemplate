@@ -2,7 +2,8 @@
 
 	namespace model\cli;
 	require_once dirname(__DIR__, 2) . '/config.php';
-	require_once WT_MODEL_PATH . 'engine.php';
+	require_once __DIR__.'/vendor/autoload.php';
+	Core::init();
 
 	use model\cli\commands\CacheCmd;
 	use model\cli\commands\CronCmd;
