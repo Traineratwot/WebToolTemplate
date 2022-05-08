@@ -40,10 +40,10 @@
 
 	- `wt cache` - очистить кеш ошибок
 
-	- `wt make ajax {name} {type? 'get'|'post'}` - создать класс метода ajax. eg: `wt make ajax "logout"`
-	- `wt make table {name} {primaryKey? 'id'}` - создать класс объекта таблицы. eg: `wt make table "users"`
-	- `wt make page {url} {template? 'base'}` - создать класс и шаблон страницы для URL. eg: `wt make page "catalog/page1 base"`
-	- `wt make cron {path}` - создать cron. eg: `wt make cron "category/test"`
+	- `wt makeAjax {name} {type? 'get'|'post'}` - создать класс метода ajax. eg: `wt make ajax "logout"`
+	- `wt makeTable {name} {primaryKey? 'id'}` - создать класс объекта таблицы. eg: `wt make table "users"`
+	- `wt makePage {url} {template? 'base'}` - создать класс и шаблон страницы для URL. eg: `wt make page "catalog/page1 base"`
+	- `wt makeCron {path}` - создать cron. eg: `wt make cron "category/test"`
 
 	- `wt lang {locale}` - создать файл локали .po из проекта исходного кода. eg: `wt lang ru_RU.utf8`
 	- `wt lang clear` - очистить кеш языков eg: `wt lang clear`
