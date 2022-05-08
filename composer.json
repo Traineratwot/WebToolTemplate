@@ -12,7 +12,8 @@
 	"type"       :"project",
 	"scripts"    :{
 		"up:release"     :"gh release create \"4.0.1\" --generate-notes",
-		"composer-config":"composer getAllConfigs"
+		"composer-config-print": "composer getAllConfigs",
+		"composer-config-update": "composer configUpdate"
 	},
 	"require"    :{
 		"smarty/smarty"               :"~3.1",
