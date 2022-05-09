@@ -27,7 +27,7 @@
 		"traineratwot/php-cli"        :"^1.1.5",
 		"traineratwot/pdo-extended"   :"^1.0",
 		"traineratwot/cache"          :"^2.0",
-		"traineratwot/composer-config":"^1.0.10"
+		"traineratwot/composer-config":"^1.1.0"
 	},
 	"require-dev":{
 		"roave/security-advisories"    :"dev-latest",
