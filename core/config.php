@@ -66,7 +66,7 @@
 	//настройка Cron
 	Config::set('WT_PHP_EXEC_CMD', "php", NULL, FALSE, 'WT_PHP_EXEC_CMD'); //команда запуска php скрипта
 	//Внешний url
-	Config::set('WT_DOMAIN_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/", NULL, FALSE, 'WT_DOMAIN_URL');
+	Config::set('WT_DOMAIN_URL', "HTTPS://localhost", NULL, FALSE, 'WT_DOMAIN_URL');
 	Config::set('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/', NULL, FALSE, 'WT_NODE_URL');
 	//определяем подключение к своей базе
 	Config::set('WT_HOST_DB',    WT_CORE_PATH . 'databases/database.db',NULL,FALSE,'WT_HOST_DB');
@@ -76,13 +76,14 @@
 	Config::set('WT_USER_DB',    '',                                    NULL,FALSE,'WT_USER_DB');
 	Config::set('WT_PASS_DB',    '',                                    NULL,FALSE,'WT_PASS_DB');
 	Config::set('WT_CHARSET_DB', '',                                    NULL,FALSE,'WT_CHARSET_DB');
-//	Config::set('WT_HOST_DB', 'localhost'null,false,,'T_HOST_DB');
-//	Config::set('WT_PORT_DB', '3306'null,false,,'T_PORT_DB');
-//	Config::set('WT_DATABASE_DB', 'wt'null,false,,'T_DATABASE_DB');
-//	Config::set('WT_TYPE_DB', 'mysql'null,false,,'T_TYPE_DB');
-//	Config::set('WT_USER_DB', 'root'null,false,,'T_USER_DB');
-//	Config::set('WT_PASS_DB', ''null,false,,'T_PASS_DB');
-//	Config::set('WT_CHARSET_DB', 'utf8mb4'null,false,,'T_CHARSET_DB');
+//	Config::set('WT_HOST_DB',    'localhost'null,false,,'T_HOST_DB');
+//	Config::set('WT_PORT_DB',    '3306'null,     false,,'T_PORT_DB');
+//	Config::set('WT_DATABASE_DB','wt'null,       false,,'T_DATABASE_DB');
+//	Config::set('WT_TYPE_DB',    'mysql'null,    false,,'T_TYPE_DB');
+//	Config::set('WT_USER_DB',    'root'null,     false,,'T_USER_DB');
+//	Config::set('WT_PASS_DB',    ''null,         false,,'T_PASS_DB');
+//	Config::set('WT_CHARSET_DB', 'utf8mb4'null,  false,,'T_CHARSET_DB');
+
 	//Настройки шаблонизатора
 	Config::set('WT_SMARTY_TEMPLATE_PATH',WT_CORE_PATH . 'templates',                                  NULL,FALSE,'WT_SMARTY_TEMPLATE_PATH');
 	Config::set('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile',                            NULL,FALSE,'WT_SMARTY_COMPILE_PATH');
