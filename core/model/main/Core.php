@@ -59,11 +59,14 @@
 					$dsn->setCharset(WT_CHARSET_DB);
 				}
 				$dsn->setHost(WT_HOST_DB);
+				$dsn->setSocket(WT_SOCKET_DB);
 				$dsn->setPort((int)WT_PORT_DB);
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
 				$this->db = new PDOE($dsn);
-				$this->db->logOn();
+				if(WT_SQL_LOG) {
+					$this->db->logOn();
+				}
 				$this->auth();
 			} catch (Exception $e) {
 				Err::error($e->getMessage(), 0, 0);

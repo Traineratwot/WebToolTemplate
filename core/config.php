@@ -66,7 +66,7 @@
 	//настройка Cron
 	Config::set('WT_PHP_EXEC_CMD', "php", NULL, FALSE, 'WT_PHP_EXEC_CMD'); //команда запуска php скрипта
 	//Внешний url
-	Config::set('WT_DOMAIN_URL', "HTTPS://localhost", NULL, FALSE, 'WT_DOMAIN_URL');
+	Config::set('WT_DOMAIN_URL', "https://localhost", NULL, FALSE, 'WT_DOMAIN_URL');
 	Config::set('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/', NULL, FALSE, 'WT_NODE_URL');
 	//определяем подключение к своей базе
 	Config::set('WT_HOST_DB',    WT_CORE_PATH . 'databases/database.db',NULL,FALSE,'WT_HOST_DB');
@@ -83,9 +83,11 @@
 //	Config::set('WT_USER_DB',    'root'null,     false,,'T_USER_DB');
 //	Config::set('WT_PASS_DB',    ''null,         false,,'T_PASS_DB');
 //	Config::set('WT_CHARSET_DB', 'utf8mb4'null,  false,,'T_CHARSET_DB');
+	Config::set('WT_SQL_LOG',  true,                                    NULL,FALSE,'WT_SQL_LOG');
+	Config::set('WT_SOCKET_DB',null,                                    NULL,FALSE,'WT_SOCKET_DB');
 
 	//Настройки шаблонизатора
-	Config::set('WT_SMARTY_TEMPLATE_PATH',WT_CORE_PATH . 'templates',                                  NULL,FALSE,'WT_SMARTY_TEMPLATE_PATH');
+	Config::set('WT_SMARTY_TEMPLATE_PATH',WT_TEMPLATES_PATH,                                  NULL,FALSE,'WT_SMARTY_TEMPLATE_PATH');
 	Config::set('WT_SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile',                            NULL,FALSE,'WT_SMARTY_COMPILE_PATH');
 	Config::set('WT_SMARTY_CONFIG_PATH',  WT_CACHE_PATH . 'smarty/config',                             NULL,FALSE,'WT_SMARTY_CONFIG_PATH');
 	Config::set('WT_SMARTY_CACHE_PATH',   WT_CACHE_PATH . 'smarty/cache',                              NULL,FALSE,'WT_SMARTY_CACHE_PATH');
