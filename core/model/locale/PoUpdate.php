@@ -182,6 +182,7 @@
 
 		function poEdit()
 		{
+			//php C:\OpenServer\domains\WebToolTemplate\poEdit.extractor.php %o %f
 			global $argv;
 			$o         = $argv[1];
 			$f         = $argv[2];
