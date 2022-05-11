@@ -69,7 +69,7 @@
 						Console::warning("Recommend add '.utf8");
 						if (!(int)Console::prompt('Continue with? "' . $lang . '" 1/0')) {
 							return;
-						};
+						}
 					}
 					if (!$newLang) {
 						Console::failure("can't set locale '$lang' ");
@@ -80,7 +80,7 @@
 						Console::warning("can't set locale '$lang' but set '$newLang' ");
 						if (!(int)Console::prompt('Continue with "' . $newLang . '" ? 1/0')) {
 							return;
-						};
+						}
 						Console::success('start generator');
 						self::localeGenerator($newLang);
 					}
