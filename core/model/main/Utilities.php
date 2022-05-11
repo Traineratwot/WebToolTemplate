@@ -10,7 +10,9 @@
 	use RecursiveIteratorIterator;
 	use RuntimeException;
 	use SplFileInfo;
+	use Traineratwot\Cache\Cache;
 	use traits\validators\jsonValidate;
+	use const WT_TYPE_SYSTEM;
 
 	/**
 	 * Класс с утилитами

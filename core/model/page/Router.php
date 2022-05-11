@@ -3,10 +3,11 @@
 	namespace model\page;
 
 	use Exception;
-	use model\main\Cache;
 	use model\main\Core;
 	use model\main\Err;
 	use model\main\Utilities;
+	use Traineratwot\Cache\Cache;
+	use Traineratwot\Cache\CacheException;
 
 
 	class Router
@@ -55,6 +56,9 @@
 			}
 		}
 
+		/**
+		 * @throws CacheException
+		 */
 		private function selectLanguage($lang)
 		{
 			if ($lang) {
@@ -78,7 +82,7 @@
 			}
 		}
 
-		//устнавливает языковой модуль
+		//устанавливает языковой модуль
 
 		/**
 		 * @throws RouterException
@@ -102,6 +106,10 @@
 				if ($ajax) {
 					$this->launchAjax($ajax, $data);
 				}
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.html');
+				if ($page) {
+					$this->launchPageHtml($page, $data);
+				}
 				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
 				if ($page) {
 					$this->launchPage($page, $data);
@@ -109,6 +117,10 @@
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				if ($page) {
 					$this->launchPageTpl($page, $data);
+				}
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
+				if ($page) {
+					$this->launchPageHtml($page, $data);
 				}
 			}
 		}
@@ -147,7 +159,7 @@
 		}
 
 		/**
-		 * запускает старницу из файла .php
+		 * Запускает страницу из файла .php
 		 * @throws RouterException
 		 * @throws Exception
 		 */
@@ -178,10 +190,24 @@
 		}
 
 		/**
-		 * запускает старницу из файла .tpl
+		 * Запускает страницу из файла .tpl
 		 * @throws Exception
 		 */
 		private function launchPageTpl($page, $data = [])
+		{
+			$result = new TmpPage($this->core, $this->alias, $data, $page);
+			try {
+				$result->render();
+			} catch (Exception $e) {
+				Err::error($e->getMessage());
+			}
+			exit();
+		}
+		/**
+		 * Запускает страницу из файла .html
+		 * @throws Exception
+		 */
+		private function launchPageHtml($page, $data = [])
 		{
 			$result = new TmpPage($this->core, $this->alias, $data, $page);
 			try {

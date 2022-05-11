@@ -37,8 +37,7 @@
 	"autoload"   :{
 		"files":[
 			"core/model/main/Core.php",
-			"core/model/main/Err.php",
-			"core/model/main/Cache.php"
+			"core/model/main/Err.php"
 		],
 		"psr-4":{
 			"tables\\" :"core/classes/tables/",

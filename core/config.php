@@ -49,6 +49,8 @@
 			WT_START_SESSION_FUNCTION();
 		}
 	}
+	Config::set('WT_TYPE_SYSTEM', getSystem(), NULL, FALSE, 'WT_TYPE_SYSTEM');
+
 	//определяем основные пути
 	Config::set('WT_BASE_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_BASE_PATH');
 	Config::set('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_CORE_PATH');

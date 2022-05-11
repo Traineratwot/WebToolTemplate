@@ -9,6 +9,7 @@
 	use model\main\ErrorPage;
 	use model\main\Utilities;
 	use SmartyBC;
+	use SmartyException;
 
 	/**
 	 * Класс для Страницы
@@ -48,6 +49,9 @@
 			$this->init();
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public function prepareAlias()
 		{
 			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
@@ -88,6 +92,9 @@
 			$this->addModifier('chunk', '\model\page\Page::chunk');
 		}
 
+		/**
+		 * @throws SmartyException
+		 */
 		public function addModifier($name, $function)
 		{
 			$this->smarty->registerPlugin("modifier", $name, $function);
@@ -121,6 +128,9 @@
 			return (new Chunk($core, $alias, $values))->render(TRUE);
 		}
 
+		/**
+		 * @throws SmartyException
+		 */
 		public function render($return = FALSE)
 		{
 			if ($return) {
@@ -173,6 +183,9 @@
 			$this->smarty->assign($name, $var, $nocache);
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public function errorPage($code = 404, $msg = 'Not Found')
 		{
 			$this->core->errorPage($code, $msg);

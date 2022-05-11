@@ -3,8 +3,8 @@
 	namespace model\cli\commands;
 
 	use model\cli\types\CacheEnum;
-	use model\main\Cache;
 	use model\main\Utilities;
+	use Traineratwot\Cache\Cache;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 

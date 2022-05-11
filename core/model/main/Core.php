@@ -17,6 +17,7 @@
 	use PHPMailer\PHPMailer\SMTP;
 	use SmartyBC;
 	use tables\Users;
+	use Traineratwot\Cache\Cache;
 	use Traineratwot\PDOExtended\Dsn;
 	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
 	use Traineratwot\PDOExtended\PDOE;
