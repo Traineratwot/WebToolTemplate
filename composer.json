@@ -13,7 +13,8 @@
 	"scripts"    :{
 		"up:release"            :"gh release create \"4.0.1\" --generate-notes",
 		"composer-config-print" :"composer getAllConfigs",
-		"composer-config-update":"composer configUpdate"
+		"composer-config-update":"composer configUpdate",
+		"composer-config": "composer getAllConfigs"
 	},
 	"require"    :{
 		"smarty/smarty"               :"~3.1",

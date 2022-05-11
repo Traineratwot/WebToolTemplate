@@ -76,13 +76,13 @@
 	Config::set('WT_USER_DB',    '',                                    NULL,FALSE,'WT_USER_DB');
 	Config::set('WT_PASS_DB',    '',                                    NULL,FALSE,'WT_PASS_DB');
 	Config::set('WT_CHARSET_DB', '',                                    NULL,FALSE,'WT_CHARSET_DB');
-//	Config::set('WT_HOST_DB',    'localhost'null,false,,'T_HOST_DB');
-//	Config::set('WT_PORT_DB',    '3306'null,     false,,'T_PORT_DB');
-//	Config::set('WT_DATABASE_DB','wt'null,       false,,'T_DATABASE_DB');
-//	Config::set('WT_TYPE_DB',    'mysql'null,    false,,'T_TYPE_DB');
-//	Config::set('WT_USER_DB',    'root'null,     false,,'T_USER_DB');
-//	Config::set('WT_PASS_DB',    ''null,         false,,'T_PASS_DB');
-//	Config::set('WT_CHARSET_DB', 'utf8mb4'null,  false,,'T_CHARSET_DB');
+//	Config::set('WT_HOST_DB',    'localhost',null,false,,'WT_HOST_DB');
+//	Config::set('WT_PORT_DB',    '3306',null,     false,,'WT_PORT_DB');
+//	Config::set('WT_DATABASE_DB','wt',null,       false,,'WT_DATABASE_DB');
+//	Config::set('WT_TYPE_DB',    'mysql',null,    false,,'WT_TYPE_DB');
+//	Config::set('WT_USER_DB',    'root',null,     false,,'WT_USER_DB');
+//	Config::set('WT_PASS_DB',    '',null,         false,,'WT_PASS_DB');
+//	Config::set('WT_CHARSET_DB', 'utf8mb4',null,  false,,'WT_CHARSET_DB');
 	Config::set('WT_SQL_LOG',  true,                                    NULL,FALSE,'WT_SQL_LOG');
 	Config::set('WT_SOCKET_DB',null,                                    NULL,FALSE,'WT_SOCKET_DB');
 

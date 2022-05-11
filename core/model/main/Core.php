@@ -58,8 +58,11 @@
 				if(WT_CHARSET_DB) {
 					$dsn->setCharset(WT_CHARSET_DB);
 				}
-				$dsn->setHost(WT_HOST_DB);
-				$dsn->setSocket(WT_SOCKET_DB);
+				if(WT_HOST_DB) {
+					$dsn->setHost(WT_HOST_DB);
+				}else {
+					$dsn->setSocket(WT_SOCKET_DB);
+				}
 				$dsn->setPort((int)WT_PORT_DB);
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
