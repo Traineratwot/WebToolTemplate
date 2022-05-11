@@ -10,7 +10,7 @@
 	use Traineratwot\PhpCli\TypeException;
 	use Traineratwot\PhpCli\types\TString;
 
-	class localeCmd extends Cmd
+	class LocaleCmd extends Cmd
 	{
 
 		/**

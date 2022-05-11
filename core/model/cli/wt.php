@@ -6,7 +6,7 @@
 	use model\cli\commands\CacheCmd;
 	use model\cli\commands\CronCmd;
 	use model\cli\commands\ErrorCmd;
-	use model\cli\commands\localeCmd;
+	use model\cli\commands\LocaleCmd;
 	use model\cli\commands\make\MakeCron;
 	use model\cli\commands\make\MakePage;
 	use model\cli\commands\make\MakeRest;
@@ -24,8 +24,8 @@
 			->registerCmd('cron', new CronCmd())
 			->registerCmd('error', new ErrorCmd())
 			->registerCmd('err', new ErrorCmd())
-			->registerCmd('lang', new localeCmd())
-			->registerCmd('locale', new localeCmd())
+			->registerCmd('lang', new LocaleCmd())
+			->registerCmd('locale', new LocaleCmd())
 			->registerCmd('makeCron', new MakeCron())
 			->registerCmd('makeTable', new MakeTable())
 			->registerCmd('makeRest', new MakeRest())

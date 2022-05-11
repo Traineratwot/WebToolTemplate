@@ -98,7 +98,8 @@
 				"WT_PORT_MAIL": "SMTP port",
 				"WT_LOCALE_DOMAIN": "key string locale domain, see gettext",
 				"WT_LOCALE_PATH": "path to locale folder",
-				"WT_USE_GETTEXT": "use php extention gettext? (bool)"
+				"WT_USE_GETTEXT": "use php extention gettext? (bool)",
+				"WT_TYPE_SYSTEM": "Operation system win or nix"
 			},
 			"optional": {
 
