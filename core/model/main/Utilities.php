@@ -423,7 +423,7 @@
 				$concurrentDirectory = dirname($path);
 				if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
 					if (!mkdir($concurrentDirectory, 0777, 1) && !is_dir($concurrentDirectory)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+						throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 					}
 				}
 			}

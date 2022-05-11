@@ -55,19 +55,19 @@
 				$dsn = new Dsn();
 				$dsn->setDriver(WT_TYPE_DB);
 				$dsn->setDatabase(WT_DATABASE_DB);
-				if(WT_CHARSET_DB) {
+				if (WT_CHARSET_DB) {
 					$dsn->setCharset(WT_CHARSET_DB);
 				}
-				if(WT_HOST_DB) {
+				if (WT_HOST_DB) {
 					$dsn->setHost(WT_HOST_DB);
-				}else {
+				} else {
 					$dsn->setSocket(WT_SOCKET_DB);
 				}
 				$dsn->setPort((int)WT_PORT_DB);
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
 				$this->db = new PDOE($dsn);
-				if(WT_SQL_LOG) {
+				if (WT_SQL_LOG) {
 					$this->db->logOn();
 				}
 				$this->auth();
