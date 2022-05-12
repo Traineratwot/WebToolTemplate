@@ -67,7 +67,7 @@
 				$dsn->setPort((int)WT_PORT_DB);
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
-				$this->db = new PDOE($dsn);
+				$this->db = PDOE::init($dsn);
 				if (WT_SQL_LOG) {
 					$this->db->logOn();
 				}
