@@ -34,6 +34,9 @@
 		 */
 		function getGravatar($s = 80, $d = 'mp', $r = 'g')
 		{
+			if (!$this->get('email')) {
+				return "https://i.pravatar.cc/$s";
+			}
 			$url = 'https://www.gravatar.com/avatar/';
 			$url .= md5(strtolower(trim($this->get('email'))));
 			$url .= "?s=$s&d=$d&r=$r";
