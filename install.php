@@ -8,7 +8,7 @@
 	use Traineratwot\Cache\Cache;
 
 	error_reporting(0);
-	require_once __DIR__ . '/core/config.php';
+	require_once 'vendor/autoload.php';
 	$log = [];
 	function installLinux()
 	{
