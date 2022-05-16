@@ -9,4 +9,4 @@
 	session_start();
 	require_once __DIR__ . '/vendor/autoload.php';
 	Core::init();
-	require_once realpath(WT_MODEL_PATH . 'page/router.php');
+	require_once realpath(WT_MODEL_PATH . 'page/Router.php');
