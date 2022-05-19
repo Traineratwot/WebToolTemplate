@@ -4,5 +4,5 @@
 
 {/block}
 {block name='content'}
-        {$msg}
+    {$msg}
 {/block}

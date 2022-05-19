@@ -3,9 +3,9 @@
 
 {/block}
 {block name='content'}
-	{if $msg}
+    {if $msg}
         {$msg}
     {else}
 		Доступ запрещен
-	{/if}
+    {/if}
 {/block}
