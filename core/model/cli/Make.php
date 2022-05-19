@@ -47,11 +47,31 @@ PHP;
 PHP;
 		}
 
+		public static function makePlugin($name, $type = 'any')
+		{
+			self::name2class($name, $class, $namespace);
+			return <<<PHP
+<?php
+	namespace classes\plugins{$namespace};
+	use model\Events\Plugin;
+	class {$class} extends Plugin
+	{
+		public function process(\$data)
+		{
+			//TODO make plugin {$class}
+		}
+	}
+	return {$class}::class;
+PHP;
+		}
+
 		public static function name2class($name, &$class = '', &$namespace = '')
 		{
 			$n0        = explode(":::", Utilities::pathNormalize($name, ':::'));
 			$class     = array_pop($n0);
-			$namespace = '\\' . implode('\\', $n0);
+			if(count($n0)) {
+				$namespace = '\\' . implode('\\', $n0);
+			}
 
 			$name = preg_replace("@([A-Z])@", "_$1", $name);
 			$name = strtr($name, [
@@ -66,8 +86,8 @@ PHP;
 			$n    = explode("_", $name);
 			$n2   = [];
 			foreach ($n as $value) {
-				$n2[] = ucfirst(mb_strtolower($value));
-				$n3[] = ucfirst(mb_strtolower($value));
+				$n2[] = ucfirst(strtolower($value));
+				$n3[] = ucfirst(strtolower($value));
 			}
 
 			return ucfirst(implode('', $n2));

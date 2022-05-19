@@ -3,6 +3,7 @@
 	namespace model\page;
 
 	use Exception;
+	use model\Events\Event;
 	use model\main\Core;
 	use model\main\CoreObject;
 	use model\main\Err;
@@ -134,10 +135,10 @@
 		 */
 		public function render($return = FALSE)
 		{
-			if ($return) {
-				ob_end_flush();
-				ob_start();
-			}
+			ob_end_flush();
+			ob_start();
+			Event::emit('BeforeRender');
+
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
@@ -149,9 +150,16 @@
 				}
 			}
 			$this->smarty->display($this->source);
-			if ($return) {
-				return ob_get_clean();
+			$page = ob_get_clean();
+
+			$mod = Event::emit('AfterRender', ['content' => $page, 'page' => $this]);
+			if ($mod) {
+				$page = $mod;
 			}
+			if ($return) {
+				return $page;
+			}
+			echo $page;
 			return TRUE;
 		}
 

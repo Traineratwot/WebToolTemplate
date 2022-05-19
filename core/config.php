@@ -54,6 +54,7 @@
 	//определяем основные пути
 	Config::set('WT_BASE_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_BASE_PATH');
 	Config::set('WT_CORE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_CORE_PATH');
+	Config::set('WT_PLUGINS_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_PLUGINS_PATH');
 	Config::set('WT_CACHE_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_CACHE_PATH');
 	Config::set('WT_MODEL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_MODEL_PATH');
 	Config::set('WT_VENDOR_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR, NULL, FALSE, 'WT_VENDOR_PATH');

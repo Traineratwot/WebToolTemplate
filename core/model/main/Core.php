@@ -10,6 +10,7 @@
 	use Gettext\Loader\PoLoader;
 	use Gettext\Translator;
 	use Gettext\TranslatorFunctions;
+	use model\Events\Event;
 	use model\helper\CsvTable;
 	use model\page\TmpPage;
 	use PDO;
@@ -52,6 +53,7 @@
 
 		public function __construct()
 		{
+			Event::emit('BeforeAppInit');
 			try {
 
 				$dsn = new Dsn();
@@ -78,6 +80,7 @@
 				Err::error($e->getMessage(), 0, 0);
 			}
 			$this->cache = new Cache();
+			Event::emit('AfterAppInit');
 		}
 
 		/**
@@ -157,6 +160,7 @@
 		 */
 		public function mail($to, $subject, $body, $file = [], $options = [])
 		{
+			Event::emit('BeforeMailSend');
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
@@ -212,6 +216,7 @@
 				$mail->Body    = $body;
 				$mail->AltBody = strip_tags($body);
 				$mail->send();
+				Event::emit('AfterMailSend');
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
 				Err::error($e->getMessage());

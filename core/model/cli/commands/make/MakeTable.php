@@ -34,7 +34,7 @@
 				$list = $core->db->getTablesList();
 				$find = FALSE;
 				foreach ($list as $t) {
-					if (mb_strtolower($t) === mb_strtolower($table)) {
+					if (strtolower($t) === strtolower($table)) {
 						$find  = TRUE;
 						$table = $t;
 						break;

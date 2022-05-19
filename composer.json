@@ -14,7 +14,7 @@
 		"up:release"            :"gh release create \"4.0.1\" --generate-notes",
 		"composer-config-print" :"composer getAllConfigs",
 		"composer-config-update":"composer configUpdate",
-		"composer-config": "composer getAllConfigs"
+		"composer-config"       :"composer getAllConfigs"
 	},
 	"require"    :{
 		"smarty/smarty"               :"~3.1",
@@ -28,7 +28,8 @@
 		"traineratwot/php-cli"        :"^1.1.5",
 		"traineratwot/pdo-extended"   :"^1.0",
 		"traineratwot/cache"          :"^2.0",
-		"traineratwot/composer-config":"^1.1.0"
+		"traineratwot/composer-config":"^1.1.0",
+		"tiben/crontab-manager": "^1.3"
 	},
 	"require-dev":{
 		"roave/security-advisories"    :"dev-latest",
@@ -41,6 +42,7 @@
 		],
 		"psr-4":{
 			"tables\\" :"core/classes/tables/",
+			"plugins\\":"core/classes/plugins/",
 			"traits\\" :"core/classes/traits/",
 			"classes\\":"core/classes/",
 			"model\\"  :"core/model/",
@@ -61,6 +63,7 @@
 				"WT_NODE_URL": "url to node_modules, like 'https://example.com/node_modules/'",
 				"WT_BASE_PATH": "base path",
 				"WT_CORE_PATH": "core path",
+				"WT_PLUGINS_PATH": "plugins path",
 				"WT_CACHE_PATH": "cache path",
 				"WT_MODEL_PATH": "model path",
 				"WT_VENDOR_PATH": "vendor path",

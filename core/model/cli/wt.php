@@ -9,6 +9,7 @@
 	use model\cli\commands\LocaleCmd;
 	use model\cli\commands\make\MakeCron;
 	use model\cli\commands\make\MakePage;
+	use model\cli\commands\make\MakePlugin;
 	use model\cli\commands\make\MakeRest;
 	use model\cli\commands\make\MakeTable;
 	use model\main\Core;
@@ -31,6 +32,7 @@
 			->registerCmd('makeRest', new MakeRest())
 			->registerCmd('makeAjax', new MakeRest())
 			->registerCmd('makePage', new MakePage())
+			->registerCmd('MakePlugin', new MakePlugin())
 			->run()
 		;
 	} catch (TypeException $e) {
