@@ -86,7 +86,7 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new PoScanner(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner = new poScan(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
@@ -133,7 +133,7 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new PoScanner(Translations::create(WT_LOCALE_DOMAIN));
+				$phpScanner = new poScan(Translations::create(WT_LOCALE_DOMAIN));
 				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {

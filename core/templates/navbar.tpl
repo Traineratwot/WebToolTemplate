@@ -11,26 +11,20 @@
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {if $isAuthenticated}
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/user/profile">Profile</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="/links">Links</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+						<a class="nav-link active" aria-current="page" href="/user/profile">{t}profile{/t}</a>
 					</li>
                 {else}
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/user/login">Login</a>
+						<a class="nav-link active" aria-current="page" href="/user/login">{t}login{/t}</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="/user/register">Register</a>
+						<a class="nav-link active" aria-current="page" href="/user/register">{t}register{/t}</a>
 					</li>
                 {/if}
 			</ul>
             {if $isAuthenticated}
 				<form class="d-flex" action="/user/logout" id="Logout">
-					<button class="btn btn-outline-info" type="submit">Logout</button>
+					<button class="btn btn-outline-info" type="submit">{t}logout{/t}</button>
 				</form>
             {/if}
 		</div>

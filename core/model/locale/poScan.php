@@ -8,19 +8,19 @@
 	/**
 	 * Class to scan PHP files && get gettext translations
 	 */
-	class PoScanner
+	class poScan
 	{
-		public $trans = [];
-		public $translations;
+		public $trans        = [];
+		public $translations = [];
 		/**
 		 * @var mixed|string
 		 */
-		public mixed $domain;
+		public $domain;
 		/**
 		 * @var string[]
 		 */
 		public array $commentsPrefixes;
-		protected    $functions
+		public       $functions
 			= [
 				'gettext',
 				'_',

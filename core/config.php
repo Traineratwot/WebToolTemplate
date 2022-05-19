@@ -12,14 +12,10 @@
 		 */
 		function WT_LOCALE_SELECT_FUNCTION()
 		{
-			preg_match('/^(.{1,3})?\..*$/', $_SERVER['HTTP_HOST'], $math);
-			if (!isset($math[1])) {
-				if (class_exists(Locale::class)) {
-					return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-				}
+			if (!isset($_COOKIE['lang'])) {
 				return 'en';
 			}
-			return $math[1];
+			return $_COOKIE['lang'];
 		}
 	}
 	//настройка системы
