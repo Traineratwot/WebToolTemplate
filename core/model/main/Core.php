@@ -89,7 +89,7 @@
 				if (!$u->isNew) {
 					$this->user = &$u;
 				} else {
-					session_unset();
+					$u->logout();
 				}
 			} else {
 				$authKey = strip_tags($_COOKIE['authKey']);
