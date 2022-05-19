@@ -210,7 +210,7 @@
 		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
 		{
 			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
-			$re = "@".preg_quote($DIRECTORY_SEPARATOR,'@').'{2,}@';
+			$re   = "@" . preg_quote($DIRECTORY_SEPARATOR, '@') . '{2,}@';
 			if (file_exists($path)) {
 				if (is_dir($path)) {
 					if (WT_TYPE_SYSTEM === 'nix') {

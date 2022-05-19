@@ -48,6 +48,11 @@
 			}
 		}
 
+		public function toArray()
+		{
+			return $this->data;
+		}
+
 		/**
 		 * @param $where
 		 * @param $type
@@ -119,6 +124,8 @@ SQL;
 			}
 		}
 
+		//--------------------------------------------------------
+
 		/**
 		 * @param $array
 		 * @return BdObject
@@ -131,8 +138,6 @@ SQL;
 			$obj->fromArray($array['data'], FALSE);
 			return $obj;
 		}
-
-		//--------------------------------------------------------
 
 		/**
 		 * @param array    $data
@@ -176,11 +181,6 @@ SQL;
 			}
 			$this->data[$key] = $value;
 			return $this;
-		}
-
-		public function toArray()
-		{
-			return $this->data;
 		}
 
 		public function save()

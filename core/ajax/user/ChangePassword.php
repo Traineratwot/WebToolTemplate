@@ -24,7 +24,7 @@
 
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
-					$salt    = Utilities::id(8);
+					$salt  = Utilities::id(8);
 					$email = $this->core->user->get('email');
 					$this->core->user->setPassword($this->password);
 					$authKey = md5($this->core->user->get('password') . $email . $salt);

@@ -79,6 +79,20 @@
 		}
 
 		/**
+		 * @return self
+		 */
+		public static function init()
+		{
+			if (array_key_exists('core', $GLOBALS)) {
+				return $GLOBALS['core'];
+			}
+
+			global $core;
+			$core = new self();
+			return $core;
+		}
+
+		/**
 		 * Check authorization
 		 * @return void
 		 */
@@ -119,20 +133,6 @@
 		public static function __set_state($arr)
 		{
 			global $core;
-			return $core;
-		}
-
-		/**
-		 * @return self
-		 */
-		public static function init()
-		{
-			if (array_key_exists('core', $GLOBALS)) {
-				return $GLOBALS['core'];
-			}
-
-			global $core;
-			$core = new self();
 			return $core;
 		}
 

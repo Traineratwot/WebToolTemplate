@@ -36,5 +36,6 @@
 			return FALSE;
 		}
 
-		abstract function verifyPassword(string $password):bool;
+		abstract function verifyPassword(string $password)
+		: bool;
 	}

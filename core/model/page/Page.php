@@ -163,6 +163,14 @@
 		/**
 		 * @throws Exception
 		 */
+		public function errorPage($code = 404, $msg = 'Not Found')
+		{
+			$this->core->errorPage($code, $msg);
+		}
+
+		/**
+		 * @throws Exception
+		 */
 		public function setAlias($alias)
 		{
 			$this->alias = $alias;
@@ -183,14 +191,6 @@
 		public function setVar($name, $var, $nocache = FALSE)
 		{
 			$this->smarty->assign($name, $var, $nocache);
-		}
-
-		/**
-		 * @throws Exception
-		 */
-		public function errorPage($code = 404, $msg = 'Not Found')
-		{
-			$this->core->errorPage($code, $msg);
 		}
 	}
 
