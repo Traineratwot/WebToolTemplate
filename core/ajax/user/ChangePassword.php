@@ -3,6 +3,7 @@
 	namespace ajax\user;
 
 
+	use model\main\Utilities;
 	use model\page\Ajax;
 
 	class ChangePassword extends Ajax
@@ -23,7 +24,7 @@
 
 			if ($this->core->isAuthenticated) {
 				if ($this->password) {
-					$salt  = random_int(1000000, 9999999);
+					$salt    = Utilities::id(8);
 					$email = $this->core->user->get('email');
 					$this->core->user->setPassword($this->password);
 					$authKey = md5($this->core->user->get('password') . $email . $salt);

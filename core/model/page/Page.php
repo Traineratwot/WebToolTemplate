@@ -130,6 +130,7 @@
 
 		/**
 		 * @throws SmartyException
+		 * @throws Exception
 		 */
 		public function render($return = FALSE)
 		{
@@ -142,7 +143,8 @@
 			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
 				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
-					Err::fatal('can`t load: "' . $this->source . '"');
+					Err::error('can`t load: "' . $this->source . '"');
+					$this->errorPage(404);
 					return FALSE;
 				}
 			}
