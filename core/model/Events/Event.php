@@ -15,6 +15,7 @@
 		 * @param mixed  $data
 		 * @param string $category
 		 * @return null
+		 * @throws Exception
 		 */
 		public static function emit(string $event, $data = [], string $category = '')
 		{
@@ -28,6 +29,7 @@
 		 * @param mixed  $data
 		 * @param string $category
 		 * @return null
+		 * @throws Exception
 		 */
 		public static function trigger(string $event, $data = [], string $category = '')
 		{
