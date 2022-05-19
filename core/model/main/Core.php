@@ -161,7 +161,7 @@
 				$mail->setLanguage('ru');
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
 				if (!empty($options['from'])) {
-					if ($options['from'] instanceof Users) {
+					if ($options['from'] instanceof User) {
 						$email = $options['from']->get('email');
 						$name  = $options['from']->get('full_name');
 					} else {
@@ -190,9 +190,9 @@
 					$to = [$to];
 				}
 				foreach ($to as $too) {
-					if ($too instanceof Users) {
+					if ($too instanceof User) {
 						$email = $too->get('email');
-						$name  = $too->get('full_name');
+						$name  = $too->getName();
 					} else {
 						$a     = explode('::', $too);
 						$email = $a[0];

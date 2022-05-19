@@ -2,8 +2,8 @@
 
 	namespace tables;
 
-	use model\main\BdObject;
 	use model\main\Err;
+	use model\main\User;
 	use model\main\Utilities;
 
 
@@ -11,28 +11,28 @@
 	 * Класс для работы с таблицей `users`
 	 * вызывается core::getObject('Users')
 	 */
-	class Users extends BdObject
+	class Users extends User
 	{
 
 
 		public $table      = 'users';
 		public $primaryKey = 'id';
 
-		public function sendMail($subject, $body = '', $file = [])
+		public function sendMail($subject='', $body = '', $file = [], $options = [])
 		{
-			return $this->core->mail($this, $subject, $body, $file);
+			return $this->core->mail($this, $subject, $file, $options);
 		}
 
 		/**
 		 * Get either a Gravatar URL || complete image tag for a specified email address.
 		 *
-		 * @param int    $s Size in pixels, defaults to 80px [ 1 - 2048 ]
-		 * @param string $d Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
-		 * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+		 * @param int    $size
+		 * @param string $default
+		 * @param string $rating Maximum rating (inclusive) [ g | pg | r | x ]
 		 * @return String containing either just a URL || a complete image tag
 		 * @source https://gravatar.com/site/implement/images/php/
 		 */
-		function getGravatar($s = 80, $d = 'mp', $r = 'g')
+		function getGravatar($size = 80, $default = 'mp', $rating = 'g')
 		{
 			if (!$this->get('email')) {
 				return "https://i.pravatar.cc/$s";
@@ -41,6 +41,11 @@
 			$url .= md5(strtolower(trim($this->get('email'))));
 			$url .= "?s=$s&d=$d&r=$r";
 			return $url;
+		}
+
+		public function getEmail()
+		{
+			return $this->get('email');
 		}
 
 		public function getName()
@@ -81,7 +86,7 @@
 			return TRUE;
 		}
 
-		public function setPassword($password)
+		public function setPassword(string $password)
 		{
 			$salt = Utilities::id(8);
 			$this->set('salt', $salt);

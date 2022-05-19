@@ -210,6 +210,7 @@
 		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
 		{
 			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
+			$re = "@".preg_quote($DIRECTORY_SEPARATOR,'@').'{2,}@';
 			if (file_exists($path)) {
 				if (is_dir($path)) {
 					if (WT_TYPE_SYSTEM === 'nix') {
@@ -222,9 +223,9 @@
 				} else {
 					$path = trim($path, $DIRECTORY_SEPARATOR);
 				}
-				return $path;
+				return preg_replace($re, $DIRECTORY_SEPARATOR, $path);
 			}
-			return $path;
+			return preg_replace($re, $DIRECTORY_SEPARATOR, $path);
 		}
 
 		public static function arrayToSqlIn($arr = [])
