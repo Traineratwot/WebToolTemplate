@@ -18,7 +18,7 @@
 		public $table      = 'users';
 		public $primaryKey = 'id';
 
-		public function sendMail($subject='', $body = '', $file = [], $options = [])
+		public function sendMail($subject = '', $body = '', $file = [], $options = [])
 		{
 			return $this->core->mail($this, $subject, $file, $options);
 		}
@@ -32,23 +32,26 @@
 		 * @return String containing either just a URL || a complete image tag
 		 * @source https://gravatar.com/site/implement/images/php/
 		 */
-		function getGravatar($size = 80, $default = 'mp', $rating = 'g')
+		public function getGravatar($size = 80, $default = 'mp', $rating = 'g')
+		: string
 		{
 			if (!$this->get('email')) {
-				return "https://i.pravatar.cc/$s";
+				return "https://i.pravatar.cc/$size";
 			}
 			$url = 'https://www.gravatar.com/avatar/';
 			$url .= md5(strtolower(trim($this->get('email'))));
-			$url .= "?s=$s&d=$d&r=$r";
+			$url .= "?s=$size&d=$default&r=$rating";
 			return $url;
 		}
 
 		public function getEmail()
+		: string
 		{
 			return $this->get('email');
 		}
 
 		public function getName()
+		: string
 		{
 			return $this->get('email');
 		}
@@ -105,6 +108,7 @@
 		}
 
 		public function verifyPassword($password)
+		: bool
 		{
 			return password_verify($password . $this->get('salt'), $this->get('password'));
 		}

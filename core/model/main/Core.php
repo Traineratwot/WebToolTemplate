@@ -53,6 +53,7 @@
 		public function __construct()
 		{
 			try {
+
 				$dsn = new Dsn();
 				$dsn->setDriver(WT_TYPE_DB);
 				$dsn->setDatabase(WT_DATABASE_DB);
@@ -68,6 +69,7 @@
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
 				$this->db = PDOE::init($dsn);
+
 				if (WT_SQL_LOG) {
 					$this->db->logOn();
 				}
