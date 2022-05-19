@@ -12,10 +12,7 @@
 		 */
 		function WT_LOCALE_SELECT_FUNCTION()
 		{
-			if (!isset($_COOKIE['lang'])) {
-				return 'en';
-			}
-			return $_COOKIE['lang'];
+			return $_COOKIE['lang'] ?? 'en';
 		}
 	}
 	//настройка системы
