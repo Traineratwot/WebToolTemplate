@@ -44,7 +44,14 @@
 				$this->selectLanguage($lang);
 			}
 			try {
+				$this->ln = Cache::getCache('routers', 'router');
+				if ($this->ln[$this->alias] == 'route8') {
+					goto route8;
+				}
 				$this->_route();
+				$this->ln[$this->alias] = 'route8';
+				Cache::setCache('routers', $this->ln, 600, 'router');
+				route8:
 				$this->advancedRoute();
 				$this->core->errorPage();
 			} catch (RouterException $e) {
@@ -94,9 +101,8 @@
 				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
 				$this->launchAjax($ajax, $data);
 			} else {
-				$ln = Cache::getCache('routers', 'router');
-				if ($ln[$this->alias]) {
-					switch ($ln[$this->alias]) {
+				if ($this->ln[$this->alias]) {
+					switch ($this->ln[$this->alias]) {
 						case 'route1':
 							goto route1;
 							break;
@@ -123,63 +129,63 @@
 				route1:
 				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . '.php');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route1';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route1';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPage($page, $data);
 				}
 				route2:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route2';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route2';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPageTpl($page, $data);
 				}
 				route3:
 				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
 				if ($ajax) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route3';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route3';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchAjax($ajax, $data);
 				}
 				route4:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.html');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route4';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route4';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPageHtml($page, $data);
 				}
 				route5:
 				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route5';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route5';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPage($page, $data);
 				}
 				route6:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route6';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route6';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPageTpl($page, $data);
 				}
 				route7:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
 				if ($page) {
-					if (!$ln[$this->alias]) {
-						$ln[$this->alias] = 'route7';
-						Cache::setCache('routers', $ln, 600, 'router');
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route7';
+						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPageHtml($page, $data);
 				}
