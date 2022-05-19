@@ -75,6 +75,9 @@
 			setcookie($name, $value, $expire, '/');
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public static function id($length = 6)
 		{
 			$length--;
@@ -279,6 +282,8 @@
 						unset($a[count($a) - 1]);
 					}
 					//нахожу первый существующий путь
+					$k = 0;
+					$p = '';
 					foreach ($array_path as $k => $p) {
 						if (file_exists($p)) {
 							break;
@@ -352,7 +357,10 @@
 			return strtr($value, $converter);
 		}
 
-		public static function isAssoc(&$arr = [])
+		/**
+		 * @throws Exception
+		 */
+		public static function isAssoc($arr = [])
 		{
 			if (function_exists('array_is_list')) {
 				return !array_is_list($arr);
