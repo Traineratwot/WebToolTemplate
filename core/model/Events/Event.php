@@ -15,7 +15,7 @@
 		 * @param mixed  $data
 		 * @param string $category
 		 * @return null
-		 * @throws Exception
+		 *
 		 */
 		public static function emit(string $event, $data = [], string $category = '')
 		{
@@ -29,7 +29,7 @@
 		 * @param mixed  $data
 		 * @param string $category
 		 * @return null
-		 * @throws Exception
+		 *
 		 */
 		public static function trigger(string $event, $data = [], string $category = '')
 		{
@@ -42,21 +42,25 @@
 		}
 
 		/**
-		 * @throws Exception
+		 *
 		 */
 		private static function load(string $event, string $category)
 		{
-			if (isset(self::$plugins[$category][$event])) {
-				return self::$plugins[$category][$event];
-			}
-
-			$class = Utilities::findPath(WT_PLUGINS_PATH . $category . DIRECTORY_SEPARATOR . $event.'.php');
-			if(file_exists($class)) {
-				$cls = include $class;
-				if (is_string($cls) && class_exists($cls)) {
-					self::$plugins[$category][$event] = $cls;
-					return $cls;
+			try {
+				if (isset(self::$plugins[$category][$event])) {
+					return self::$plugins[$category][$event];
 				}
+
+				$class = Utilities::findPath(WT_PLUGINS_PATH . $category . DIRECTORY_SEPARATOR . $event . '.php');
+				if (file_exists($class)) {
+					$cls = include $class;
+					if (is_string($cls) && class_exists($cls)) {
+						self::$plugins[$category][$event] = $cls;
+						return $cls;
+					}
+				}
+			} catch (Exception $e) {
+
 			}
 			return FALSE;
 		}

@@ -53,7 +53,7 @@
 
 		public function __construct()
 		{
-			Event::emit('BeforeAppInit');
+			Event::emit('BeforeAppInit', $this);
 			try {
 
 				$dsn = new Dsn();
@@ -80,7 +80,7 @@
 				Err::error($e->getMessage(), 0, 0);
 			}
 			$this->cache = new Cache();
-			Event::emit('AfterAppInit');
+			Event::emit('AfterAppInit', $this);
 		}
 
 		/**
