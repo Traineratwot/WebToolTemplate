@@ -101,8 +101,18 @@
 		 * Check authorization
 		 * @return void
 		 */
-		public function auth()
+		public function auth(User &$user = NULL)
 		{
+			if($user){
+				$user->login();
+				$this->user = &$user;
+				if ($this->user === NULL) {
+					$this->isAuthenticated = FALSE;
+				} else {
+					$this->isAuthenticated = TRUE;
+				}
+				return;
+			}
 			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] === Utilities::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
@@ -114,7 +124,7 @@
 				$authKey = strip_tags($_COOKIE['authKey']);
 				$id      = (int)$_COOKIE['userId'];
 				$u       = $this->getUser($id);
-				if (!$u->isNew && $authKey === hash('sha256', $u->get('authKey') . Utilities::getIp())) {
+				if (!$u->isNew && $authKey === Utilities::hash($u->get('authKey') . Utilities::getIp())) {
 					$this->user = &$u;
 					$this->user->login();
 				}

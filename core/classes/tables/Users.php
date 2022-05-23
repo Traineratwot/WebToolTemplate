@@ -75,7 +75,7 @@
 				}
 				$pass = $password;
 				$this->setPassword($pass);
-				$authKey = hash('sha256', $email . $this->get('password'));
+				$authKey = Utilities::hash($email . $this->get('password'));
 				$this->set('email', $email);
 				$this->set('authKey', $authKey);
 				$this->save();
@@ -102,7 +102,7 @@
 			WT_RESTART_SESSION_FUNCTION();
 			$_SESSION['authKey'] = $this->get('authKey');
 			$_SESSION['ip']      = Utilities::getIp();
-			$hash                = hash('sha256', $_SESSION['authKey'] . $_SESSION['ip']);
+			$hash                = Utilities::hash($_SESSION['authKey'] . $_SESSION['ip']);
 			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
 			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
 		}
