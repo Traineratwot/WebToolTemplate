@@ -12,7 +12,10 @@
 		 */
 		function WT_LOCALE_SELECT_FUNCTION()
 		{
-			return $_COOKIE['lang'] ?? 'en';
+			if (class_exists(Locale::class)) {
+				return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+			}
+			return $_COOKIE['lang'] ?: 'en';
 		}
 	}
 	//настройка системы
