@@ -68,20 +68,22 @@
 	Config::set('WT_DOMAIN_URL', "https://localhost", NULL, FALSE, 'WT_DOMAIN_URL');
 	Config::set('WT_NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/', NULL, FALSE, 'WT_NODE_URL');
 	//определяем подключение к своей базе
-	Config::set('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db', NULL, FALSE, 'WT_HOST_DB');
-	Config::set('WT_PORT_DB', '', NULL, FALSE, 'WT_PORT_DB');
-	Config::set('WT_DATABASE_DB', '', NULL, FALSE, 'WT_DATABASE_DB');
-	Config::set('WT_TYPE_DB', 'sqlite', NULL, FALSE, 'WT_TYPE_DB');
-	Config::set('WT_USER_DB', '', NULL, FALSE, 'WT_USER_DB');
-	Config::set('WT_PASS_DB', '', NULL, FALSE, 'WT_PASS_DB');
+//	Config::set('WT_HOST_DB', WT_CORE_PATH . 'databases/database.db', NULL, FALSE, 'WT_HOST_DB');
+//	Config::set('WT_PORT_DB', '', NULL, FALSE, 'WT_PORT_DB');
+//	Config::set('WT_DATABASE_DB', '', NULL, FALSE, 'WT_DATABASE_DB');
+//	Config::set('WT_TYPE_DB', 'sqlite', NULL, FALSE, 'WT_TYPE_DB');
+//	Config::set('WT_USER_DB', '', NULL, FALSE, 'WT_USER_DB');
+//	Config::set('WT_PASS_DB', '', NULL, FALSE, 'WT_PASS_DB');
+//	Config::set('WT_CHARSET_DB', '', NULL, FALSE, 'WT_CHARSET_DB');
+
+	Config::set('WT_HOST_DB', '192.168.1.74', NULL, FALSE, 'WT_HOST_DB');
+	Config::set('WT_PORT_DB', 3306, NULL, FALSE, 'WT_PORT_DB');
+	Config::set('WT_DATABASE_DB', 'wt', NULL, FALSE, 'WT_DATABASE_DB');
+	Config::set('WT_TYPE_DB', 'mysql', NULL, FALSE, 'WT_TYPE_DB');
+	Config::set('WT_USER_DB', 'kirill', NULL, FALSE, 'WT_USER_DB');
+	Config::set('WT_PASS_DB', '240997', NULL, FALSE, 'WT_PASS_DB');
 	Config::set('WT_CHARSET_DB', '', NULL, FALSE, 'WT_CHARSET_DB');
-//	Config::set('WT_HOST_DB',    'localhost',null,false,,'WT_HOST_DB');
-//	Config::set('WT_PORT_DB',    '3306',null,     false,,'WT_PORT_DB');
-//	Config::set('WT_DATABASE_DB','wt',null,       false,,'WT_DATABASE_DB');
-//	Config::set('WT_TYPE_DB',    'mysql',null,    false,,'WT_TYPE_DB');
-//	Config::set('WT_USER_DB',    'root',null,     false,,'WT_USER_DB');
-//	Config::set('WT_PASS_DB',    '',null,         false,,'WT_PASS_DB');
-//	Config::set('WT_CHARSET_DB', 'utf8mb4',null,  false,,'WT_CHARSET_DB');
+
 	Config::set('WT_SQL_LOG', TRUE, NULL, FALSE, 'WT_SQL_LOG');
 	Config::set('WT_SOCKET_DB', NULL, NULL, FALSE, 'WT_SOCKET_DB');
 

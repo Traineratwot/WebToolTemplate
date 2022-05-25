@@ -2,12 +2,14 @@
 
 	namespace core\composer;
 
+	use DateTime;
 	use Exception;
 	use model\main\Core;
 	use model\main\Utilities;
 	use PhpZip\Exception\ZipException;
 	use PhpZip\ZipFile;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\PDOExtended\PDOE;
 	use Traineratwot\PhpCli\Console;
 
 	class Scripts
@@ -95,17 +97,65 @@ SQL
 		 */
 		public static function package()
 		{
+			$dt = new DateTime();
 			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 			self::mkDirs(WT_BASE_PATH . '/backups/');
+
+
 			$zipFile = new ZipFile();
+			$zipFile->setArchiveComment(<<<TXT
+Backup DataBase
+Date: {$dt->format(DATE_ATOM)}
+TXT
+			);
+			switch (WT_TYPE_DB) {
+				case PDOE::DRIVER_MySQL:
+					$h = WT_HOST_DB;
+					$p = WT_PASS_DB;
+					$u = WT_USER_DB;
+					$d = WT_DATABASE_DB;
+					$s = WT_CORE_PATH . 'database/dump.sql';
+					self::mkDirs(dirname($s));
+					$cmd = <<<BASH
+mysqldump -u $u -p$p -h $h $d > "$s"
+BASH;
+					Console::info($cmd);
+
+					exec($cmd, $o, $c);
+					if ($c === 0) {
+						$zipFile->addFile($s);
+
+						$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump.zip');
+						$zipFile->close();
+					} else {
+						Console::warning("You must make dump, use: \"$cmd\"");
+					}
+					break;
+				case PDOE::DRIVER_PostgreSQL:
+
+					break;
+				case PDOE::DRIVER_SQLite:
+					$zipFile->addFile(WT_HOST_DB);
+					$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump.zip');
+					$zipFile->close();
+					break;
+			}
+
+			//--------------------------------------------------
+
+			$zipFile = new ZipFile();
+			$zipFile->setArchiveComment(<<<TXT
+Backup project
+Date: {$dt->format(DATE_ATOM)}
+TXT
+			);
 			$zipFile->addDirRecursive(WT_BASE_PATH);
 			$zipFile->deleteFromRegex("@.idea@");
 			$zipFile->deleteFromRegex("@.vscode@");
-			$zipFile->deleteFromRegex("@.git/objects@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
-			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup.zip');   // save the archive to a file
-			$zipFile->close();                                            // close archive
+			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup.zip');
+			$zipFile->close();
 		}
 
 		public static function mkDirs(string $dir)
