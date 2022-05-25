@@ -12,7 +12,6 @@
 	$log = [];
 	function installLinux()
 	{
-
 		exec('chmod 755 -R -f ' . WT_MODEL_PATH);
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.php');
 		exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');

@@ -112,3 +112,9 @@ Console::getColoredString('text','red','yellow') //return colored string
 Console::foreground_colors //list text color
 Console::background_colors //list background color
 ```
+
+
+# FAQ
+
+ - Композер выдает фатальную ошибку 
+   - if composer fatal error use 

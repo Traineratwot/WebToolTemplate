@@ -17,3 +17,4 @@ package-lock.json
 pnpm-lock.yaml
 !/core/cron/**/*
 !/vendor/.htaccess
+backups/backup.zip
