@@ -1,4 +1,7 @@
 window.gettext = (string) => {
-	return Translations['messages'][''][string] ?? string
+	if(window.hasOwnProperty('Translations')) {
+		return Translations['messages'][''][string] ?? string
+	}
+	return string
 }
 window.__ = window.gettext

@@ -3,10 +3,11 @@
 	namespace model\page;
 
 	use Exception;
-	use model\main\Cache;
 	use model\main\Core;
 	use model\main\Err;
 	use model\main\Utilities;
+	use Traineratwot\Cache\Cache;
+	use Traineratwot\Cache\CacheException;
 
 
 	class Router
@@ -43,7 +44,14 @@
 				$this->selectLanguage($lang);
 			}
 			try {
+				$this->ln = Cache::getCache('routers', 'router');
+				if ($this->ln[$this->alias] == 'route8') {
+					goto route8;
+				}
 				$this->_route();
+				$this->ln[$this->alias] = 'route8';
+				Cache::setCache('routers', $this->ln, 600, 'router');
+				route8:
 				$this->advancedRoute();
 				$this->core->errorPage();
 			} catch (RouterException $e) {
@@ -55,6 +63,9 @@
 			}
 		}
 
+		/**
+		 * @throws CacheException
+		 */
 		private function selectLanguage($lang)
 		{
 			if ($lang) {
@@ -78,7 +89,7 @@
 			}
 		}
 
-		//устнавливает языковой модуль
+		//устанавливает языковой модуль
 
 		/**
 		 * @throws RouterException
@@ -90,25 +101,93 @@
 				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
 				$this->launchAjax($ajax, $data);
 			} else {
+				if ($this->ln[$this->alias]) {
+					switch ($this->ln[$this->alias]) {
+						case 'route1':
+							goto route1;
+							break;
+						case 'route2':
+							goto route2;
+							break;
+						case 'route3':
+							goto route3;
+							break;
+						case 'route4':
+							goto route4;
+							break;
+						case 'route5':
+							goto route5;
+							break;
+						case 'route6':
+							goto route6;
+							break;
+						case 'route7':
+							goto route7;
+							break;
+					}
+				}
+				route1:
 				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . '.php');
 				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route1';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
 					$this->launchPage($page, $data);
 				}
+				route2:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
 				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route2';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
 					$this->launchPageTpl($page, $data);
 				}
+				route3:
 				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
 				if ($ajax) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route3';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
 					$this->launchAjax($ajax, $data);
 				}
+				route4:
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.html');
+				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route4';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
+					$this->launchPageHtml($page, $data);
+				}
+				route5:
 				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
 				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route5';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
 					$this->launchPage($page, $data);
 				}
+				route6:
 				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route6';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
 					$this->launchPageTpl($page, $data);
+				}
+				route7:
+				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
+				if ($page) {
+					if (!$this->ln[$this->alias]) {
+						$this->ln[$this->alias] = 'route7';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
+					$this->launchPageHtml($page, $data);
 				}
 			}
 		}
@@ -147,7 +226,7 @@
 		}
 
 		/**
-		 * запускает старницу из файла .php
+		 * Запускает страницу из файла .php
 		 * @throws RouterException
 		 * @throws Exception
 		 */
@@ -178,10 +257,25 @@
 		}
 
 		/**
-		 * запускает старницу из файла .tpl
+		 * Запускает страницу из файла .tpl
 		 * @throws Exception
 		 */
 		private function launchPageTpl($page, $data = [])
+		{
+			$result = new TmpPage($this->core, $this->alias, $data, $page);
+			try {
+				$result->render();
+			} catch (Exception $e) {
+				Err::error($e->getMessage());
+			}
+			exit();
+		}
+
+		/**
+		 * Запускает страницу из файла .html
+		 * @throws Exception
+		 */
+		private function launchPageHtml($page, $data = [])
 		{
 			$result = new TmpPage($this->core, $this->alias, $data, $page);
 			try {

@@ -1,6 +1,7 @@
 {
+	"$schema": "https://raw.githubusercontent.com/Traineratwot/composer-config/master/composer-config-schema.json",
 	"name"       :"traineratwot/web-tool-template",
-	"version"    :"3.0.1",
+	"version"    :"4.0.1",
 	"authors"    :[
 		{
 			"name" :"Kirill",
@@ -10,20 +11,25 @@
 	"license"    :"GPL-3.0-or-later",
 	"type"       :"project",
 	"scripts"    :{
-		"up:release":"gh release create \"3.0.2\" --generate-notes"
+		"up:release"            :"gh release create \"4.0.1\" --generate-notes",
+		"composer-config-print" :"composer getAllConfigs",
+		"composer-config-update":"composer configUpdate"
 	},
 	"require"    :{
-		"nilportugues/sql-query-builder":"^1.8",
-		"smarty/smarty"                 :"~3.1",
-		"greenlion/php-sql-parser"      :"^4.4",
-		"phpmailer/phpmailer"           :"^6.5",
-		"bramus/router"                 :"~1.6",
-		"gettext/gettext"               :"^5.6",
-		"gettext/js-scanner"            :"^1.1",
-		"gettext/php-scanner"           :"^1.3",
-		"gettext/json"                  :"^1.0",
-		"gettext/translator"            :"^1.0",
-		"traineratwot/php-cli"          :"^1.1.5"
+		"php": "^7.4 || ^8.0",
+		"smarty/smarty"               :"~3.1",
+		"phpmailer/phpmailer"         :"^6.5",
+		"bramus/router"               :"~1.6",
+		"gettext/gettext"             :"^5.6",
+		"gettext/js-scanner"          :"^1.1",
+		"gettext/php-scanner"         :"^1.3",
+		"gettext/json"                :"^1.0",
+		"gettext/translator"          :"^1.0",
+		"traineratwot/php-cli"        :"^1.1.5",
+		"traineratwot/pdo-extended"   :"^1.0",
+		"traineratwot/cache"          :"^2.0",
+		"traineratwot/composer-config":"^1.1.0",
+		"tiben/crontab-manager": "^1.3"
 	},
 	"require-dev":{
 		"roave/security-advisories"    :"dev-latest",
@@ -31,18 +37,76 @@
 	},
 	"autoload"   :{
 		"files":[
-			"core/model/main/PDOExtended.php",
 			"core/model/main/Core.php",
-			"core/model/main/Err.php",
-			"core/model/main/Cache.php"
+			"core/model/main/Err.php"
 		],
 		"psr-4":{
 			"tables\\" :"core/classes/tables/",
+			"plugins\\":"core/classes/plugins/",
 			"traits\\" :"core/classes/traits/",
 			"classes\\":"core/classes/",
 			"model\\"  :"core/model/",
 			"page\\"   :"core/views/",
 			"ajax\\"   :"core/ajax/"
+		}
+	},
+	"config"     :{
+		"allow-plugins":{
+			"traineratwot/composer-config":true
+		}
+	},
+	"extra"      :{
+		"composer-config":{
+			"configPath": "core/config.php",
+			"required": {
+				"WT_DOMAIN_URL": "main site url, like 'https://example.com'",
+				"WT_NODE_URL": "url to node_modules, like 'https://example.com/node_modules/'",
+				"WT_BASE_PATH": "base path",
+				"WT_CORE_PATH": "core path",
+				"WT_PLUGINS_PATH": "plugins path",
+				"WT_CACHE_PATH": "cache path",
+				"WT_MODEL_PATH": "model path",
+				"WT_VENDOR_PATH": "vendor path",
+				"WT_PAGES_PATH": "pages path",
+				"WT_VIEWS_PATH": "views path",
+				"WT_CLASSES_PATH": "classes path",
+				"WT_TEMPLATES_PATH": "template path",
+				"WT_AJAX_PATH": "ajax path",
+				"WT_CRON_PATH": "cron path",
+				"WT_ASSETS_PATH": "assets path",
+				"WT_IMAGES_PATH": "images path",
+				"WT_HOST_DB": "data base host, set null if use socket",
+				"WT_SOCKET_DB": "data base host, or  set null if use host",
+				"WT_PORT_DB": "database port, set null if use socket",
+				"WT_DATABASE_DB": "database name",
+				"WT_TYPE_DB": "driver name, see PDOE::DRIVER_*",
+				"WT_USER_DB": "username",
+				"WT_PASS_DB": "password",
+				"WT_CHARSET_DB": "charset, default utf8mb4",
+				"WT_SQL_LOG": "enable sql log?, log saved into cache",
+				"WT_PHP_EXEC_CMD": "command to exec php for cron, like '/bin/php7.4/php'",
+				"WT_SMARTY_TEMPLATE_PATH": "smarty templdate path, use 'WT_TEMPLATES_PATH'",
+				"WT_SMARTY_COMPILE_PATH": "smarty cache COMPILE path",
+				"WT_SMARTY_CONFIG_PATH": "smarty cache CONFIG path",
+				"WT_SMARTY_CACHE_PATH": "smarty cache path",
+				"WT_SMARTY_PLUGINS_PATH": "smarty plugin path",
+				"WT_FROM_EMAIL_MAIL": "sender email",
+				"WT_FROM_NAME_MAIL": "sender name",
+				"WT_SMTP_MAIL": "use SMTP? (bool)",
+				"WT_HOST_MAIL": "SMPT host",
+				"WT_AUTH_MAIL": "SMPT autch method, see 'phpmailer'",
+				"WT_USERNAME_MAIL": "SMPT user",
+				"WT_PASSWORD_MAIL": "SMPT pass",
+				"WT_SECURE_MAIL": "SMPT secure method, see 'phpmailer'",
+				"WT_PORT_MAIL": "SMTP port",
+				"WT_LOCALE_DOMAIN": "key string locale domain, see gettext",
+				"WT_LOCALE_PATH": "path to locale folder",
+				"WT_USE_GETTEXT": "use php extention gettext? (bool)",
+				"WT_TYPE_SYSTEM": "Operation system win or nix"
+			},
+			"optional": {
+
+			}
 		}
 	}
 }

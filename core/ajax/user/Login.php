@@ -2,6 +2,7 @@
 
 	namespace ajax\user;
 
+	use Exception;
 	use model\main\Err;
 	use model\page\Ajax;
 
@@ -35,7 +36,7 @@
 				} else {
 					return $this->failure('Пользователь не существует: ' . $this->login);
 				}
-			} catch (\Exception $e) {
+			} catch (Exception $e) {
 				return $this->failure($e->getMessage());
 			}
 		}

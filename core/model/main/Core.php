@@ -10,21 +10,29 @@
 	use Gettext\Loader\PoLoader;
 	use Gettext\Translator;
 	use Gettext\TranslatorFunctions;
+	use model\Events\Event;
 	use model\helper\CsvTable;
 	use model\page\TmpPage;
-	use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 	use PDO;
-	use PDOException;
 	use PHPMailer\PHPMailer\PHPMailer;
 	use PHPMailer\PHPMailer\SMTP;
 	use SmartyBC;
 	use tables\Users;
+	use Traineratwot\Cache\Cache;
+	use Traineratwot\PDOExtended\Dsn;
+	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
+	use Traineratwot\PDOExtended\PDOE;
 
 	/**
 	 * Основной класс
 	 */
+//	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB.";charset=". WT_CHARSET_DB);
+
 	final class Core implements ErrorPage
 	{
+		/**
+		 * @var PDOE
+		 */
 		public $db;
 		public $user;
 		/**
@@ -45,33 +53,78 @@
 
 		public function __construct()
 		{
+			Event::emit('BeforeAppInit', $this);
 			try {
-				$this->db = new PDOExtended(WT_DSN_DB, WT_USER_DB, WT_PASS_DB);
-			} catch (PDOException $e) {
-				Err::fatal($e->getMessage());
+
+				$dsn = new Dsn();
+				$dsn->setDriver(WT_TYPE_DB);
+				$dsn->setDatabase(WT_DATABASE_DB);
+				if (WT_CHARSET_DB) {
+					$dsn->setCharset(WT_CHARSET_DB);
+				}
+				if (WT_HOST_DB) {
+					$dsn->setHost(WT_HOST_DB);
+				} else {
+					$dsn->setSocket(WT_SOCKET_DB);
+				}
+				$dsn->setPort((int)WT_PORT_DB);
+				$dsn->setPassword(WT_PASS_DB);
+				$dsn->setUsername(WT_USER_DB);
+				$this->db = PDOE::init($dsn);
+
+				if (WT_SQL_LOG) {
+					$this->db->logOn();
+				}
+				$this->auth();
+			} catch (Exception $e) {
+				Err::error($e->getMessage(), 0, 0);
 			}
-			$this->auth();
 			$this->cache = new Cache();
+			Event::emit('AfterAppInit', $this);
+		}
+
+		/**
+		 * @return self
+		 */
+		public static function init()
+		{
+			if (array_key_exists('core', $GLOBALS)) {
+				return $GLOBALS['core'];
+			}
+
+			global $core;
+			$core = new self();
+			return $core;
 		}
 
 		/**
 		 * Check authorization
 		 * @return void
 		 */
-		public function auth()
+		public function auth(User &$user = NULL)
 		{
+			if($user){
+				$user->login();
+				$this->user = &$user;
+				if ($this->user === NULL) {
+					$this->isAuthenticated = FALSE;
+				} else {
+					$this->isAuthenticated = TRUE;
+				}
+				return;
+			}
 			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] === Utilities::getIp()) {
 				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
 				} else {
-					session_unset();
+					$u->logout();
 				}
 			} else {
 				$authKey = strip_tags($_COOKIE['authKey']);
 				$id      = (int)$_COOKIE['userId'];
 				$u       = $this->getUser($id);
-				if (!$u->isNew && $authKey === hash('sha256', $u->get('authKey') . Utilities::getIp())) {
+				if (!$u->isNew && $authKey === Utilities::hash($u->get('authKey') . Utilities::getIp())) {
 					$this->user = &$u;
 					$this->user->login();
 				}
@@ -99,20 +152,6 @@
 		}
 
 		/**
-		 * @return self
-		 */
-		public static function init()
-		{
-			if (array_key_exists('core', $GLOBALS)) {
-				return $GLOBALS['core'];
-			}
-
-			global $core;
-			$core = new self();
-			return $core;
-		}
-
-		/**
 		 * Simple work with csv table
 		 * @return CsvTable
 		 */
@@ -131,13 +170,14 @@
 		 */
 		public function mail($to, $subject, $body, $file = [], $options = [])
 		{
+			Event::emit('BeforeMailSend');
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
 				$mail->setLanguage('ru');
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
 				if (!empty($options['from'])) {
-					if ($options['from'] instanceof Users) {
+					if ($options['from'] instanceof User) {
 						$email = $options['from']->get('email');
 						$name  = $options['from']->get('full_name');
 					} else {
@@ -166,9 +206,9 @@
 					$to = [$to];
 				}
 				foreach ($to as $too) {
-					if ($too instanceof Users) {
+					if ($too instanceof User) {
 						$email = $too->get('email');
-						$name  = $too->get('full_name');
+						$name  = $too->getName();
 					} else {
 						$a     = explode('::', $too);
 						$email = $a[0];
@@ -186,6 +226,7 @@
 				$mail->Body    = $body;
 				$mail->AltBody = strip_tags($body);
 				$mail->send();
+				Event::emit('AfterMailSend');
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
 				Err::error($e->getMessage());
@@ -234,6 +275,7 @@
 		 * @param null            $order_by
 		 * @param string          $order_dir
 		 * @return array [T]
+		 * @throws SqlBuildException
 		 */
 		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
 		{
@@ -244,21 +286,15 @@
 			if (empty($where)) {
 				$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
 			} else {
-				$builder = new GenericBuilder();
+				$builder = $this->db->table($cls->table);
 				$query   = $builder->select()
-								   ->setTable($cls->table)
-								   ->orderBy($order_by, $order_dir)
+								   ->orderBy([$order_by => $order_dir])
 								   ->where()
 				;
 				foreach ($where as $key => $value) {
-					$query->equals($key, $value);
+					$query->eq($key, $value);
 				}
-				$query  = $query->end();
-				$sql    = $builder->write($query);
-				$values = $builder->getValues();
-				$values = BdObject::prepareBinds($values);
-				$sql    = BdObject::prepareSql($sql, $cls->table);
-				$sql    = strtr($sql, $values);
+				$sql = $query->end()->toSql();
 			}
 			$q = $this->db->query($sql);
 			if ($q) {

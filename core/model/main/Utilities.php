@@ -10,7 +10,9 @@
 	use RecursiveIteratorIterator;
 	use RuntimeException;
 	use SplFileInfo;
+	use Traineratwot\Cache\Cache;
 	use traits\validators\jsonValidate;
+	use const WT_TYPE_SYSTEM;
 
 	/**
 	 * Класс с утилитами
@@ -73,6 +75,9 @@
 			setcookie($name, $value, $expire, '/');
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public static function id($length = 6)
 		{
 			$length--;
@@ -208,6 +213,7 @@
 		public static function pathNormalize($path, $DIRECTORY_SEPARATOR = "/")
 		{
 			$path = preg_replace('/(\/+|\\\\+)/m', $DIRECTORY_SEPARATOR, $path);
+			$re   = "@" . preg_quote($DIRECTORY_SEPARATOR, '@') . '{2,}@';
 			if (file_exists($path)) {
 				if (is_dir($path)) {
 					if (WT_TYPE_SYSTEM === 'nix') {
@@ -220,9 +226,9 @@
 				} else {
 					$path = trim($path, $DIRECTORY_SEPARATOR);
 				}
-				return $path;
+				return preg_replace($re, $DIRECTORY_SEPARATOR, $path);
 			}
-			return $path;
+			return preg_replace($re, $DIRECTORY_SEPARATOR, $path);
 		}
 
 		public static function arrayToSqlIn($arr = [])
@@ -276,6 +282,8 @@
 						unset($a[count($a) - 1]);
 					}
 					//нахожу первый существующий путь
+					$k = 0;
+					$p = '';
 					foreach ($array_path as $k => $p) {
 						if (file_exists($p)) {
 							break;
@@ -349,7 +357,10 @@
 			return strtr($value, $converter);
 		}
 
-		public static function isAssoc(&$arr = [])
+		/**
+		 * @throws Exception
+		 */
+		public static function isAssoc($arr = [])
 		{
 			if (function_exists('array_is_list')) {
 				return !array_is_list($arr);
@@ -423,7 +434,7 @@
 				$concurrentDirectory = dirname($path);
 				if (!file_exists($concurrentDirectory) || !is_dir($concurrentDirectory)) {
 					if (!mkdir($concurrentDirectory, 0777, 1) && !is_dir($concurrentDirectory)) {
-						throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+						throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 					}
 				}
 			}

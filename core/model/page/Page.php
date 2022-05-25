@@ -3,12 +3,14 @@
 	namespace model\page;
 
 	use Exception;
+	use model\Events\Event;
 	use model\main\Core;
 	use model\main\CoreObject;
 	use model\main\Err;
 	use model\main\ErrorPage;
 	use model\main\Utilities;
 	use SmartyBC;
+	use SmartyException;
 
 	/**
 	 * Класс для Страницы
@@ -48,6 +50,9 @@
 			$this->init();
 		}
 
+		/**
+		 * @throws Exception
+		 */
 		public function prepareAlias()
 		{
 			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
@@ -88,6 +93,9 @@
 			$this->addModifier('chunk', '\model\page\Page::chunk');
 		}
 
+		/**
+		 * @throws SmartyException
+		 */
 		public function addModifier($name, $function)
 		{
 			$this->smarty->registerPlugin("modifier", $name, $function);
@@ -121,31 +129,50 @@
 			return (new Chunk($core, $alias, $values))->render(TRUE);
 		}
 
+		/**
+		 * @throws SmartyException
+		 * @throws Exception
+		 */
 		public function render($return = FALSE)
 		{
-			if ($return) {
-				ob_end_flush();
-				ob_start();
-			}
+			ob_end_flush();
+			ob_start();
+			Event::emit('BeforeRender',$this);
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
 				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
-					Err::fatal('can`t load: "' . $this->source . '"');
+					Err::error('can`t load: "' . $this->source . '"');
+					$this->errorPage(404);
 					return FALSE;
 				}
 			}
 			$this->smarty->display($this->source);
-			if ($return) {
-				return ob_get_clean();
+			$page = ob_get_clean();
+
+			$mod = Event::emit('AfterRender', ['content' => $page, 'page' => $this]);
+			if ($mod) {
+				$page = $mod;
 			}
+			if ($return) {
+				return $page;
+			}
+			echo $page;
 			return TRUE;
 		}
 
 		public function beforeRender()
 		{
 
+		}
+
+		/**
+		 * @throws Exception
+		 */
+		public function errorPage($code = 404, $msg = 'Not Found')
+		{
+			$this->core->errorPage($code, $msg);
 		}
 
 		/**
@@ -171,11 +198,6 @@
 		public function setVar($name, $var, $nocache = FALSE)
 		{
 			$this->smarty->assign($name, $var, $nocache);
-		}
-
-		public function errorPage($code = 404, $msg = 'Not Found')
-		{
-			$this->core->errorPage($code, $msg);
 		}
 	}
 

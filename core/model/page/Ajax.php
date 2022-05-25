@@ -49,8 +49,8 @@
 		/**
 		 * @var array|mixed
 		 */
-		public  $data;
-		private $FILES;
+		public $data;
+		public $FILES;
 
 		public function __construct(Core $core, $data = [])
 		{

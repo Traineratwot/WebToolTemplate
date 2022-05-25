@@ -73,7 +73,11 @@
 			return $filesByInput;
 		}
 
+		/**
+		 * @return PostFile
+		 */
 		public function current()
+		: PostFile
 		{
 			return $this->containers[$this->index];
 		}

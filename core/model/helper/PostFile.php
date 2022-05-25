@@ -62,19 +62,19 @@
 		 */
 		public function save($path = '', $overwrite = FALSE)
 		{
+			$converter = [
+				'{name}'     => $this->name,
+				'{fullName}' => $this->fullName,
+				'{ext}'      => $this->ext,
+				'{size}'     => $this->size,
+				'{type}'     => $this->type,
+			];
+			$path      = strtr($path, $converter);
 			if ($path && !$this->saved) {
 				if (!is_dir(dirname($path)) && !mkdir($concurrentDirectory = dirname($path), 0777, TRUE) && !is_dir($concurrentDirectory)) {
 					throw new Exception(sprintf('Directory "%s" was not created', $concurrentDirectory));
 					return 'can`t create directory';
 				}
-				$converter = [
-					'{name}'     => $this->name,
-					'{fullName}' => $this->fullName,
-					'{ext}'      => $this->ext,
-					'{size}'     => $this->size,
-					'{type}'     => $this->type,
-				];
-				$path      = strtr($path, $converter);
 				if (!$overwrite && file_exists($path)) {
 					throw new Exception('file already exist');
 					return 'file already exist';
@@ -121,7 +121,7 @@
 
 		public function __toString()
 		{
-			return json_encode($this->toArray());
+			return (string)json_encode($this->toArray());
 		}
 
 		public function toArray()
