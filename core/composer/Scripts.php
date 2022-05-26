@@ -178,6 +178,7 @@ HTML
 			$zipFile->addDirRecursive(WT_BASE_PATH);
 			$zipFile->deleteFromRegex("@.idea@");
 			$zipFile->deleteFromRegex("@.vscode@");
+			$zipFile->deleteFromRegex("@.git@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
 			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup.zip');
