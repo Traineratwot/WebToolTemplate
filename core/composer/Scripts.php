@@ -87,20 +87,22 @@ HTML
 			} else {
 				Console::warning('Please install npm');
 			}
-			die;
 		}
 
+		/**
+		 * @throws ZipException
+		 */
 		public static function engineUpdate()
 		: void
 		{
 			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+			self::package();
+			self::rmdir(WT_BASE_PATH . 'update');
 			self::mkDirs(WT_BASE_PATH . 'update');
 			chdir(WT_BASE_PATH . 'update');
 			exec('git clone "https://github.com/Traineratwot/WebToolTemplate.git" .');
 			self::copy(WT_BASE_PATH . 'update/core/model', WT_MODEL_PATH);
 			self::rmdir(WT_BASE_PATH . 'update/');
-			die;
-
 		}
 
 		private static function commandExist($cmd)
@@ -183,7 +185,6 @@ HTML
 			$zipFile->deleteFromRegex("@backups@");
 			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup.zip');
 			$zipFile->close();
-			die;
 		}
 
 		private static function mkDirs(string $dir)
@@ -200,6 +201,7 @@ HTML
 		}
 
 		private static function rmdir($dir)
+		: void
 		{
 			if (is_dir($dir)) {
 				$files = scandir($dir);
@@ -215,6 +217,7 @@ HTML
 		}
 
 		private static function copy($src, $dst)
+		: void
 		{
 			if (file_exists($dst)) {
 				self::rmdir($dst);
