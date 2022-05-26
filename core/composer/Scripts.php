@@ -91,18 +91,25 @@ HTML
 
 		/**
 		 * @throws ZipException
+		 * @throws Exception
 		 */
 		public static function engineUpdate()
 		: void
 		{
 			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+			Console::info("make backup");
 			self::package();
-			self::rmdir(WT_BASE_PATH . 'update');
-			self::mkDirs(WT_BASE_PATH . 'update');
-			chdir(WT_BASE_PATH . 'update');
-			exec('git clone "https://github.com/Traineratwot/WebToolTemplate.git" .');
-			self::copy(WT_BASE_PATH . 'update/core/model', WT_MODEL_PATH);
 			self::rmdir(WT_BASE_PATH . 'update/');
+			self::mkDirs(WT_BASE_PATH . 'update/');
+			$dist = WT_BASE_PATH . 'update/';
+			Console::info("Download new version");
+			file_put_contents($dist . 'master.zip', file_get_contents("https://github.com/Traineratwot/WebToolTemplate/archive/refs/heads/master.zip"));
+			$zipFile = new ZipFile();
+			$zipFile->openFile($dist . 'master.zip');
+			$zipFile->extractTo($dist);
+			$zipFile->close();
+			self::copy(Utilities::findPath(WT_BASE_PATH . 'update/WebToolTemplate-master/core/model'), WT_MODEL_PATH);
+//			self::rmdir(WT_BASE_PATH . 'update/');
 		}
 
 		private static function commandExist($cmd)
@@ -152,7 +159,7 @@ HTML;
 						if ($c === 0) {
 							$zipFile->addFile($s);
 
-							$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump_'.$dt->format(DATE_ATOM).'.zip');
+							$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
 							$zipFile->close();
 						} else {
 							Console::warning("You must make dump, use: \"$cmd\"");
@@ -166,7 +173,7 @@ HTML;
 					break;
 				case PDOE::DRIVER_SQLite:
 					$zipFile->addFile(WT_HOST_DB);
-					$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump_'.$dt->format(DATE_ATOM).'.zip');
+					$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
 					$zipFile->close();
 					break;
 			}
@@ -183,7 +190,8 @@ HTML
 			$zipFile->deleteFromRegex("@.git@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
-			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup_'.$dt->format(DATE_ATOM).'.zip');
+			$zipFile->deleteFromRegex("@update@");
+			$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/backup_' . $dt->format("Y-m-d H-i") . '_.zip'));
 			$zipFile->close();
 		}
 
@@ -191,6 +199,7 @@ HTML
 		: void
 		{
 			$dir = Utilities::pathNormalize($dir);
+
 			if (!file_exists($dir)) {
 				if (!mkdir($dir, 0777, 1) || !is_dir($dir) || !file_exists($dir)) {
 					Console::failure(sprintf('Directory "%s" was not created', $dir));
