@@ -152,7 +152,7 @@ HTML;
 						if ($c === 0) {
 							$zipFile->addFile($s);
 
-							$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump.zip');
+							$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump_'.$dt->format(DATE_ATOM).'.zip');
 							$zipFile->close();
 						} else {
 							Console::warning("You must make dump, use: \"$cmd\"");
@@ -166,7 +166,7 @@ HTML;
 					break;
 				case PDOE::DRIVER_SQLite:
 					$zipFile->addFile(WT_HOST_DB);
-					$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump.zip');
+					$zipFile->saveAsFile(WT_BASE_PATH . '/backups/dump_'.$dt->format(DATE_ATOM).'.zip');
 					$zipFile->close();
 					break;
 			}
@@ -183,7 +183,7 @@ HTML
 			$zipFile->deleteFromRegex("@.git@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
-			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup.zip');
+			$zipFile->saveAsFile(WT_BASE_PATH . '/backups/backup_'.$dt->format(DATE_ATOM).'.zip');
 			$zipFile->close();
 		}
 
