@@ -15,41 +15,39 @@
 	use model\page\TmpPage;
 	use PDO;
 	use PHPMailer\PHPMailer\PHPMailer;
-	use PHPMailer\PHPMailer\SMTP;
 	use SmartyBC;
 	use tables\Users;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\PDOExtended\Dsn;
 	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
 	use Traineratwot\PDOExtended\PDOE;
+	use traits\validators\ExceptionValidate;
 
 	/**
 	 * Основной класс
 	 */
-//	define('WT_DSN_DB', WT_TYPE_DB . ":host=" . WT_HOST_DB . ";port=" . WT_PORT_DB . ";dbname=" . WT_DATABASE_DB.";charset=". WT_CHARSET_DB);
-
 	final class Core implements ErrorPage
 	{
 		/**
 		 * @var PDOE
 		 */
-		public $db;
-		public $user;
+		public PDOE   $db;
+		public ?Users $user = NULL;
 		/**
 		 * @var SmartyBC|null
 		 */
-		public $smarty;
-		public $isAuthenticated = FALSE;
+		public ?SmartyBC $smarty;
+		public bool      $isAuthenticated = FALSE;
 		/**
 		 * @var Cache
 		 */
-		public $cache;
+		public Cache $cache;
 		/**
 		 * Переводы текущей локали
 		 * @var mixed|null
 		 */
-		public  $translation;
-		private $_cache = [];
+		public        $translation;
+		private array $_cache = [];
 
 		public function __construct()
 		{
@@ -71,13 +69,14 @@
 				$dsn->setPassword(WT_PASS_DB);
 				$dsn->setUsername(WT_USER_DB);
 				$this->db = PDOE::init($dsn);
-
 				if (WT_SQL_LOG) {
 					$this->db->logOn();
 				}
 				$this->auth();
 			} catch (Exception $e) {
-				Err::error($e->getMessage(), 0, 0);
+				if (!Event::emit('onDataBaseError', ['core' => $this, 'error' => $e])) {
+					Err::fatal($e->getMessage(), 0, 0, $e);
+				}
 			}
 			$this->cache = new Cache();
 			Event::emit('AfterAppInit', $this);
@@ -103,7 +102,7 @@
 		 */
 		public function auth(User &$user = NULL)
 		{
-			if($user){
+			if ($user) {
 				$user->login();
 				$this->user = &$user;
 				if ($this->user === NULL) {
@@ -137,7 +136,7 @@
 		}
 
 		/**
-		 * @param $where
+		 * @param mixed $where
 		 * @return Users
 		 */
 		public function getUser($where = [])
@@ -168,7 +167,7 @@
 		 * @param array                            $options
 		 * @return bool|string
 		 */
-		public function mail($to, $subject, $body, $file = [], $options = [])
+		public function mail($to, string $subject, string $body, array $file = [], array $options = [])
 		{
 
 			try {
@@ -228,10 +227,12 @@
 				Event::emit('AfterMailSend', $mail);
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
+				Event::emit('onEmailSendError', ['mail' => $mail, 'error' => $e]);
 				Err::error($e->getMessage());
 				return $mail->ErrorInfo;
 			}
 		}
+
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T> $class
@@ -240,7 +241,7 @@
 		 * @return BdObject|T
 		 * @throws Exception
 		 */
-		public function getObject($class, $where = [], $cache = TRUE)
+		public function getObject(string $class, array $where = [], bool $cache = TRUE)
 		{
 			$class = self::getClass($class);
 			if (!$cache || empty($where)) {
@@ -263,7 +264,6 @@
 				return $class;
 			}
 			Err::fatal($class . " not exists");
-			return $class;
 		}
 
 		/**
@@ -275,14 +275,14 @@
 		 * @return array [T]
 		 * @throws SqlBuildException
 		 */
-		public function getCollection($class, $where = [], $order_by = NULL, $order_dir = 'ASC')
+		public function getCollection(string $class, array $where = [], $order_by = NULL, string $order_dir = 'ASC')
 		{
 			$data     = [];
 			$class    = self::getClass($class);
 			$cls      = new $class($this);
 			$order_by = $order_by ?: $cls->primaryKey;
 			if (empty($where)) {
-				$sql = "SELECT * FROM `{$cls->table}` ORDER BY `{$order_by}` $order_dir";
+				$sql = "SELECT * FROM `$cls->table` ORDER BY `$order_by` $order_dir";
 			} else {
 				$builder = $this->db->table($cls->table);
 				$query   = $builder->select()
@@ -298,26 +298,26 @@
 			if ($q) {
 				while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
 					$c = new $class($this);
-					/** @var BdObject $c */
+					assert($c instanceof BdObject);
 					$c->fromArray($row, FALSE);
 					$data[] = $c;
 				}
 			}
 			return $data;
-
 		}
 
 		/**
 		 * @param      $_lang
 		 * @param bool $_gt //use gettext
 		 * @return string
+		 * @throws ExceptionValidate
 		 */
-		public function setLocale($_lang, $_gt = TRUE)
+		public function setLocale($_lang, bool $_gt = TRUE)
 		{
 			putenv("LANG_FOLDER=$_lang");
 			$lang = setlocale(LC_ALL, $_lang);
 			if ($lang === FALSE) {
-				Err::error("Can't set locale to '{$_lang}'");
+				Err::error("Can't set locale to '$_lang'");
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
 			if ($_gt && $lang) {
@@ -335,7 +335,7 @@
 							$translations = (new PoLoader())->loadFile($po);
 							(new MoGenerator())->generateFile($translations, $mo);
 						}
-						$this->translation = json_decode(file_get_contents($json), TRUE);
+						$this->translation = Utilities::jsonValidate(file_get_contents($json));
 					} else {
 						$php = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
 						if (!file_exists($php)) {
@@ -381,12 +381,10 @@
 			$errPage = new TmpPage($this, 'errors/' . $code);
 			$errPage->setVar('code', $code);
 			$errPage->setVar('msg', $msg);
+			ob_end_clean();
 			if ($page = $errPage->render(TRUE)) {
-				ob_end_clean();
 				exit($page);
 			}
-
-			ob_end_clean();
 			if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
 				readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
 			} else {

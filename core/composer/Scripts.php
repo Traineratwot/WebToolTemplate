@@ -109,7 +109,7 @@ HTML
 			$zipFile->extractTo($dist);
 			$zipFile->close();
 			self::copy(Utilities::findPath(WT_BASE_PATH . 'update/WebToolTemplate-master/core/model'), WT_MODEL_PATH);
-//			self::rmdir(WT_BASE_PATH . 'update/');
+			self::rmdir(WT_BASE_PATH . 'update/');
 		}
 
 		private static function commandExist($cmd)
@@ -199,7 +199,6 @@ HTML
 		: void
 		{
 			$dir = Utilities::pathNormalize($dir);
-
 			if (!file_exists($dir)) {
 				if (!mkdir($dir, 0777, 1) || !is_dir($dir) || !file_exists($dir)) {
 					Console::failure(sprintf('Directory "%s" was not created', $dir));

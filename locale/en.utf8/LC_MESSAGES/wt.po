@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Content-Type: : text/plain; charset=UTF-8\n"
+"Language: en\n"
+"X-Domain: wt\n"
+
+#: core/classes/traits/validators/emptyValidate.php:12
+#: core/classes/traits/validators/emptyValidate.php:15
+msgid "can`t be"
+msgstr ""
+
+#: core/classes/traits/validators/emptyValidate.php:12
+msgid "empty"
+msgstr ""
+
+#: core/classes/traits/validators/htmlValidate.php:22
+#: core/classes/traits/validators/htmlValidate.php:26
+#: core/classes/traits/validators/htmlValidate.php:30
+#: core/classes/traits/validators/htmlValidate.php:34
+msgid "danger script detected"
+msgstr ""
+
+#: core/pages/user/login.tpl:4
+msgid "login"
+msgstr ""
+
+#: core/pages/user/login.tpl:6
+msgid "email"
+msgstr ""
+
+#: core/pages/user/login.tpl:14
+msgid "password"
+msgstr ""
+
+#: core/pages/user/login.tpl:20
+msgid "submit"
+msgstr ""
+
+#: core/pages/user/login.tpl:21
+msgid "forgotPassword"
+msgstr ""

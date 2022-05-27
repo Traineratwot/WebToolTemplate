@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+"Language-Team: \n"
+"Last-Translator: \n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: \n"
+"Project-Id-Version: \n"
+"X-Domain: wt\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: core/classes/traits/validators/emptyValidate.php:12
+#: core/classes/traits/validators/emptyValidate.php:15
+msgid "can`t be"
+msgstr "не может быть"
+
+#: core/classes/traits/validators/emptyValidate.php:12
+msgid "empty"
+msgstr "пусто"
+
+#: core/classes/traits/validators/htmlValidate.php:22
+#: core/classes/traits/validators/htmlValidate.php:26
+#: core/classes/traits/validators/htmlValidate.php:30
+#: core/classes/traits/validators/htmlValidate.php:34
+msgid "danger script detected"
+msgstr "обнаружен опасный скрипт"
+
+#: core/pages/user/login.tpl:4
+#: core/templates/navbar.tpl:18
+msgid "login"
+msgstr "логин"
+
+#: core/pages/user/login.tpl:6
+msgid "email"
+msgstr "электронная почта"
+
+#: core/pages/user/login.tpl:14
+msgid "password"
+msgstr "пароль"
+
+#: core/pages/user/login.tpl:20
+msgid "submit"
+msgstr "отправить"
+
+#: core/pages/user/login.tpl:21
+msgid "forgotPassword"
+msgstr "восстановить пароль"
+
+#: core/templates/navbar.tpl:14
+msgid "profile"
+msgstr "профиль"
+
+#: core/templates/navbar.tpl:21
+msgid "register"
+msgstr "регистрация"
+
+#: core/templates/navbar.tpl:27
+msgid "logout"
+msgstr "выйти"
