@@ -170,7 +170,7 @@
 		 */
 		public function mail($to, $subject, $body, $file = [], $options = [])
 		{
-			Event::emit('BeforeMailSend');
+
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
@@ -190,7 +190,6 @@
 					$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
 				}
 				if (WT_SMTP_MAIL) {
-					$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
 					$mail->isSMTP();                                            //Send using SMTP
 					$mail->Host = WT_HOST_MAIL;                                 //Set the SMTP server to send through
 					if (WT_AUTH_MAIL) {
@@ -201,7 +200,6 @@
 					$mail->SMTPSecure = WT_SECURE_MAIL;                                  //Enable implicit TLS encryption
 					$mail->Port       = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 				}
-
 				if (!is_array($to)) {
 					$to = [$to];
 				}
@@ -225,15 +223,15 @@
 				$mail->Subject = $subject;
 				$mail->Body    = $body;
 				$mail->AltBody = strip_tags($body);
+				Event::emit('BeforeMailSend', $mail);
 				$mail->send();
-				Event::emit('AfterMailSend');
+				Event::emit('AfterMailSend', $mail);
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
 				Err::error($e->getMessage());
 				return $mail->ErrorInfo;
 			}
 		}
-
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T> $class
