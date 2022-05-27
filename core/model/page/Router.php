@@ -204,8 +204,8 @@
 					Err::fatal("class '$class' is not define");
 				}
 			}
-			assert($result instanceof Ajax);
 			$result = new $class($this->core, $data);
+			$response = '';
 			try {
 				if ($result instanceof Ajax) {
 					try {
@@ -237,7 +237,6 @@
 					return;
 				}
 			}
-			assert($result instanceof Page);
 			$result = new $class($this->core, $data);
 			if ($this->isAdvanced) {
 				$result->setAlias($this->alias);
