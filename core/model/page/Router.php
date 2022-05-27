@@ -8,15 +8,20 @@
 	use model\main\Utilities;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\Cache\CacheException;
+	use traits\validators\ExceptionValidate;
 
 
 	class Router
 	{
 
-		public  $isAdvanced = FALSE;
-		private $isAjax;
-		private $alias;
-		private $core;
+		public bool    $isAdvanced = FALSE;
+		public bool   $isAjax;
+		public string $alias;
+		public ?Core  $core;
+		/**
+		 * @var mixed|null
+		 */
+		public $ln;
 
 		public function __construct()
 		{
@@ -45,7 +50,7 @@
 			}
 			try {
 				$this->ln = Cache::getCache('routers', 'router');
-				if ($this->ln[$this->alias] == 'route8') {
+				if ($this->ln[$this->alias] === 'route8') {
 					goto route8;
 				}
 				$this->_route();
@@ -64,7 +69,7 @@
 		}
 
 		/**
-		 * @throws CacheException
+		 * @throws CacheException|ExceptionValidate
 		 */
 		private function selectLanguage($lang)
 		{
@@ -81,11 +86,11 @@
 							$index[$sim] = $locale;
 						}
 					}
-					ksort($index, SORT_NUMERIC);
+					krsort($index, SORT_NUMERIC);
 					$newLang = end($index);
 					Cache::setCache('locale_' . $lang, $newLang, 600, 'locales');
 				}
-				$this->core->setLocale($newLang, TRUE);
+				$this->core->setLocale($newLang);
 			}
 		}
 
@@ -105,25 +110,18 @@
 					switch ($this->ln[$this->alias]) {
 						case 'route1':
 							goto route1;
-							break;
 						case 'route2':
 							goto route2;
-							break;
 						case 'route3':
 							goto route3;
-							break;
 						case 'route4':
 							goto route4;
-							break;
 						case 'route5':
 							goto route5;
-							break;
 						case 'route6':
 							goto route6;
-							break;
 						case 'route7':
 							goto route7;
-							break;
 					}
 				}
 				route1:
@@ -206,7 +204,7 @@
 					Err::fatal("class '$class' is not define");
 				}
 			}
-			/** @var Ajax $result */
+			assert($result instanceof Ajax);
 			$result = new $class($this->core, $data);
 			try {
 				if ($result instanceof Ajax) {
@@ -239,7 +237,7 @@
 					return;
 				}
 			}
-			/** @var Page $result */
+			assert($result instanceof Page);
 			$result = new $class($this->core, $data);
 			if ($this->isAdvanced) {
 				$result->setAlias($this->alias);
