@@ -4,7 +4,7 @@
 
 	ini_set('display_errors', 1);
 	error_reporting(E_ERROR);
-	if (!function_exists('LOCALE_SELECT_FUNCTION')) {
+	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
 		/**
 		 * Пользовательская функция возвращающая язык для установки цокали на основе url
 		 * вы можете ее менять
@@ -30,7 +30,7 @@
 		}
 	}
 
-	if (!function_exists('START_SESSION_FUNCTION')) {
+	if (!function_exists('WT_START_SESSION_FUNCTION')) {
 		function WT_START_SESSION_FUNCTION()
 		{
 			session_set_cookie_params(0, '/');
