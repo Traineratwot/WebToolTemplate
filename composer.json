@@ -12,9 +12,9 @@
 	"type"       :"project",
 	"scripts"    :{
 		"up:release"            :"gh release create \"4.0.1\" --generate-notes",
-		"post-package-install"  :"core\\composer\\Scripts::postInstall",
+		"wtInstall"  :"core\\composer\\Scripts::postInstall",
 		"package"               :"core\\composer\\Scripts::package",
-		"engineUpdate"          :"core\\composer\\Scripts::engineUpdate",
+		"wtUpdate"          :"core\\composer\\Scripts::engineUpdate",
 		"composer-config-print" :"composer getAllConfigs",
 		"composer-config-update":"composer configUpdate"
 	},
