@@ -3,7 +3,7 @@
 	use Traineratwot\config\Config;
 
 	ini_set('display_errors', 1);
-	error_reporting(E_ERROR);
+	error_reporting(E_ALL);
 	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
 		/**
 		 * Пользовательская функция возвращающая язык для установки цокали на основе url
@@ -15,7 +15,7 @@
 			if (class_exists(Locale::class)) {
 				return Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 			}
-			return $_COOKIE['lang'] ?: 'en';
+			return $_COOKIE['lang'] ?? 'en';
 		}
 	}
 	//настройка системы
@@ -66,9 +66,9 @@
 	Config::set('PHP_EXEC_CMD', "php", 'WT', FALSE, 'WT_PHP_EXEC_CMD'); //команда запуска php скрипта
 	//Внешний url
 	Config::set('DOMAIN_URL', "https://localhost", 'WT', FALSE, 'WT_DOMAIN_URL');
-	Config::set('NODE_URL', WT_DOMAIN_URL . '/node_modules' . '/', 'WT', FALSE, 'WT_NODE_URL');
+	Config::set('NODE_URL', Config::get('DOMAIN_URL') . '/node_modules' . '/', 'WT', FALSE, 'WT_NODE_URL');
 //	определяем подключение к своей базе
-	Config::set('HOST_DB', WT_CORE_PATH . 'databases/database.db', 'WT', FALSE, 'WT_HOST_DB');
+	Config::set('HOST_DB', Config::get('CORE_PATH') . 'databases/database.db', 'WT', FALSE, 'WT_HOST_DB');
 	Config::set('PORT_DB', '', 'WT', FALSE, 'WT_PORT_DB');
 	Config::set('DATABASE_DB', '', 'WT', FALSE, 'WT_DATABASE_DB');
 	Config::set('TYPE_DB', 'sqlite', 'WT', FALSE, 'WT_TYPE_DB');
@@ -88,11 +88,11 @@
 	Config::set('SOCKET_DB', 'WT', 'WT', FALSE, 'WT_SOCKET_DB');
 
 	//Настройки шаблонизатора
-	Config::set('SMARTY_TEMPLATE_PATH', WT_TEMPLATES_PATH, 'WT', FALSE, 'WT_SMARTY_TEMPLATE_PATH');
-	Config::set('SMARTY_COMPILE_PATH', WT_CACHE_PATH . 'smarty/compile', 'WT', FALSE, 'WT_SMARTY_COMPILE_PATH');
-	Config::set('SMARTY_CONFIG_PATH', WT_CACHE_PATH . 'smarty/config', 'WT', FALSE, 'WT_SMARTY_CONFIG_PATH');
-	Config::set('SMARTY_CACHE_PATH', WT_CACHE_PATH . 'smarty/cache', 'WT', FALSE, 'WT_SMARTY_CACHE_PATH');
-	Config::set('SMARTY_PLUGINS_PATH', WT_CLASSES_PATH . 'smarty' . DIRECTORY_SEPARATOR . 'plugins', 'WT', FALSE, 'WT_SMARTY_PLUGINS_PATH');
+	Config::set('SMARTY_TEMPLATE_PATH', Config::get('TEMPLATES_PATH'), 'WT', FALSE, 'WT_SMARTY_TEMPLATE_PATH');
+	Config::set('SMARTY_COMPILE_PATH', Config::get('CACHE_PATH') . 'smarty/compile', 'WT', FALSE, 'WT_SMARTY_COMPILE_PATH');
+	Config::set('SMARTY_CONFIG_PATH', Config::get('CACHE_PATH') . 'smarty/config', 'WT', FALSE, 'WT_SMARTY_CONFIG_PATH');
+	Config::set('SMARTY_CACHE_PATH', Config::get('CACHE_PATH') . 'smarty/cache', 'WT', FALSE, 'WT_SMARTY_CACHE_PATH');
+	Config::set('SMARTY_PLUGINS_PATH', Config::get('CLASSES_PATH') . 'smarty' . DIRECTORY_SEPARATOR . 'plugins', 'WT', FALSE, 'WT_SMARTY_PLUGINS_PATH');
 
 	//настройка Почты
 	Config::set('FROM_EMAIL_MAIL', 'admin@example.com', 'WT', FALSE, 'WT_FROM_EMAIL_MAIL');
@@ -107,11 +107,11 @@
 
 	//настройка Локализации
 	Config::set('LOCALE_DOMAIN', 'wt', 'WT', FALSE, 'WT_LOCALE_DOMAIN');
-	Config::set('LOCALE_PATH', WT_BASE_PATH . 'locale' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_LOCALE_PATH');
+	Config::set('LOCALE_PATH', Config::get('BASE_PATH') . 'locale' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_LOCALE_PATH');
 	// Если у вас нет или не работает (как у меня) "gettext", отключите его, здесь будет использована альтернатива
 	Config::set('USE_GETTEXT', FALSE, 'WT', FALSE, 'WT_USE_GETTEXT');               //extension_loaded('gettext')
 
-	Config::set('CACHE_PATH', WT_CACHE_PATH, 'WT', FALSE, 'CACHE_PATH');
+	Config::set('CACHE_PATH', Config::get('CACHE_PATH'), 'WT', FALSE, 'CACHE_PATH');
 	Config::set('CACHE_EXPIRATION', 600, 'PDOE', FALSE, 'CACHE_EXPIRATION');
 
 

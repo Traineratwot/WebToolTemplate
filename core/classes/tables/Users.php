@@ -58,7 +58,7 @@
 
 		public function logout()
 		{
-			WT_RESTART_SESSION_FUNCTION();
+			Config::get('RESTART_SESSION_FUNCTION')();
 		}
 
 		public function register($email, $password = NULL)
@@ -99,7 +99,7 @@
 
 		public function login()
 		{
-			WT_RESTART_SESSION_FUNCTION();
+			Config::get('RESTART_SESSION_FUNCTION')();
 			$_SESSION['authKey'] = $this->get('authKey');
 			$_SESSION['ip']      = Utilities::getIp();
 			$hash                = Utilities::hash($_SESSION['authKey'] . $_SESSION['ip']);

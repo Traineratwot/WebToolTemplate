@@ -9,7 +9,7 @@
 	{
 		public function validate($value)
 		{
-			$value = Utilities::pathNormalize(WT_CRON_PATH . 'controllers/' . $value);
+			$value = Utilities::pathNormalize(Config::get('CRON_PATH') . 'controllers/' . $value);
 			return file_exists($value) ?: 'Invalid path "' . $value . '" ';
 		}
 	}

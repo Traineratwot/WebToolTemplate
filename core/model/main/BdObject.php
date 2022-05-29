@@ -25,8 +25,9 @@
 		public function __construct(Core $core, $where = [])
 		{
 			parent::__construct($core);
-			$this->schema = $core->db->getScheme($this->table)->toArray();
-			$this->pd     = $core->db->table($this->table);
+			$this->schema = $core->db->getScheme($this->table);
+
+			$this->pd = $core->db->table($this->table);
 			try {
 				if (!empty($where)) {
 					if (!is_array($where)) {
@@ -44,8 +45,9 @@
 			}
 			foreach ($this->schema->columns as $v) {
 				$n              = $v->getName();
-				$this->data[$n] = $this->data[$n] ?: NULL;
+				$this->data[$n] = $this->data[$n] ?? NULL;
 			}
+			$this->schema = $this->schema->toArray();
 		}
 
 		public function toArray()

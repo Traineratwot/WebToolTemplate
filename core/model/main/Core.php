@@ -18,6 +18,7 @@
 	use SmartyBC;
 	use tables\Users;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\config\Config;
 	use Traineratwot\PDOExtended\Dsn;
 	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
 	use Traineratwot\PDOExtended\PDOE;
@@ -55,21 +56,21 @@
 			try {
 
 				$dsn = new Dsn();
-				$dsn->setDriver(WT_TYPE_DB);
-				$dsn->setDatabase(WT_DATABASE_DB);
-				if (WT_CHARSET_DB) {
-					$dsn->setCharset(WT_CHARSET_DB);
+				$dsn->setDriver(Config::get('TYPE_DB'));
+				$dsn->setDatabase(Config::get('DATABASE_DB'));
+				if (Config::get('CHARSET_DB')) {
+					$dsn->setCharset(Config::get('CHARSET_DB'));
 				}
-				if (WT_HOST_DB) {
-					$dsn->setHost(WT_HOST_DB);
+				if (Config::get('HOST_DB')) {
+					$dsn->setHost(Config::get('HOST_DB'));
 				} else {
-					$dsn->setSocket(WT_SOCKET_DB);
+					$dsn->setSocket(Config::get('SOCKET_DB'));
 				}
-				$dsn->setPort((int)WT_PORT_DB);
-				$dsn->setPassword(WT_PASS_DB);
-				$dsn->setUsername(WT_USER_DB);
+				$dsn->setPort((int)Config::get('PORT_DB'));
+				$dsn->setPassword(Config::get('PASS_DB'));
+				$dsn->setUsername(Config::get('USER_DB'));
 				$this->db = PDOE::init($dsn);
-				if (WT_SQL_LOG) {
+				if (Config::get('SQL_LOG')) {
 					$this->db->logOn();
 				}
 				$this->auth();
@@ -186,18 +187,18 @@
 					}
 					$mail->setFrom($email, $name);
 				} else {
-					$mail->setFrom(WT_FROM_EMAIL_MAIL, WT_FROM_NAME_MAIL);
+					$mail->setFrom(Config::get('FROM_EMAIL_MAIL'), Config::get('FROM_NAME_MAIL'));
 				}
-				if (WT_SMTP_MAIL) {
-					$mail->isSMTP();                                            //Send using SMTP
-					$mail->Host = WT_HOST_MAIL;                                 //Set the SMTP server to send through
-					if (WT_AUTH_MAIL) {
-						$mail->SMTPAuth = TRUE;                                           //Enable SMTP authentication
-						$mail->Username = WT_USERNAME_MAIL;                               //SMTP username
-						$mail->Password = WT_PASSWORD_MAIL;                               //SMTP password
+				if (Config::get('SMTP_MAIL')) {
+					$mail->isSMTP();                                                        //Send using SMTP
+					$mail->Host = Config::get('HOST_MAIL');                                 //Set the SMTP server to send through
+					if (Config::get('AUTH_MAIL')) {
+						$mail->SMTPAuth = TRUE;                                                       //Enable SMTP authentication
+						$mail->Username = Config::get('USERNAME_MAIL');                               //SMTP username
+						$mail->Password = Config::get('PASSWORD_MAIL');                               //SMTP password
 					}
-					$mail->SMTPSecure = WT_SECURE_MAIL;                                  //Enable implicit TLS encryption
-					$mail->Port       = WT_PORT_MAIL;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+					$mail->SMTPSecure = Config::get('SECURE_MAIL');                                  //Enable implicit TLS encryption
+					$mail->Port       = Config::get('PORT_MAIL');                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 				}
 				if (!is_array($to)) {
 					$to = [$to];
@@ -320,24 +321,25 @@
 				Err::error("Can't set locale to '$_lang'");
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
+			$php = '';
 			if ($_gt && $lang) {
-				$domain = WT_LOCALE_DOMAIN;
-				$po     = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
+				$domain = Config::get('LOCALE_DOMAIN');
+				$po     = Config::get('LOCALE_PATH') . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".po";
 				if (file_exists($po)) {
-					$json = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
+					$json = Config::get('LOCALE_PATH') . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".json";
 					if (!file_exists($json)) {
 						$translations = (new PoLoader())->loadFile($po);
 						(new JsonGenerator())->generateFile($translations, $json);
 					}
-					if (WT_USE_GETTEXT) {
-						$mo = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
+					if (Config::get('USE_GETTEXT')) {
+						$mo = Config::get('LOCALE_PATH') . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".mo";
 						if (!file_exists($mo)) {
 							$translations = (new PoLoader())->loadFile($po);
 							(new MoGenerator())->generateFile($translations, $mo);
 						}
 						$this->translation = Utilities::jsonValidate(file_get_contents($json));
 					} else {
-						$php = WT_LOCALE_PATH . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
+						$php = Config::get('LOCALE_PATH') . $_lang . DIRECTORY_SEPARATOR . "LC_MESSAGES" . DIRECTORY_SEPARATOR . $domain . ".php";
 						if (!file_exists($php)) {
 							$translations = (new PoLoader())->loadFile($po);
 							(new ArrayGenerator())->generateFile($translations, $php);
@@ -353,17 +355,17 @@
 			} else {
 				header('X-locale: ' . $_lang);
 			}
-			if (WT_USE_GETTEXT) {
+			if (Config::get('USE_GETTEXT')) {
 				$t = new GettextTranslator();
 				if ($lang) {
 					$t->setLanguage($lang);
 				}
-				$t->loadDomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-				bindtextdomain(WT_LOCALE_DOMAIN, WT_LOCALE_PATH);
-				textdomain(WT_LOCALE_DOMAIN);
+				$t->loadDomain(Config::get('LOCALE_DOMAIN'), Config::get('LOCALE_PATH'));
+				bindtextdomain(Config::get('LOCALE_DOMAIN'), Config::get('LOCALE_PATH'));
+				textdomain(Config::get('LOCALE_DOMAIN'));
 			} else {
 				$t = new Translator();
-				$t->defaultDomain(WT_LOCALE_DOMAIN);
+				$t->defaultDomain(Config::get('LOCALE_DOMAIN'));
 				if (file_exists($php)) {
 					$t->loadTranslations($php);
 				}
@@ -385,10 +387,10 @@
 			if ($page = $errPage->render(TRUE)) {
 				exit($page);
 			}
-			if (file_exists(WT_PAGES_PATH . 'errors/' . $code . '.html')) {
-				readfile(WT_PAGES_PATH . 'errors/' . $code . '.html');
+			if (file_exists(Config::get('PAGES_PATH') . 'errors/' . $code . '.html')) {
+				readfile(Config::get('PAGES_PATH') . 'errors/' . $code . '.html');
 			} else {
-				readfile(WT_PAGES_PATH . 'errors/' . '404.html');
+				readfile(Config::get('PAGES_PATH') . 'errors/' . '404.html');
 			}
 			exit;
 		}

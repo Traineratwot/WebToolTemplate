@@ -13,7 +13,7 @@
 	$options = getopt("f:d:");
 	$alias   = $options['f'];
 	$key     = md5($alias);
-	$cron    = realpath(WT_CRON_PATH . 'controllers' . DIRECTORY_SEPARATOR . $alias);
+	$cron    = realpath(Config::get('CRON_PATH') . 'controllers' . DIRECTORY_SEPARATOR . $alias);
 	if ($cron && file_exists($cron)) {
 		$core = Core::init();
 		ob_start();

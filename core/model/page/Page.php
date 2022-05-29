@@ -11,6 +11,7 @@
 	use model\main\Utilities;
 	use SmartyBC;
 	use SmartyException;
+	use Traineratwot\config\Config;
 
 	/**
 	 * Класс для Страницы
@@ -58,28 +59,28 @@
 			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
 				$this->source = $this->alias;
 			} elseif (strpos($this->alias, 'chunk:') === 0 || strpos($this->alias, 'file:') === 0) {
-				$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
+				$this->source = Config::get('TEMPLATES_PATH') . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
 				if (!file_exists($this->source)) {
-					$this->source = WT_TEMPLATES_PATH . preg_replace("@^(chunk|file):@i", '', $this->alias);
+					$this->source = Config::get('TEMPLATES_PATH') . preg_replace("@^(chunk|file):@i", '', $this->alias);
 					if (!file_exists($this->source)) {
 						throw new Exception('Chunk error: "' . $this->source . '" file not found ');
 					}
 				}
 			} else {
-				$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
-				if (!$this->source && is_dir(WT_PAGES_PATH . $this->alias)) {
-					$this->source = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
+				$this->source = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . '.tpl');
+				if (!$this->source && is_dir(Config::get('PAGES_PATH') . $this->alias)) {
+					$this->source = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				}
 			}
 		}
 
 		public function init()
 		{
-			$this->smarty->addPluginsDir(WT_SMARTY_PLUGINS_PATH . '/');
-			$this->smarty->setTemplateDir(WT_SMARTY_TEMPLATE_PATH . '/');
-			$this->smarty->setCompileDir(WT_SMARTY_COMPILE_PATH . '/');
-			$this->smarty->setConfigDir(WT_SMARTY_CONFIG_PATH . '/');
-			$this->smarty->setCacheDir(WT_SMARTY_CACHE_PATH . '/');
+			$this->smarty->addPluginsDir(Config::get('SMARTY_PLUGINS_PATH') . '/');
+			$this->smarty->setTemplateDir(Config::get('SMARTY_TEMPLATE_PATH') . '/');
+			$this->smarty->setCompileDir(Config::get('SMARTY_COMPILE_PATH') . '/');
+			$this->smarty->setConfigDir(Config::get('SMARTY_CONFIG_PATH') . '/');
+			$this->smarty->setCacheDir(Config::get('SMARTY_CACHE_PATH') . '/');
 			$this->smarty->assignGlobal('page', $this);
 			$this->smarty->assignGlobal('core', $this->core);
 			$this->smarty->assignGlobal('user', $this->core->user);
@@ -186,9 +187,9 @@
 
 		public function forward($alias)
 		{
-			if (file_exists(WT_PAGES_PATH . $alias . '.tpl')) {
+			if (file_exists(Config::get('PAGES_PATH') . $alias . '.tpl')) {
 				$this->alias  = $alias;
-				$this->source = WT_PAGES_PATH . $alias . '.tpl';
+				$this->source = Config::get('PAGES_PATH') . $alias . '.tpl';
 				return TRUE;
 			}
 

@@ -44,10 +44,10 @@
 
 		public static function save($str)
 		{
-			if (!is_dir(WT_CACHE_PATH) && !mkdir($concurrentDirectory = WT_CACHE_PATH, 0777, 1) && !is_dir($concurrentDirectory)) {
+			if (!is_dir(Config::get('CACHE_PATH')) && !mkdir($concurrentDirectory = Config::get('CACHE_PATH'), 0777, 1) && !is_dir($concurrentDirectory)) {
 				throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 			}
-			file_put_contents(WT_CACHE_PATH . 'error.log', $str . PHP_EOL, FILE_APPEND);
+			file_put_contents(Config::get('CACHE_PATH') . 'error.log', $str . PHP_EOL, FILE_APPEND);
 		}
 
 		public static function pretty($data = [])

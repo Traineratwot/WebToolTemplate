@@ -12,7 +12,7 @@
 	use Traineratwot\PhpCli\Console;
 
 
-	include_once WT_MODEL_PATH . 'locale/SmartyScanner.php';
+	include_once Config::get('MODEL_PATH') . 'locale/SmartyScanner.php';
 
 	class PoUpdate
 	{
@@ -26,26 +26,26 @@
 
 		public function __construct()
 		{
-			if (!WT_USE_GETTEXT) {
-				include_once WT_MODEL_PATH . 'locale/poScan.php';
+			if (!Config::get('USE_GETTEXT')) {
+				include_once Config::get('MODEL_PATH') . 'locale/poScan.php';
 			}
 		}
 
 		public function run($lang)
 		{
-			$this->domain = WT_LOCALE_DOMAIN;
+			$this->domain = Config::get('LOCALE_DOMAIN');
 			$this->lang   = $lang;
-			chdir(WT_BASE_PATH);
+			chdir(Config::get('BASE_PATH'));
 			if ($lang) {
 				$poLoader  = new PoLoader();
 				$generator = new PoGenerator();
-				$dir       = WT_LOCALE_PATH . $lang . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR;
+				$dir       = Config::get('LOCALE_PATH') . $lang . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR;
 				if (!is_dir($dir) && !mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
 					throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
 				}
-				$oldFile = $dir . WT_LOCALE_DOMAIN . '.po';
+				$oldFile = $dir . Config::get('LOCALE_DOMAIN') . '.po';
 				if (!file_exists($oldFile)) {
-					$translations = Translations::create(WT_LOCALE_DOMAIN);
+					$translations = Translations::create(Config::get('LOCALE_DOMAIN'));
 					$locale       = explode('.', $lang);
 					$translations->getHeaders()
 								 ->set('Language', $locale[0])
@@ -54,7 +54,7 @@
 					$generator->generateFile($translations, $oldFile);
 				}
 				$this->old = $poLoader->loadFile($oldFile);
-				$new       = $this->phpScan(Translations::create(WT_LOCALE_DOMAIN));
+				$new       = $this->phpScan(Translations::create(Config::get('LOCALE_DOMAIN')));
 				$new       = $this->jsScan($new);
 				$new       = $this->SmartyScan($new);
 				$new       = $this->old->mergeWith($new, Merge::TRANSLATIONS_THEIRS);
@@ -64,9 +64,9 @@
 
 		function phpScan(Translations $old, $file = NULL)
 		{
-			if (WT_USE_GETTEXT) {
-				$phpScanner = new PhpScanner(Translations::create(WT_LOCALE_DOMAIN));
-				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+			if (Config::get('USE_GETTEXT')) {
+				$phpScanner = new PhpScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
+				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
 					if (stripos($file, '.php') !== FALSE) {
@@ -86,8 +86,8 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new poScan(Translations::create(WT_LOCALE_DOMAIN));
-				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner = new poScan(Translations::create(Config::get('LOCALE_DOMAIN')));
+				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
 					if (stripos($file, '.php') !== FALSE) {
@@ -111,9 +111,9 @@
 
 		function jsScan(Translations $old, $file = NULL)
 		{
-			if (WT_USE_GETTEXT) {
-				$phpScanner = new JsScanner(Translations::create(WT_LOCALE_DOMAIN));
-				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+			if (Config::get('USE_GETTEXT')) {
+				$phpScanner = new JsScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
+				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
 					if (stripos($file, '.js') !== FALSE) {
@@ -133,8 +133,8 @@
 				}
 				return $old;
 			} else {
-				$phpScanner = new poScan(Translations::create(WT_LOCALE_DOMAIN));
-				$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+				$phpScanner = new poScan(Translations::create(Config::get('LOCALE_DOMAIN')));
+				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
 				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 				if ($file) {
 					if (stripos($file, '.js') !== FALSE) {
@@ -158,8 +158,8 @@
 
 		function SmartyScan(Translations $old, $file = NULL)
 		{
-			$phpScanner = new SmartyScanner(Translations::create(WT_LOCALE_DOMAIN));
-			$phpScanner->setDefaultDomain(WT_LOCALE_DOMAIN);
+			$phpScanner = new SmartyScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
+			$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
 			$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
 			if ($file) {
 				if (stripos($file, '.tpl') !== FALSE) {

@@ -44,7 +44,7 @@
 
 		public function setDefaultDomain($domain)
 		{
-			$this->domain = $domain ?: WT_LOCALE_DOMAIN;
+			$this->domain = $domain ?: Config::get('LOCALE_DOMAIN');
 		}
 
 		public function extractCommentsStartingWith(string ...$prefixes)
@@ -170,7 +170,7 @@
 		public function createTranslation($name, $line, $translate = '', $plural = '')
 		{
 			$translation = $this->trans[$name] ?? $this->trans[$name] = Translation::create(NULL, $name);
-			$f           = str_replace(WT_BASE_PATH, '', $this->FileName);
+			$f           = str_replace(Config::get('BASE_PATH'), '', $this->FileName);
 			$translation->getReferences()->add($f, $line);
 			if ($translate) {
 				$translation->translate($translate);

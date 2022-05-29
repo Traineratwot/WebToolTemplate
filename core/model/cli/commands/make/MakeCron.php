@@ -25,7 +25,7 @@
 			if (substr($cron, -4, strlen($cron)) === '.php') {
 				$cron = substr($cron, 0, -4);
 			}
-			$p = Utilities::pathNormalize(WT_CRON_PATH . 'controllers/' . $cron . '.php');
+			$p = Utilities::pathNormalize(Config::get('CRON_PATH') . 'controllers/' . $cron . '.php');
 			if (!file_exists($p)) {
 				Utilities::writeFile($p, Make::makeCron($cron));
 				Console::success('ok: ' . $p);

@@ -8,6 +8,7 @@
 	use model\main\Utilities;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\Cache\CacheException;
+	use Traineratwot\config\Config;
 	use traits\validators\ExceptionValidate;
 
 
@@ -76,7 +77,7 @@
 			if ($lang) {
 				$newLang = Cache::getCache('locale_' . $lang, 'locales');
 				if (!$newLang) {
-					$locales = scandir(WT_LOCALE_PATH);
+					$locales = scandir(Config::get('LOCALE_PATH'));
 					$index   = [
 						-1 => $lang,
 					];
@@ -103,7 +104,7 @@
 		private function _route($data = [])
 		{
 			if ($this->isAjax) {
-				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
+				$ajax = Utilities::findPath(Config::get('AJAX_PATH') . $this->alias . '.php');
 				$this->launchAjax($ajax, $data);
 			} else {
 				if ($this->ln[$this->alias]) {
@@ -125,7 +126,7 @@
 					}
 				}
 				route1:
-				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . '.php');
+				$page = Utilities::findPath(Config::get('VIEWS_PATH') . $this->alias . '.php');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route1';
@@ -134,7 +135,7 @@
 					$this->launchPage($page, $data);
 				}
 				route2:
-				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.tpl');
+				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . '.tpl');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route2';
@@ -143,7 +144,7 @@
 					$this->launchPageTpl($page, $data);
 				}
 				route3:
-				$ajax = Utilities::findPath(WT_AJAX_PATH . $this->alias . '.php');
+				$ajax = Utilities::findPath(Config::get('AJAX_PATH') . $this->alias . '.php');
 				if ($ajax) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route3';
@@ -152,7 +153,7 @@
 					$this->launchAjax($ajax, $data);
 				}
 				route4:
-				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . '.html');
+				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . '.html');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route4';
@@ -161,7 +162,7 @@
 					$this->launchPageHtml($page, $data);
 				}
 				route5:
-				$page = Utilities::findPath(WT_VIEWS_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
+				$page = Utilities::findPath(Config::get('VIEWS_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route5';
@@ -170,7 +171,7 @@
 					$this->launchPage($page, $data);
 				}
 				route6:
-				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
+				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route6';
@@ -179,7 +180,7 @@
 					$this->launchPageTpl($page, $data);
 				}
 				route7:
-				$page = Utilities::findPath(WT_PAGES_PATH . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
+				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
 				if ($page) {
 					if (!$this->ln[$this->alias]) {
 						$this->ln[$this->alias] = 'route7';
@@ -290,7 +291,7 @@
 		private function advancedRoute()
 		{
 			$this->isAdvanced = TRUE;
-			$router_path      = Utilities::findPath(WT_CORE_PATH . "router.php");
+			$router_path      = Utilities::findPath(Config::get('CORE_PATH') . "router.php");
 			$router           = include $router_path;
 			if (!empty($router)) {
 				$switcher = new \Bramus\Router\Router();

@@ -19,9 +19,9 @@
 
 		public function run()
 		{
-			$error = WT_CACHE_PATH . 'error.log';
+			$error = Config::get('CACHE_PATH') . 'error.log';
 			if (!is_null($this->getArg('clear')) && file_exists($error)) {
-				unlink(WT_CACHE_PATH . 'error.log');
+				unlink(Config::get('CACHE_PATH') . 'error.log');
 			}
 			$i = 0;
 			if (file_exists($error)) {

@@ -12,6 +12,8 @@
 	 * that were distributed with this source code.
 	 */
 
+	use Traineratwot\config\Config;
+
 	/**
 	 * Replaces arguments in a string with their values.
 	 * Arguments are represented by % followed by their number.
@@ -63,7 +65,6 @@
 	 * @return string
 	 * @see http://www.smarty.net/docs/en/plugins.block.functions.tpl
 	 */
-	$WT_GETTEXT = NULL;
 	function smarty_block_t($params, $text, &$smarty, &$repeat)
 	{
 		if (!isset($text)) {
@@ -106,31 +107,31 @@
 		}
 
 		// use plural if required parameters are set
-		if (isset($count) && isset($plural)) {
+		if (isset($count, $plural)) {
 			// use specified textdomain if available
-			if (isset($domain) && isset($context)) {
+			if (isset($domain, $context)) {
 
-				if (WT_USE_GETTEXT && function_exists('dnpgettext')) {
+				if (Config::get('USE_GETTEXT') && function_exists('dnpgettext')) {
 					$text = dnpgettext($domain, $context, $text, $plural, $count);
 				} else {
 					$text = dnp__($domain, $context, $text, $plural, $count);
 				}
 			} elseif (isset($domain)) {
-				if (WT_USE_GETTEXT) {
+				if (Config::get('USE_GETTEXT')) {
 					$text = dngettext($domain, $text, $plural, $count);
 				} else {
 					$text = np__($domain, $context, $text);
 				}
 
 			} elseif (isset($context)) {
-				if (WT_USE_GETTEXT && function_exists('npgettext')) {
+				if (Config::get('USE_GETTEXT') && function_exists('npgettext')) {
 					$text = npgettext($context, $text, $plural, $count);
 				} else {
 					$text = np__($context, $text, $plural, $count);
 				}
 
 			} else {
-				if (WT_USE_GETTEXT) {
+				if (Config::get('USE_GETTEXT')) {
 					$text = ngettext($text, $plural, $count);
 				} else {
 					$text = n__($text, $plural, $count);
@@ -139,25 +140,25 @@
 		} else {
 			// use specified textdomain if available
 			if (isset($domain) && isset($context)) {
-				if (WT_USE_GETTEXT && function_exists('dpgettext')) {
+				if (Config::get('USE_GETTEXT') && function_exists('dpgettext')) {
 					$text = dpgettext($domain, $context, $text);
 				} else {
 					$text = dp__($domain, $context, $text);
 				}
 			} elseif (isset($domain)) {
-				if (WT_USE_GETTEXT) {
+				if (Config::get('USE_GETTEXT')) {
 					$text = dgettext($domain, $text);
 				} else {
 					$text = d__($domain, $text);
 				}
 			} elseif (isset($context)) {
-				if (WT_USE_GETTEXT && function_exists('pgettext')) {
+				if (Config::get('USE_GETTEXT') && function_exists('pgettext')) {
 					$text = pgettext($context, $text);
 				} else {
 					$text = p__($context, $text);
 				}
 			} else {
-				if (WT_USE_GETTEXT) {
+				if (Config::get('USE_GETTEXT')) {
 					$text = _($text);
 				} else {
 					$text = __($text);

@@ -28,7 +28,7 @@
 				$path = $cls;
 				$cls  = substr($cls, 0, -4);
 			}
-			$path = Utilities::pathNormalize(WT_PLUGINS_PATH . $path);
+			$path = Utilities::pathNormalize(Config::get('PLUGINS_PATH') . $path);
 			if (!file_exists($path)) {
 				Utilities::writeFile($path, Make::makePlugin($cls));
 				Console::success('ok: ' . $path);

@@ -24,24 +24,24 @@
 
 		public function run()
 		{
-			if (!defined('WT_PHP_EXEC_CMD')) {
-				define('WT_PHP_EXEC_CMD', 'php');
+			if (!defined('Config::get('PHP_EXEC_CMD')')) {
+				define('Config::get('PHP_EXEC_CMD')', 'php');
 			}
 			$path = $this->getArg('path');
 			$cron = $this->getArg('cron');
 			if (is_null($path)) {
-				$array_cron = Utilities::glob(WT_CRON_PATH . 'controllers/', '*.*');
+				$array_cron = Utilities::glob(Config::get('CRON_PATH') . 'controllers/', '*.*');
 				$array_cron = array_unique($array_cron);
 				Console::success('Список кронов');
-				$s = Utilities::pathNormalize(WT_CRON_PATH . 'controllers/', '/');
+				$s = Utilities::pathNormalize(Config::get('CRON_PATH') . 'controllers/', '/');
 				foreach ($array_cron as $cron) {
 					$cron = Utilities::pathNormalize($cron, '/');
 					Console::info('    ' . str_replace($s, '', $cron));
 				}
 			} else {
-				$cmd     = $this->getArg('cmd') ?: WT_PHP_EXEC_CMD;
+				$cmd     = $this->getArg('cmd') ?: Config::get('PHP_EXEC_CMD');
 				$run     = $this->getArg('run');
-				$command = $cmd . ' ' . WT_CRON_PATH . 'launch.php -f"' . $path . '"';
+				$command = $cmd . ' ' . Config::get('CRON_PATH') . 'launch.php -f"' . $path . '"';
 				if (!is_null($run)) {
 					if ($run === TRUE) {
 						$command .= ' -d true';
@@ -52,7 +52,7 @@
 					echo Console::getColoredString($command, 'green') . PHP_EOL;
 				}
 				if (!is_null($cron)) {
-					if (WT_TYPE_SYSTEM === 'win') {
+					if (Config::get('TYPE_SYSTEM') === 'win') {
 						Console::error('Невозможно добавить задачу на windows');
 						return;
 					}
@@ -100,7 +100,7 @@
 		{
 			$this->registerParameter('path', 0, FilePath::class, "Относительный путь  от папки 'controllers' до файла задания");
 
-			$this->registerOption('cmd', 'c', 0, TString::class, "Введите CMD команду для запуска файла по умолчанию 'WT_PHP_EXEC_CMD' ");
+			$this->registerOption('cmd', 'c', 0, TString::class, "Введите CMD команду для запуска файла по умолчанию 'Config::get('PHP_EXEC_CMD')' ");
 			$this->registerOption('run', 'r', 0, TBool::class, "Установите этот флаг чтобы запустить задание");
 			$this->registerOption('cron', 'j', 0, TBool::class, "Добавить задание в кронта. доступно только на серверах с досупом к команде crontab. eg: -j=\"*/5 * * * *\"");
 

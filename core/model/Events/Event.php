@@ -4,6 +4,7 @@
 
 	use Exception;
 	use model\main\Utilities;
+	use Traineratwot\config\Config;
 
 	class Event
 	{
@@ -51,7 +52,7 @@
 					return self::$plugins[$category][$event];
 				}
 
-				$class = Utilities::findPath(WT_PLUGINS_PATH . $category . DIRECTORY_SEPARATOR . $event . '.php');
+				$class = Utilities::findPath(Config::get('PLUGINS_PATH') . $category . DIRECTORY_SEPARATOR . $event . '.php');
 				if (file_exists($class)) {
 					$cls = include $class;
 					if (is_string($cls) && class_exists($cls)) {

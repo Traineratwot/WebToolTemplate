@@ -27,10 +27,10 @@
 			}
 			if (PHP_OS === "Linux" && self::commandExist('exec')) {
 				Console::info('Change permission');
-				exec('chmod 755 -R -f ' . WT_MODEL_PATH);
-				exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.php');
-				exec('chmod 744 -R -f ' . WT_CORE_PATH . 'config.json');
-				exec('chmod 744 -R -f ' . WT_AJAX_PATH);
+				exec('chmod 755 -R -f ' . Config::get('MODEL_PATH'));
+				exec('chmod 744 -R -f ' . Config::get('CORE_PATH') . 'config.php');
+				exec('chmod 744 -R -f ' . Config::get('CORE_PATH') . 'config.json');
+				exec('chmod 744 -R -f ' . Config::get('AJAX_PATH'));
 			}
 			try {
 				$core = Core::init();
@@ -39,8 +39,8 @@
 				if ($needInstall) {
 					Console::info('Install Database');
 					if ($core->db->dsn->getDriver() === 'sqlite') {
-						if (!file_exists(WT_HOST_DB)) {
-							file_put_contents(WT_HOST_DB, '');
+						if (!file_exists(Config::get('HOST_DB'))) {
+							file_put_contents(Config::get('HOST_DB'), '');
 						}
 						$core->db->exec(<<<HTML
 CREATE TABLE users
@@ -82,7 +82,7 @@ HTML
 			}
 			if (self::commandExist('npm')) {
 				Console::info('npm install');
-				chdir(WT_BASE_PATH);
+				chdir(Config::get('BASE_PATH'));
 				exec('npm install');
 			} else {
 				Console::warning('Please install npm');
@@ -99,17 +99,17 @@ HTML
 			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 			Console::info("make backup");
 			self::package();
-			self::rmdir(WT_BASE_PATH . 'update/');
-			self::mkDirs(WT_BASE_PATH . 'update/');
-			$dist = WT_BASE_PATH . 'update/';
+			self::rmdir(Config::get('BASE_PATH') . 'update/');
+			self::mkDirs(Config::get('BASE_PATH') . 'update/');
+			$dist = Config::get('BASE_PATH') . 'update/';
 			Console::info("Download new version");
 			file_put_contents($dist . 'master.zip', file_get_contents("https://github.com/Traineratwot/WebToolTemplate/archive/refs/heads/master.zip"));
 			$zipFile = new ZipFile();
 			$zipFile->openFile($dist . 'master.zip');
 			$zipFile->extractTo($dist);
 			$zipFile->close();
-			self::copy(Utilities::findPath(WT_BASE_PATH . 'update/WebToolTemplate-master/core/model'), WT_MODEL_PATH);
-			self::rmdir(WT_BASE_PATH . 'update/');
+			self::copy(Utilities::findPath(Config::get('BASE_PATH') . 'update/WebToolTemplate-master/core/model'), Config::get('MODEL_PATH'));
+			self::rmdir(Config::get('BASE_PATH') . 'update/');
 		}
 
 		private static function commandExist($cmd)
@@ -136,21 +136,21 @@ HTML
 			//------------------------------DATABASE-------------------------------------
 			$dt = new DateTime();
 			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
-			self::mkDirs(WT_BASE_PATH . '/backups/');
+			self::mkDirs(Config::get('BASE_PATH') . '/backups/');
 			$zipFile = new ZipFile();
 			$zipFile->setArchiveComment(<<<HTML
 Backup DataBase
 Date: {$dt->format(DATE_ATOM)}
 HTML
 			);
-			switch (WT_TYPE_DB) {
+			switch (Config::get('TYPE_DB')) {
 				case PDOE::DRIVER_MySQL:
 					if (self::commandExist('mysqldump')) {
-						$h = WT_HOST_DB;
-						$p = WT_PASS_DB;
-						$u = WT_USER_DB;
-						$d = WT_DATABASE_DB;
-						$s = WT_CORE_PATH . 'database/dump.sql';
+						$h = Config::get('HOST_DB');
+						$p = Config::get('PASS_DB');
+						$u = Config::get('USER_DB');
+						$d = Config::get('DATABASE_DB');
+						$s = Config::get('CORE_PATH') . 'database/dump.sql';
 						self::mkDirs(dirname($s));
 						$cmd = <<<HTML
 mysqldump -u $u -p$p -h $h $d > "$s"
@@ -159,7 +159,7 @@ HTML;
 						if ($c === 0) {
 							$zipFile->addFile($s);
 
-							$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
+							$zipFile->saveAsFile(Utilities::pathNormalize(Config::get('BASE_PATH') . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
 							$zipFile->close();
 						} else {
 							Console::warning("You must make dump, use: \"$cmd\"");
@@ -172,8 +172,8 @@ HTML;
 
 					break;
 				case PDOE::DRIVER_SQLite:
-					$zipFile->addFile(WT_HOST_DB);
-					$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
+					$zipFile->addFile(Config::get('HOST_DB'));
+					$zipFile->saveAsFile(Utilities::pathNormalize(Config::get('BASE_PATH') . '/backups/dump_' . $dt->format("Y-m-d H-i") . '_.zip'));
 					$zipFile->close();
 					break;
 			}
@@ -184,14 +184,14 @@ Backup project
 Date: {$dt->format(DATE_ATOM)}
 HTML
 			);
-			$zipFile->addDirRecursive(WT_BASE_PATH);
+			$zipFile->addDirRecursive(Config::get('BASE_PATH'));
 			$zipFile->deleteFromRegex("@.idea@");
 			$zipFile->deleteFromRegex("@.vscode@");
 			$zipFile->deleteFromRegex("@.git@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
 			$zipFile->deleteFromRegex("@update@");
-			$zipFile->saveAsFile(Utilities::pathNormalize(WT_BASE_PATH . '/backups/backup_' . $dt->format("Y-m-d H-i") . '_.zip'));
+			$zipFile->saveAsFile(Utilities::pathNormalize(Config::get('BASE_PATH') . '/backups/backup_' . $dt->format("Y-m-d H-i") . '_.zip'));
 			$zipFile->close();
 		}
 

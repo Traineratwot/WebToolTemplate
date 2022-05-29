@@ -11,8 +11,8 @@
 	use RuntimeException;
 	use SplFileInfo;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\config\Config;
 	use traits\validators\jsonValidate;
-	use const WT_TYPE_SYSTEM;
 
 	/**
 	 * Класс с утилитами
@@ -216,12 +216,12 @@
 			$re   = "@" . preg_quote($DIRECTORY_SEPARATOR, '@') . '{2,}@';
 			if (file_exists($path)) {
 				if (is_dir($path)) {
-					if (WT_TYPE_SYSTEM === 'nix') {
+					if (Config::get('TYPE_SYSTEM') === 'nix') {
 						$path = "/" . trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
 					} else {
 						$path = trim($path, $DIRECTORY_SEPARATOR) . $DIRECTORY_SEPARATOR;
 					}
-				} elseif (WT_TYPE_SYSTEM === 'nix') {
+				} elseif (Config::get('TYPE_SYSTEM') === 'nix') {
 					$path = $DIRECTORY_SEPARATOR . trim($path, $DIRECTORY_SEPARATOR);
 				} else {
 					$path = trim($path, $DIRECTORY_SEPARATOR);

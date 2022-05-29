@@ -10,7 +10,7 @@
 		function process()
 		{
 			$tables = $this->core->db->getTablesList();
-			chdir(WT_BASE_PATH);
+			chdir(Config::get('BASE_PATH'));
 			foreach ($tables as $table) {
 				exec('wt maketable ' . $table);
 			}

@@ -30,7 +30,7 @@
 				$path = $url;
 				$url  = substr($url, 0, -4);
 			}
-			$path = Utilities::pathNormalize(WT_AJAX_PATH . $path);
+			$path = Utilities::pathNormalize(Config::get('AJAX_PATH') . $path);
 			if (!file_exists($path)) {
 				Utilities::writeFile($path, Make::makeAjax($url, $type));
 				Console::success('ok: ' . $path);

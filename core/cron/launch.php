@@ -17,7 +17,7 @@
 
 	ob_start();
 	$key       = md5($alias);
-	$lock_path = WT_CRON_PATH . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
+	$lock_path = Config::get('CRON_PATH') . 'locks' . DIRECTORY_SEPARATOR . $key . '.lock';
 	//проверка запущен ли еще предыдущий крон
 	if (file_exists($lock_path)) {
 		if (!isset($options['d']) || $options['d'] !== "true") {
@@ -42,7 +42,7 @@
 	foreach ($args as $val) {
 		$a[] = escapeshellcmd($val);
 	}
-	system(WT_PHP_EXEC_CMD . " " . WT_CRON_PATH . "microLaunch.php -f\"$alias\" " . implode(" ", $a), $output);
+	system(Config::get('PHP_EXEC_CMD') . " " . Config::get('CRON_PATH') . "microLaunch.php -f\"$alias\" " . implode(" ", $a), $output);
 	$end = microtime(TRUE);
 	//Вывод статистики
 	echo PHP_EOL . '------STATS------' . PHP_EOL;
@@ -53,7 +53,7 @@
 	echo 'Date:            ' . date('Y-m-d H:i:s');
 	//создание log файла
 	try {
-		$log = WT_CRON_PATH . 'logs' . DIRECTORY_SEPARATOR . $alias . '.log';
+		$log = Config::get('CRON_PATH') . 'logs' . DIRECTORY_SEPARATOR . $alias . '.log';
 		if (!mkdir($concurrentDirectory = dirname($log), 0777, TRUE) && !is_dir($concurrentDirectory)) {
 			throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}

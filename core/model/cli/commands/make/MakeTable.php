@@ -47,7 +47,7 @@
 					throw new TypeException("Table '$table' does not exist. Chose table from this list");
 				}
 				$class = Make::name2class($table);
-				$p     = WT_CLASSES_PATH . 'tables/' . $class . '.php';
+				$p     = Config::get('CLASSES_PATH') . 'tables/' . $class . '.php';
 				if (!file_exists($p)) {
 					$p = Utilities::pathNormalize($p);
 					Utilities::writeFile($p, Make::makeTable($table, $keyField));

@@ -28,7 +28,7 @@
 		{
 			$action = $this->getArg('action');
 			if ($action === 'list') {
-				if (WT_TYPE_SYSTEM === 'nix') {
+				if (Config::get('TYPE_SYSTEM') === 'nix') {
 					exec("locale -a", $out);
 					Console::success('Installed locale:');
 					foreach ($out as $l) {
@@ -43,7 +43,7 @@
 				if (!$lang) {
 					throw new TypeException("missing lang");
 				}
-				if (WT_TYPE_SYSTEM === 'nix') {
+				if (Config::get('TYPE_SYSTEM') === 'nix') {
 					exec("locale -a|grep {$lang}", $out);
 					if (empty($out)) {
 						throw new TypeException("please install locales");
@@ -90,7 +90,7 @@
 
 		public static function localeGenerator($lang)
 		{
-			require_once(WT_MODEL_PATH . 'locale/PoUpdate.php');
+			require_once(Config::get('MODEL_PATH') . 'locale/PoUpdate.php');
 			(new PoUpdate())->run($lang);
 			Console::success('ok');
 			exit();

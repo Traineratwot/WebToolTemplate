@@ -28,7 +28,7 @@
 		{
 			$action = $this->getArg('action');
 			if (empty($action) || $action === 'info') {
-				$files = Utilities::glob(WT_CACHE_PATH, '*.cache.php');
+				$files = Utilities::glob(Config::get('CACHE_PATH'), '*.cache.php');
 				$size  = 0;
 				foreach ($files as $f) {
 					$size += filesize($f);

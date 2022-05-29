@@ -9,7 +9,7 @@
 	 * строке прописной
 	 * -------------------------------------------------------------
 	 */
-	$WT_GETTEXT = NULL;
+	$Config::get('GETTEXT') = NULL;
 	function smarty_modifier_byte($text = '', $arr = [])
 	{
 		$size = (int)$text;
