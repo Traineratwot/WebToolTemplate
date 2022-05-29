@@ -89,6 +89,34 @@ HTML
 			}
 		}
 
+		private static function mkDirs(string $dir)
+		: void
+		{
+			$dir = Utilities::pathNormalize($dir);
+			if (!file_exists($dir)) {
+				if (!mkdir($dir, 0777, 1) || !is_dir($dir) || !file_exists($dir)) {
+					Console::failure(sprintf('Directory "%s" was not created', $dir));
+				} else {
+					Console::success(sprintf('Created "%s"', $dir));
+				}
+			}
+		}
+
+		private static function commandExist($cmd)
+		: bool
+		{
+			if (PHP_OS === "Linux") {
+				$return = shell_exec(sprintf("which %s", escapeshellarg($cmd)));
+				return !empty($return);
+			}
+			exec(sprintf("where %s", escapeshellarg($cmd)), $r, $c);
+			if ($c !== 0) {
+				return FALSE;
+			}
+			$r = shell_exec(sprintf("help %s", escapeshellarg($cmd)));
+			return strpos('not supported', $r) === FALSE;
+		}
+
 		/**
 		 * @throws ZipException
 		 * @throws Exception
@@ -110,21 +138,6 @@ HTML
 			$zipFile->close();
 			self::copy(Utilities::findPath(Config::get('BASE_PATH') . 'update/WebToolTemplate-master/core/model'), Config::get('MODEL_PATH'));
 			self::rmdir(Config::get('BASE_PATH') . 'update/');
-		}
-
-		private static function commandExist($cmd)
-		: bool
-		{
-			if (PHP_OS === "Linux") {
-				$return = shell_exec(sprintf("which %s", escapeshellarg($cmd)));
-				return !empty($return);
-			}
-			exec(sprintf("where %s", escapeshellarg($cmd)), $r, $c);
-			if ($c !== 0) {
-				return FALSE;
-			}
-			$r = shell_exec(sprintf("help %s", escapeshellarg($cmd)));
-			return strpos('not supported', $r) === FALSE;
 		}
 
 		/**
@@ -193,19 +206,6 @@ HTML
 			$zipFile->deleteFromRegex("@update@");
 			$zipFile->saveAsFile(Utilities::pathNormalize(Config::get('BASE_PATH') . '/backups/backup_' . $dt->format("Y-m-d H-i") . '_.zip'));
 			$zipFile->close();
-		}
-
-		private static function mkDirs(string $dir)
-		: void
-		{
-			$dir = Utilities::pathNormalize($dir);
-			if (!file_exists($dir)) {
-				if (!mkdir($dir, 0777, 1) || !is_dir($dir) || !file_exists($dir)) {
-					Console::failure(sprintf('Directory "%s" was not created', $dir));
-				} else {
-					Console::success(sprintf('Created "%s"', $dir));
-				}
-			}
 		}
 
 		private static function rmdir($dir)

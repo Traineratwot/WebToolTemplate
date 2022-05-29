@@ -18,10 +18,9 @@
 		 * @return null
 		 *
 		 */
-		public static function emit(string $event, $data = [], string $category = '')
+		public static function trigger(string $event, $data = [], string $category = '')
 		{
-			$plugin = self::load($event, $category);
-			return self::execute($plugin, $data);
+			return self::emit($event, $data, $category);
 		}
 
 		/**
@@ -32,14 +31,10 @@
 		 * @return null
 		 *
 		 */
-		public static function trigger(string $event, $data = [], string $category = '')
+		public static function emit(string $event, $data = [], string $category = '')
 		{
-			return self::emit($event, $data, $category);
-		}
-
-		public static function registerEvent(string $event, callable $callback, string $category = '')
-		{
-			self::$plugins[$category][$event] = $callback;
+			$plugin = self::load($event, $category);
+			return self::execute($plugin, $data);
 		}
 
 		/**
@@ -80,5 +75,10 @@
 				return $plugin($data);
 			}
 			return NULL;
+		}
+
+		public static function registerEvent(string $event, callable $callback, string $category = '')
+		{
+			self::$plugins[$category][$event] = $callback;
 		}
 	}

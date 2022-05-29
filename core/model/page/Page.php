@@ -138,7 +138,7 @@
 		{
 			ob_end_flush();
 			ob_start();
-			Event::emit('BeforeRender',$this);
+			Event::emit('BeforeRender', $this);
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
 			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {

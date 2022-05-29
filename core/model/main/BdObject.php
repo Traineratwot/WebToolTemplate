@@ -50,11 +50,6 @@
 			$this->schema = $this->schema->toArray();
 		}
 
-		public function toArray()
-		{
-			return $this->data;
-		}
-
 		/**
 		 * @param $where
 		 * @param $type
@@ -124,6 +119,11 @@ SQL;
 					$this->update[$key] = NULL;
 				}
 			}
+		}
+
+		public function toArray()
+		{
+			return $this->data;
 		}
 
 		//--------------------------------------------------------

@@ -47,29 +47,11 @@ PHP;
 PHP;
 		}
 
-		public static function makePlugin($name, $type = 'any')
-		{
-			self::name2class($name, $class, $namespace);
-			return <<<PHP
-<?php
-	namespace classes\plugins{$namespace};
-	use model\Events\Plugin;
-	class {$class} extends Plugin
-	{
-		public function process(\$data)
-		{
-			//TODO make plugin {$class}
-		}
-	}
-	return {$class}::class;
-PHP;
-		}
-
 		public static function name2class($name, &$class = '', &$namespace = '')
 		{
-			$n0        = explode(":::", Utilities::pathNormalize($name, ':::'));
-			$class     = array_pop($n0);
-			if(count($n0)) {
+			$n0    = explode(":::", Utilities::pathNormalize($name, ':::'));
+			$class = array_pop($n0);
+			if (count($n0)) {
 				$namespace = '\\' . implode('\\', $n0);
 			}
 
@@ -91,6 +73,24 @@ PHP;
 			}
 
 			return ucfirst(implode('', $n2));
+		}
+
+		public static function makePlugin($name, $type = 'any')
+		{
+			self::name2class($name, $class, $namespace);
+			return <<<PHP
+<?php
+	namespace classes\plugins{$namespace};
+	use model\Events\Plugin;
+	class {$class} extends Plugin
+	{
+		public function process(\$data)
+		{
+			//TODO make plugin {$class}
+		}
+	}
+	return {$class}::class;
+PHP;
 		}
 
 		public static function makePageTpl($name, $template = 'base')

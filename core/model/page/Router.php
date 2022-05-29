@@ -15,7 +15,7 @@
 	class Router
 	{
 
-		public bool    $isAdvanced = FALSE;
+		public bool   $isAdvanced = FALSE;
 		public bool   $isAjax;
 		public string $alias;
 		public ?Core  $core;
@@ -205,7 +205,7 @@
 					Err::fatal("class '$class' is not define");
 				}
 			}
-			$result = new $class($this->core, $data);
+			$result   = new $class($this->core, $data);
 			$response = '';
 			try {
 				if ($result instanceof Ajax) {

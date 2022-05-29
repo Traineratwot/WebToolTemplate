@@ -25,7 +25,7 @@
 		public function run()
 		{
 			if (!defined('Config::get('PHP_EXEC_CMD')')) {
-				define('Config::get('PHP_EXEC_CMD')', 'php');
+			define('Config::get('PHP_EXEC_CMD')', 'php');
 			}
 			$path = $this->getArg('path');
 			$cron = $this->getArg('cron');
