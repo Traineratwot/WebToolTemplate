@@ -360,6 +360,7 @@
 		/**
 		 * @param array $options
 		 * @return array|string
+		 * @throws Exception
 		 */
 		public function randomColor($options = [])
 		{

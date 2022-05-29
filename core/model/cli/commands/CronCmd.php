@@ -7,6 +7,7 @@
 	use TiBeN\CrontabManager\CrontabAdapter;
 	use TiBeN\CrontabManager\CrontabJob;
 	use TiBeN\CrontabManager\CrontabRepository;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\types\TBool;
@@ -24,9 +25,6 @@
 
 		public function run()
 		{
-			if (!defined('Config::get('PHP_EXEC_CMD')')) {
-			define('Config::get('PHP_EXEC_CMD')', 'php');
-			}
 			$path = $this->getArg('path');
 			$cron = $this->getArg('cron');
 			if (is_null($path)) {
@@ -39,7 +37,7 @@
 					Console::info('    ' . str_replace($s, '', $cron));
 				}
 			} else {
-				$cmd     = $this->getArg('cmd') ?: Config::get('PHP_EXEC_CMD');
+				$cmd     = $this->getArg('cmd') ?: Config::get('PHP_EXEC_CMD', NULL, 'php');
 				$run     = $this->getArg('run');
 				$command = $cmd . ' ' . Config::get('CRON_PATH') . 'launch.php -f"' . $path . '"';
 				if (!is_null($run)) {

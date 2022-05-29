@@ -9,6 +9,7 @@
 	use Gettext\Scanner\PhpScanner;
 	use Gettext\Translations;
 	use RuntimeException;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Console;
 
 

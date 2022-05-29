@@ -4,6 +4,7 @@
 
 	use RuntimeException;
 	use Throwable;
+	use Traineratwot\config\Config;
 
 	class Err
 	{

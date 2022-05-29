@@ -5,6 +5,7 @@
 	use model\cli\Make;
 	use model\cli\types\AjaxEnum;
 	use model\main\Utilities;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\types\TString;

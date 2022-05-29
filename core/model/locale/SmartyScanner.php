@@ -4,6 +4,7 @@
 
 	use Gettext\Translation;
 	use Gettext\Translations;
+	use Traineratwot\config\Config;
 
 	/**
 	 * Class to scan PHP files && get gettext translations

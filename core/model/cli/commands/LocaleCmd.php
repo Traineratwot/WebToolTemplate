@@ -5,6 +5,7 @@
 	use model\cli\types\LocaleEnum;
 	use model\locale\PoUpdate;
 	use model\main\Core;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\TypeException;

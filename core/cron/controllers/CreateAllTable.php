@@ -4,6 +4,7 @@
 
 	use model\main\Core;
 	use model\main\CoreObject;
+	use Traineratwot\config\Config;
 
 	class CreteAllTable extends CoreObject
 	{

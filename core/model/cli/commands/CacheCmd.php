@@ -5,6 +5,7 @@
 	use model\cli\types\CacheEnum;
 	use model\main\Utilities;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 

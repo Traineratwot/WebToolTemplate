@@ -9,16 +9,16 @@
 	 * строке прописной
 	 * -------------------------------------------------------------
 	 */
-	$Config::get('GETTEXT') = NULL;
 	function smarty_modifier_config($text = '', $arr = [])
 	{
 		if (defined($text)) {
 			return constant($text);
-		} elseif (!empty($arr) && isset($arr[$text])) {
-			return $arr[$text];
-		} else {
-			return NULL;
 		}
+
+		if (!empty($arr) && isset($arr[$text])) {
+			return $arr[$text];
+		}
+
+		return NULL;
 	}
 
-?>

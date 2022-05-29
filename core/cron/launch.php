@@ -3,6 +3,7 @@
 
 	use model\main\Core;
 	use model\main\Utilities;
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Console;
 
 	if (!file_exists(realpath(dirname(__DIR__) . '/config.php'))) {

@@ -5,6 +5,7 @@
 	use model\main\Err;
 	use model\main\User;
 	use model\main\Utilities;
+	use Traineratwot\config\Config;
 
 
 	/**
@@ -20,7 +21,7 @@
 
 		public function sendMail($subject = '', $body = '', $file = [], $options = [])
 		{
-			return $this->core->mail($this, $subject, $file, $options);
+			return $this->core->mail($this, $subject, $body, $file, $options);
 		}
 
 		/**
@@ -47,18 +48,18 @@
 		public function getEmail()
 		: string
 		{
-			return $this->get('email');
+			return (string)$this->get('email');
 		}
 
 		public function getName()
 		: string
 		{
-			return $this->get('email');
+			return (string)$this->get('email');
 		}
 
 		public function logout()
 		{
-			Config::get('RESTART_SESSION_FUNCTION')();
+			WT_RESTART_SESSION_FUNCTION();
 		}
 
 		public function register($email, $password = NULL)
@@ -99,7 +100,7 @@
 
 		public function login()
 		{
-			Config::get('RESTART_SESSION_FUNCTION')();
+			WT_RESTART_SESSION_FUNCTION();
 			$_SESSION['authKey'] = $this->get('authKey');
 			$_SESSION['ip']      = Utilities::getIp();
 			$hash                = Utilities::hash($_SESSION['authKey'] . $_SESSION['ip']);

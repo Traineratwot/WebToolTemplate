@@ -3,7 +3,7 @@
 	use Traineratwot\config\Config;
 
 	ini_set('display_errors', 1);
-	error_reporting(E_ALL);
+	error_reporting(E_ERROR || E_PARSE);
 	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
 		/**
 		 * Пользовательская функция возвращающая язык для установки цокали на основе url

@@ -2,6 +2,7 @@
 
 	namespace model\cli\commands;
 
+	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\types\TBool;

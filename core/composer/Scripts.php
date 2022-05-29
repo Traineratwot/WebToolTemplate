@@ -9,6 +9,7 @@
 	use PhpZip\Exception\ZipException;
 	use PhpZip\ZipFile;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\config\Config;
 	use Traineratwot\PDOExtended\PDOE;
 	use Traineratwot\PhpCli\Console;
 

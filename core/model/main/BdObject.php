@@ -248,7 +248,7 @@ SQL;
 		{
 			$this->repair();
 			if (is_null($default) && isset($this->schema[$key])) {
-				$default = $this->schema[$key]['null'] ? NULL : $this->schema[$key]['default'];
+				$default = ($this->schema[$key]['null'] ?? NULL) ? NULL : $this->schema[$key]['default'];
 			}
 			return $this->data[$key] ?: $default;
 		}
