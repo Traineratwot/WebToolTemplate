@@ -170,7 +170,7 @@
 		 */
 		public function mail($to, string $subject, string $body, array $file = [], array $options = [])
 		{
-
+			$mail = null;
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
