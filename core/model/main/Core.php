@@ -170,7 +170,7 @@
 		 */
 		public function mail($to, string $subject, string $body, array $file = [], array $options = [])
 		{
-			$mail = null;
+			$mail = NULL;
 			try {
 				$mail = new PHPMailer(TRUE);
 				$mail->isHTML(TRUE);
@@ -236,13 +236,13 @@
 
 		/**
 		 * @template T of \BdObject
-		 * @param class-string<T> $class
-		 * @param array           $where
-		 * @param boolean         $cache
+		 * @param class-string<T>  $class
+		 * @param array|string|int $where
+		 * @param boolean          $cache
 		 * @return BdObject|T
 		 * @throws Exception
 		 */
-		public function getObject(string $class, array $where = [], bool $cache = TRUE)
+		public function getObject(string $class, $where = [], bool $cache = TRUE)
 		{
 			$class = self::getClass($class);
 			if (!$cache || empty($where)) {
