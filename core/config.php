@@ -1,6 +1,6 @@
 <?php
 	//включаем ошибки
-	use Traineratwot\cc\Config;
+	use Traineratwot\config\Config;
 
 	ini_set('display_errors', 1);
 	error_reporting(E_ERROR);
