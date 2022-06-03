@@ -68,22 +68,22 @@
 	Config::set('DOMAIN_URL', "https://localhost", 'WT', FALSE, 'WT_DOMAIN_URL');
 	Config::set('NODE_URL', Config::get('DOMAIN_URL') . '/node_modules' . '/', 'WT', FALSE, 'WT_NODE_URL');
 //	определяем подключение к своей базе
-//	Config::set('HOST_DB', Config::get('CORE_PATH') . 'databases/database.db', 'WT', FALSE, 'WT_HOST_DB');
-//	Config::set('PORT_DB', '', 'WT', FALSE, 'WT_PORT_DB');
-//	Config::set('DATABASE_DB', '', 'WT', FALSE, 'WT_DATABASE_DB');
-//	Config::set('TYPE_DB', 'sqlite', 'WT', FALSE, 'WT_TYPE_DB');
-//	Config::set('USER_DB', '', 'WT', FALSE, 'WT_USER_DB');
-//	Config::set('PASS_DB', '', 'WT', FALSE, 'WT_PASS_DB');
-//	Config::set('CHARSET_DB', '', 'WT', FALSE, 'WT_CHARSET_DB');
-
-
-	Config::set('HOST_DB', 'localhost', 'WT', FALSE, 'WT_HOST_DB');
-	Config::set('PORT_DB', 3306, 'WT', FALSE, 'WT_PORT_DB');
-	Config::set('DATABASE_DB', 'wt', 'WT', FALSE, 'WT_DATABASE_DB');
-	Config::set('TYPE_DB', 'mysql', 'WT', FALSE, 'WT_TYPE_DB');
-	Config::set('USER_DB', 'user', 'WT', FALSE, 'WT_USER_DB');
-	Config::set('PASS_DB', 'pass', 'WT', FALSE, 'WT_PASS_DB');
+	Config::set('HOST_DB', Config::get('CORE_PATH') . 'databases/database.db', 'WT', FALSE, 'WT_HOST_DB');
+	Config::set('PORT_DB', '', 'WT', FALSE, 'WT_PORT_DB');
+	Config::set('DATABASE_DB', '', 'WT', FALSE, 'WT_DATABASE_DB');
+	Config::set('TYPE_DB', 'sqlite', 'WT', FALSE, 'WT_TYPE_DB');
+	Config::set('USER_DB', '', 'WT', FALSE, 'WT_USER_DB');
+	Config::set('PASS_DB', '', 'WT', FALSE, 'WT_PASS_DB');
 	Config::set('CHARSET_DB', '', 'WT', FALSE, 'WT_CHARSET_DB');
+
+
+//	Config::set('HOST_DB', 'localhost', 'WT', FALSE, 'WT_HOST_DB');
+//	Config::set('PORT_DB', 3306, 'WT', FALSE, 'WT_PORT_DB');
+//	Config::set('DATABASE_DB', 'wt', 'WT', FALSE, 'WT_DATABASE_DB');
+//	Config::set('TYPE_DB', 'mysql', 'WT', FALSE, 'WT_TYPE_DB');
+//	Config::set('USER_DB', 'user', 'WT', FALSE, 'WT_USER_DB');
+//	Config::set('PASS_DB', 'pass', 'WT', FALSE, 'WT_PASS_DB');
+//	Config::set('CHARSET_DB', '', 'WT', FALSE, 'WT_CHARSET_DB');
 
 	Config::set('SQL_LOG', TRUE, 'WT', FALSE, 'WT_SQL_LOG');
 	Config::set('SOCKET_DB', 'WT', 'WT', FALSE, 'WT_SOCKET_DB');
