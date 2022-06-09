@@ -76,7 +76,7 @@
 			$this->utf8bom        = array_key_exists('woBom', $param) ? $param['woBom'] : chr(239) . chr(187) . chr(191);
 			$this->str_delimiter  = array_key_exists('delimiter', $param) ? $param['delimiter'] : ';';
 			$this->line_delimiter = array_key_exists('line_delimiter', $param) ? $param['line_delimiter'] : "\n";
-			$this->escape         = array_key_exists('line_delimiter', $param) ? $param['line_delimiter'] : '"';
+			$this->escape         = array_key_exists('escape', $param) ? $param['escape'] : '"';
 			$this->output_file    = $param['output_file'] ?? NULL;
 			$this->mode           = array_key_exists('mode', $param) ? $param['mode'] : 'default';
 

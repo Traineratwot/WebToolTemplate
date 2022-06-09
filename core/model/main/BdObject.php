@@ -189,17 +189,19 @@ SQL;
 		{
 			try {
 				$sql = NULL;
-				if ($this->isNew()) {
-					$sql = $this->pd->insert()
-									->setData($this->update)
-									->toSql()
-					;
-				} elseif (count($this->update) > 0) {
-					$sql = $this->pd->update()
-									->setData($this->update)
-									->where()
-									->eq($this->primaryKey, $this->data[$this->primaryKey])
-									->end()->toSql();
+				if (count($this->update) > 0) {
+					if ($this->isNew()) {
+						$sql = $this->pd->insert()
+										->setData($this->update)
+										->toSql()
+						;
+					} else {
+						$sql = $this->pd->update()
+										->setData($this->update)
+										->where()
+										->eq($this->primaryKey, $this->data[$this->primaryKey])
+										->end()->toSql();
+					}
 				}
 				if ($sql) {
 					//Err::info($sql);
