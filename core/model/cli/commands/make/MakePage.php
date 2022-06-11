@@ -24,6 +24,7 @@
 		{
 			$url      = $this->getArg('url');
 			$template = $this->getArg('template');
+			$url = Make::pathFileUcFirst($url);
 			$p        = Utilities::pathNormalize(Config::get('VIEWS_PATH') . $url . '.php');
 			$p2       = Utilities::pathNormalize(Config::get('PAGES_PATH') . $url . '.tpl');
 			if (!file_exists($p)) {

@@ -8,9 +8,9 @@
 
 	class Make
 	{
-		public static function makeAjax($name, $type = 'any')
+		public static function makeAjax(string $name, string $type = 'any')
+		: string
 		{
-			$method = '';
 			switch ($type) {
 				case 'post':
 					$method = <<<PHP
@@ -47,10 +47,12 @@ PHP;
 PHP;
 		}
 
-		public static function name2class($name, &$class = '', &$namespace = '')
+		public static function name2class(string $name, ?string &$class = '', ?string &$namespace = '')
+		: string
 		{
 			$n0    = explode(":::", Utilities::pathNormalize($name, ':::'));
 			$class = array_pop($n0);
+			$class = ucfirst($class);
 			if (count($n0)) {
 				$namespace = '\\' . implode('\\', $n0);
 			}
@@ -75,7 +77,8 @@ PHP;
 			return ucfirst(implode('', $n2));
 		}
 
-		public static function makePlugin($name, $type = 'any')
+		public static function makePlugin(string $name, string $type = 'any')
+		: string
 		{
 			self::name2class($name, $class, $namespace);
 			return <<<PHP
@@ -93,7 +96,8 @@ PHP;
 PHP;
 		}
 
-		public static function makePageTpl($name, $template = 'base')
+		public static function makePageTpl(string $name, string $template = 'base')
+		: string
 		{
 			if (!$template) {
 				$template = 'base.tpl';
@@ -112,7 +116,8 @@ PHP;
 TPL;
 		}
 
-		public static function makePageClass($name)
+		public static function makePageClass(string $name)
+		: string
 		{
 			self::name2class($name, $class, $namespace);
 			return <<<PHP
@@ -135,7 +140,8 @@ TPL;
 PHP;
 		}
 
-		public static function makeTable($name, $primaryKey = 'id')
+		public static function makeTable(string $name, string $primaryKey = 'id')
+		: string
 		{
 			$primaryKey = $primaryKey ?: 'id';
 			$class      = self::name2class($name, $class);
@@ -156,7 +162,8 @@ PHP;
 PHP;
 		}
 
-		public static function makeClass($name, $category = '')
+		public static function makeClass(string $name, string $category = '')
+		: string
 		{
 			if ($category) {
 				$category = '\\' . $category;
@@ -178,12 +185,16 @@ PHP;
 PHP;
 		}
 
-		public static function makeCron($name = '')
+		public static function makeCron(string $name = '')
+		: string
 		{
-			$class = self::name2class(basename($name));
+			$namespace = '';
+			self::name2class($name, $class, $namespace);
+
+			$namespace = "core\cron\controllers\\".trim($namespace,'\\');
 			return <<<PHP
 <?php
-	namespace cron;
+	namespace $namespace;
 	use model\main\Core;
 	use model\main\CoreObject;
 	class $class extends CoreObject
@@ -195,5 +206,12 @@ PHP;
 	\$core = Core::init();
 	(new $class(\$core))->process();
 PHP;
+		}
+
+		public static function pathFileUcFirst($path)
+		: string
+		{
+			$file = basename($path);
+			return str_ireplace($file, ucfirst($file), $path);
 		}
 	}

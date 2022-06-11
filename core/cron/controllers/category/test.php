@@ -1,10 +1,12 @@
 <?php
-
-
+	namespace core\cron\controllers\category;
 	use model\main\Core;
-	use Traineratwot\PhpCli\Console;
-
-	Console::info('sleep 5');
+	use model\main\CoreObject;
+	class Test extends CoreObject
+	{
+		function process(){
+			//TODO: process
+		}
+	}
 	$core = Core::init();
-	var_dump(Console::getOpt($a));
-	var_dump($a);
+	(new Test($core))->process();

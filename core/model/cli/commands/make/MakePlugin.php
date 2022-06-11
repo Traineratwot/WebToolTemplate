@@ -29,6 +29,7 @@
 				$path = $cls;
 				$cls  = substr($cls, 0, -4);
 			}
+			$path = Make::pathFileUcFirst($path);
 			$path = Utilities::pathNormalize(Config::get('PLUGINS_PATH') . $path);
 			if (!file_exists($path)) {
 				Utilities::writeFile($path, Make::makePlugin($cls));
