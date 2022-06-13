@@ -54,7 +54,7 @@
 		public function getName()
 		: string
 		{
-			return (string)$this->get('email');
+			return ucfirst(preg_replace("/@.*/", '', $this->get('email')));
 		}
 
 		public function logout()
