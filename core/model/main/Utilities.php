@@ -441,4 +441,21 @@
 			file_put_contents($path, $content);
 			return file_exists($path);
 		}
+
+
+		public static function phoneFormat(string $phone, $pattern = 'number')
+		: string
+		{
+			$phone = (string)(int)self::rawText($phone);
+
+			switch ($pattern) {
+				case 'number':
+					return '+' . $phone;
+					break;
+				default:
+					//TODO
+					break;
+			}
+			return $phone;
+		}
 	}
