@@ -24,7 +24,7 @@
 		public function run()
 		{
 			$url  = $this->getArg('url');
-			$type = $this->getArg('type');
+			$type = $this->getArg('type') ?: 'any';
 			if (strpos($url, '.php') === FALSE) {
 				$path = $url . '.php';
 			} else {
