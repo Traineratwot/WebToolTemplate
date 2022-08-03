@@ -30,7 +30,7 @@
 		{
 			$core     = Core::init();
 			$table    = $this->getArg('table');
-			$keyField = $this->getArg('keyField');
+			$keyField = $this->getArg('keyField') ?: 'id';
 			if ($table) {
 				$list = $core->db->getTablesList();
 				$find = FALSE;
