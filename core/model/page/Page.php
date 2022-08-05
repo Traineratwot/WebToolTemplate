@@ -136,8 +136,6 @@
 		 */
 		public function render($return = FALSE)
 		{
-			ob_end_flush();
-			ob_start();
 			Event::emit('BeforeRender', $this);
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
@@ -149,10 +147,8 @@
 					return FALSE;
 				}
 			}
-			$this->smarty->display($this->source);
-			$page = ob_get_clean();
-
-			$mod = Event::emit('AfterRender', ['content' => $page, 'page' => $this]);
+			$page = $this->smarty->fetch($this->source);
+			$mod  = Event::emit('AfterRender', ['content' => $page, 'page' => $this]);
 			if ($mod) {
 				$page = $mod;
 			}
