@@ -165,7 +165,7 @@
 		 * @param string                           $subject
 		 * @param string                           $body
 		 * @param array                            $file
-		 * @param array                            $options
+		 * @param array                            $options cc, bcc , from
 		 * @return bool|string
 		 */
 		public function mail($to, string $subject, string $body, array $file = [], array $options = [])
@@ -178,8 +178,8 @@
 				$mail->CharSet = PHPMailer::CHARSET_UTF8;
 				if (!empty($options['from'])) {
 					if ($options['from'] instanceof User) {
-						$email = $options['from']->get('email');
-						$name  = $options['from']->get('full_name');
+						$email = $options['from']->getEmail();
+						$name  = $options['from']->getName();
 					} else {
 						$a     = explode('::', $options['from']);
 						$email = $a[0];
@@ -205,7 +205,7 @@
 				}
 				foreach ($to as $too) {
 					if ($too instanceof User) {
-						$email = $too->get('email');
+						$email = $too->getEmail();
 						$name  = $too->getName();
 					} else {
 						$a     = explode('::', $too);
@@ -213,6 +213,40 @@
 						$name  = $a[1];
 					}
 					$mail->addAddress($email, $name);
+				}
+				if (!empty($options['cc'])) {
+					$copy = $options['cc'];
+					if (!is_array($copy)) {
+						$copy = [$copy];
+					}
+					foreach ($copy as $too) {
+						if ($too instanceof User) {
+							$email = $too->getEmail();
+							$name  = $too->getName();
+						} else {
+							$a     = explode('::', $too);
+							$email = $a[0];
+							$name  = $a[1];
+						}
+						$mail->addCC($email, $name);
+					}
+				}
+				if (!empty($options['bcc'])) {
+					$copy = $options['bcc'];
+					if (!is_array($copy)) {
+						$copy = [$copy];
+					}
+					foreach ($copy as $too) {
+						if ($too instanceof User) {
+							$email = $too->getEmail();
+							$name  = $too->getName();
+						} else {
+							$a     = explode('::', $too);
+							$email = $a[0];
+							$name  = $a[1];
+						}
+						$mail->addBCC($email, $name);
+					}
 				}
 				if (!is_array($file)) {
 					$file = [$file];
