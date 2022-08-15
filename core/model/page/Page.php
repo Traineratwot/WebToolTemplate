@@ -74,6 +74,9 @@
 			}
 		}
 
+		/**
+		 * @throws SmartyException
+		 */
 		public function init()
 		{
 			$this->smarty->addPluginsDir(Config::get('SMARTY_PLUGINS_PATH') . '/');
@@ -81,7 +84,7 @@
 			$this->smarty->setCompileDir(Config::get('SMARTY_COMPILE_PATH') . '/');
 			$this->smarty->setConfigDir(Config::get('SMARTY_CONFIG_PATH') . '/');
 			$this->smarty->setCacheDir(Config::get('SMARTY_CACHE_PATH') . '/');
-			$this->smarty->assignGlobal('page', $this);
+			$this->smarty->assign('page', $this);
 			$this->smarty->assignGlobal('core', $this->core);
 			$this->smarty->assignGlobal('user', $this->core->user);
 			$this->smarty->assignGlobal('_GET', $_GET);
