@@ -3,6 +3,7 @@
 	namespace model\main;
 
 	use Exception;
+	use Generator;
 	use Gettext\Generator\ArrayGenerator;
 	use Gettext\Generator\JsonGenerator;
 	use Gettext\Generator\MoGenerator;
@@ -333,12 +334,48 @@
 			if ($q) {
 				while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
 					$c = new $class($this);
-					assert($c instanceof BdObject);
 					$c->fromArray($row, FALSE);
 					$data[] = $c;
 				}
 			}
 			return $data;
+		}
+		/**
+		 * @template T of \BdObject
+		 * @param class-string<T> $class extends BdObject
+		 * @param array           $where
+		 * @param null            $order_by
+		 * @param string          $order_dir
+		 * @return Generator<T>
+		 * @throws SqlBuildException
+		 */
+		public function getIterator(string $class, array $where = [], $order_by = NULL, string $order_dir = 'ASC')
+		{
+			$data     = [];
+			$class    = self::getClass($class);
+			$cls      = new $class($this);
+			$order_by = $order_by ?: $cls->primaryKey;
+			if (empty($where)) {
+				$sql = "SELECT * FROM `$cls->table` ORDER BY `$order_by` $order_dir";
+			} else {
+				$builder = $this->db->table($cls->table);
+				$query   = $builder->select()
+								   ->orderBy([$order_by => $order_dir])
+								   ->where()
+				;
+				foreach ($where as $key => $value) {
+					$query->eq($key, $value);
+				}
+				$sql = $query->end()->toSql();
+			}
+			$q = $this->db->query($sql);
+			if ($q) {
+				while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+					$c = new $class($this);
+					$c->fromArray($row, FALSE);
+					yield $c;
+				}
+			}
 		}
 
 		/**

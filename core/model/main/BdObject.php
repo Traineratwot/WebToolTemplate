@@ -254,4 +254,9 @@ SQL;
 			}
 			return $this->data[$key] ?: $default;
 		}
+
+		public function getID()
+		{
+			return $this->get($this->primaryKey);
+		}
 	}
