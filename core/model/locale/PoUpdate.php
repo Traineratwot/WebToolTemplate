@@ -21,9 +21,9 @@
 		/**
 		 * @var bool|Translations
 		 */
-		private $old = FALSE;
-		private $domain;
-		private $lang;
+		public $old = FALSE;
+		public $domain;
+		public $lang;
 
 		public function __construct()
 		{
@@ -63,54 +63,35 @@
 			}
 		}
 
-		function phpScan(Translations $old, $file = NULL)
+		public function phpScan(Translations $old, $file = NULL)
 		{
 			if (Config::get('USE_GETTEXT')) {
 				$phpScanner = new PhpScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
-				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
-				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
-				if ($file) {
-					if (stripos($file, '.php') !== FALSE) {
-						$phpScanner->scanFile($file);
-						Console::success($file);
-					}
-				} else {
-					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
-						if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
-							$phpScanner->scanFile($_file);
-							Console::success($_file);
-						}
-					}
-				}
-				foreach ($phpScanner->getTranslations() as $translations) {
-					$old = $old->mergeWith($translations, $this->strategy);
-				}
-				return $old;
 			} else {
 				$phpScanner = new poScan(Translations::create(Config::get('LOCALE_DOMAIN')));
-				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
-				$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
-				if ($file) {
-					if (stripos($file, '.php') !== FALSE) {
-						$phpScanner->scanFile($file);
-						Console::success($file);
-					}
-				} else {
-					foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
-						if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
-							$phpScanner->scanFile($_file);
-							Console::success($_file);
-						}
-					}
-				}
-				foreach ($phpScanner->getTranslations() as $translations) {
-					$old = $old->mergeWith($translations, $this->strategy);
-				}
-				return $old;
 			}
+			$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
+			$phpScanner->extractCommentsStartingWith('i18n:', 'Translators:');
+			if ($file) {
+				if (stripos($file, '.php') !== FALSE) {
+					$phpScanner->scanFile($file);
+					Console::success($file);
+				}
+			} else {
+				foreach (glob('{,*/,*/*/,*/*/*/,*/*/*/*/}*.php', GLOB_BRACE) as $_file) {
+					if (stripos($_file, 'vendor') === FALSE && stripos($_file, 'cache') === FALSE) {
+						$phpScanner->scanFile($_file);
+						Console::success($_file);
+					}
+				}
+			}
+			foreach ($phpScanner->getTranslations() as $translations) {
+				$old = $old->mergeWith($translations, $this->strategy);
+			}
+			return $old;
 		}
 
-		function jsScan(Translations $old, $file = NULL)
+		public function jsScan(Translations $old, $file = NULL)
 		{
 			if (Config::get('USE_GETTEXT')) {
 				$phpScanner = new JsScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
@@ -129,10 +110,6 @@
 						}
 					}
 				}
-				foreach ($phpScanner->getTranslations() as $translations) {
-					$old = $old->mergeWith($translations, $this->strategy);
-				}
-				return $old;
 			} else {
 				$phpScanner = new poScan(Translations::create(Config::get('LOCALE_DOMAIN')));
 				$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
@@ -150,14 +127,14 @@
 						}
 					}
 				}
-				foreach ($phpScanner->getTranslations() as $translations) {
-					$old = $old->mergeWith($translations, $this->strategy);
-				}
-				return $old;
 			}
+			foreach ($phpScanner->getTranslations() as $translations) {
+				$old = $old->mergeWith($translations, $this->strategy);
+			}
+			return $old;
 		}
 
-		function SmartyScan(Translations $old, $file = NULL)
+		public function SmartyScan(Translations $old, $file = NULL)
 		{
 			$phpScanner = new SmartyScanner(Translations::create(Config::get('LOCALE_DOMAIN')));
 			$phpScanner->setDefaultDomain(Config::get('LOCALE_DOMAIN'));
@@ -181,7 +158,7 @@
 			return $old;
 		}
 
-		function poEdit()
+		public function poEdit()
 		{
 			//php C:\OpenServer\domains\WebToolTemplate\poEdit.extractor.php %o %f
 			global $argv;
