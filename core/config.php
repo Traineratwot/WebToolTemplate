@@ -115,6 +115,9 @@
 	Config::set('CACHE_PATH', Config::get('CACHE_PATH'), 'WT', FALSE, 'CACHE_PATH');
 	Config::set('CACHE_EXPIRATION', 600, 'PDOE', FALSE, 'CACHE_EXPIRATION');
 
-
-
-
+	//Создние всех путей
+	foreach (Config::$aliases as $key => $path) {
+		if (!empty($path) && str_contains($key, 'PATH') && !file_exists($path) && !mkdir($path, 0777, TRUE) && !is_dir($path)) {
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+		}
+	}
