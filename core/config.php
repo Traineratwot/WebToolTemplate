@@ -2,6 +2,8 @@
 	//включаем ошибки
 	use Traineratwot\config\Config;
 
+	date_default_timezone_set('Europe/Moscow');
+
 	ini_set('display_errors', 1);
 	error_reporting(E_ERROR || E_PARSE);
 	if (!function_exists('WT_LOCALE_SELECT_FUNCTION')) {
