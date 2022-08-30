@@ -283,8 +283,8 @@
 			}
 			$len = max($len);
 			if (!empty($head)) {
-				if ($this->appendType == 'row') {
-					$this->html .= "<tr data-key='-1'>";
+				if ($this->appendType === 'row') {
+					$this->html .= "<thead><tr data-key='-1'>";
 					foreach ($head as $k => $h) {
 						$style = '';
 						if ($rainbow) {
@@ -294,7 +294,7 @@
 						$_k         = strip_tags($k);
 						$this->html .= "<th data-key='$_k' data-value='$_h' $style>$h</th>";
 					}
-					$this->html .= "</tr>";
+					$this->html .= "</thead></tr>";
 				} else {
 					foreach ($this->head as $k => $h) {
 						if (isset($this->matrix[$k]) && is_array($this->matrix[$k])) {
@@ -319,7 +319,7 @@
 						$i++;
 						$_r = strip_tags($r);
 						$_k = strip_tags($k);
-						if ($this->head && $this->appendType == 'column' && $i == 1) {
+						if ($this->head && $this->appendType === 'column' && $i == 1) {
 							$this->html .= "<th data-key='$_k' data-value='$_r' $style>$r</th>";
 						} else {
 							$this->html .= "<td data-key='$_k' data-value='$_r' $style>$r</td>";
