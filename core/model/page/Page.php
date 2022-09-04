@@ -120,7 +120,9 @@
 
 		public static function redirect($alias, $code = 302)
 		{
-			http_response_code($code);
+			if($code) {
+				http_response_code($code);
+			}
 			header("Location: $alias");
 		}
 
