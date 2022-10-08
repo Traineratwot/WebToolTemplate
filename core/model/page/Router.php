@@ -51,13 +51,13 @@
 			}
 			try {
 				$this->ln = Cache::getCache('routers', 'router');
-				if (isset($this->ln[$this->alias]) && $this->ln[$this->alias] === 'route8') {
-					goto route8;
+				if (isset($this->ln[$this->alias]) && $this->ln[$this->alias] === 'route9') {
+					goto route9;
 				}
 				$this->_route();
-				$this->ln[$this->alias] = 'route8';
+				$this->ln[$this->alias] = 'route9';
 				Cache::setCache('routers', $this->ln, 600, 'router');
-				route8:
+				route9:
 				$this->advancedRoute();
 				$this->core->errorPage();
 			} catch (RouterException $e) {
@@ -123,12 +123,14 @@
 							goto route6;
 						case 'route7':
 							goto route7;
+						case 'route8':
+							goto route8;
 					}
 				}
 				route1:
 				$page = Utilities::findPath(Config::get('VIEWS_PATH') . $this->alias . '.php');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route1';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -137,7 +139,7 @@
 				route2:
 				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . '.tpl');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route2';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -146,7 +148,7 @@
 				route3:
 				$ajax = Utilities::findPath(Config::get('AJAX_PATH') . $this->alias . '.php');
 				if ($ajax) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route3';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -155,7 +157,7 @@
 				route4:
 				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . '.html');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route4';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -164,7 +166,7 @@
 				route5:
 				$page = Utilities::findPath(Config::get('VIEWS_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.php');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route5';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -173,7 +175,7 @@
 				route6:
 				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.tpl');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route6';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
@@ -182,11 +184,22 @@
 				route7:
 				$page = Utilities::findPath(Config::get('PAGES_PATH') . $this->alias . DIRECTORY_SEPARATOR . 'index.html');
 				if ($page) {
-					if (isset($this->ln[$this->alias])) {
+					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route7';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$this->launchPageHtml($page, $data);
+				}
+				route8:
+				$parts = explode('/', $this->alias);
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts).DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
+				$page  = Utilities::findPath($p);
+				if ($page) {
+					if (!isset($this->ln[$this->alias])) {
+						$this->ln[$this->alias] = 'route8';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
+					$this->launchComponentAjax($page, $data);
 				}
 			}
 		}
@@ -197,6 +210,39 @@
 		 * @throws Exception
 		 */
 		private function launchAjax($ajax, $data = [])
+		{
+			$class = include $ajax;
+			if (!class_exists($class)) {
+				$class = 'ajax\\' . $class;
+				if (!class_exists($class)) {
+					Err::fatal("class '$class' is not define");
+				}
+			}
+			$result   = new $class($this->core, $data);
+			$response = '';
+			try {
+				if ($result instanceof Ajax) {
+					try {
+						$response = $result->run();
+					} catch (Exception $e) {
+						Err::error($e->getMessage());
+					}
+				} else {
+					Err::fatal("Ajax class '$class' must be extended 'Ajax'");
+				}
+			} catch (Exception $e) {
+				Err::fatal($e->getMessage());
+				$response = json_encode($result, 256);
+			}
+			exit($response);
+		}
+
+		/**
+		 * Запускает component REST controller
+		 * @throws RouterException
+		 * @throws Exception
+		 */
+		private function launchComponentAjax($ajax, $data = [])
 		{
 			$class = include $ajax;
 			if (!class_exists($class)) {
@@ -295,22 +341,20 @@
 			$router           = include $router_path;
 			if (!empty($router)) {
 				$switcher = new \Bramus\Router\Router();
-				$self     = $this;
-
 				foreach ($router['ajax'] as $pattern => $alias) {
-					$switcher->all($pattern, function () use ($alias, $self) {
+					$switcher->all($pattern, function () use ($alias) {
 						$data         = func_get_args();
-						$self->isAjax = TRUE;
-						$self->alias  = $alias;
-						$self->_route($data);
+						$this->isAjax = TRUE;
+						$this->alias  = $alias;
+						$this->_route($data);
 						exit();
 					});
 				}
 				foreach ($router['page'] as $pattern => $alias) {
-					$switcher->all($pattern, function () use ($alias, $self) {
+					$switcher->all($pattern, function () use ($alias) {
 						$data        = func_get_args();
-						$self->alias = $alias;
-						$self->_route($data);
+						$this->alias = $alias;
+						$this->_route($data);
 						exit();
 					});
 				}
@@ -323,5 +367,5 @@
 	try {
 		$r->route();
 	} catch (Exception $e) {
-		Err::Fatal($e->getMessage());
+		Err::Fatal($e->getMessage(), NULL, NULL, $e);
 	}

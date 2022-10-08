@@ -9,7 +9,7 @@
 	use model\main\Err;
 	use model\main\ErrorPage;
 	use model\main\Utilities;
-	use SmartyBC;
+	use Smarty;
 	use SmartyException;
 	use Traineratwot\config\Config;
 
@@ -26,7 +26,8 @@
 		/**
 		 * @var mixed|string
 		 */
-		public $source;
+		public         $source;
+		public Smarty $smarty;
 
 		/**
 		 * @throws Exception
@@ -47,7 +48,7 @@
 
 				$this->title = Utilities::basename($this->alias) ?: $this->alias;
 			}
-			$this->smarty = new SmartyBC();
+			$this->smarty = new Smarty();
 			$this->init();
 		}
 
