@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\composer;
+	namespace core\model\composer;
 
 	use DateTime;
 	use Exception;
@@ -18,7 +18,7 @@
 		public static function postInstall()
 		: void
 		{
-			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+			require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 			$config = get_defined_constants();
 			Console::info('Create missing directory');
 			foreach ($config as $v => $i) {
@@ -125,7 +125,7 @@ HTML
 		public static function engineUpdate()
 		: void
 		{
-			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+			require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 			Console::info("make backup");
 			self::package();
 			self::rmdir(Config::get('BASE_PATH') . 'update/');
@@ -149,7 +149,7 @@ HTML
 		{
 			//------------------------------DATABASE-------------------------------------
 			$dt = new DateTime();
-			require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+			require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 			self::mkDirs(Config::get('BASE_PATH') . '/backups/');
 			$zipFile = new ZipFile();
 			$zipFile->setArchiveComment(<<<HTML
@@ -242,5 +242,12 @@ HTML
 			} elseif (file_exists($src)) {
 				copy($src, $dst);
 			}
+		}
+
+		public static function test()
+		: void
+		{
+			require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+			Console::info("Successfully loaded");
 		}
 	}
