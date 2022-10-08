@@ -4,9 +4,14 @@
 
 	class Api
 	{
-		private static function execute(string $cmd, &$out)
+		/**
+		 * @noinspection PhpSameParameterValueInspection
+		 * @noinspection RedundantSuppression
+		 */
+		private static function execute(string $cmd, string &$out = null)
 		: bool
 		{
+			$out  = '';
 			$exec = WT_PHP_EXEC_CMD . ' ' . WT_COMPOSER_EXEC_PATH . ' ' . $cmd;
 			exec($exec, $out, $code);
 			return $code === 0;
@@ -29,7 +34,8 @@
 
 		public static function getAllConfigs()
 		{
-			return self::execute("getAllConfigs");
+			self::execute("getAllConfigs", $out);
+			return $out;
 		}
 
 		public static function configUpdate()
