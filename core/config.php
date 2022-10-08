@@ -65,6 +65,7 @@
 	Config::set('CRON_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_CRON_PATH');
 	Config::set('ASSETS_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_ASSETS_PATH');
 	Config::set('IMAGES_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_IMAGES_PATH');
+	Config::set('COMPOSER_EXEC_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR.'composer.phar', 'WT', FALSE, 'WT_COMPOSER_EXEC_PATH'); //команда запуска php скрипта
 	//настройка Cron
 	Config::set('PHP_EXEC_CMD', "php", 'WT', FALSE, 'WT_PHP_EXEC_CMD'); //команда запуска php скрипта
 	//Внешний url
