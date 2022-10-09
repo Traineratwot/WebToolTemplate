@@ -2,7 +2,7 @@
 
 	namespace model\cli\commands;
 
-	use model\cli\types\FilePath;
+	use model\cli\types\CronFilePath;
 	use model\main\Utilities;
 	use TiBeN\CrontabManager\CrontabAdapter;
 	use TiBeN\CrontabManager\CrontabJob;
@@ -96,7 +96,7 @@
 
 		public function setup()
 		{
-			$this->registerParameter('path', 0, FilePath::class, "Относительный путь  от папки 'controllers' до файла задания");
+			$this->registerParameter('path', 0, CronFilePath::class, "Относительный путь  от папки 'controllers' до файла задания");
 
 			$this->registerOption('cmd', 'c', 0, TString::class, "Введите CMD команду для запуска файла по умолчанию 'Config::get('PHP_EXEC_CMD')' ");
 			$this->registerOption('run', 'r', 0, TBool::class, "Установите этот флаг чтобы запустить задание");

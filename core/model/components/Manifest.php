@@ -2,7 +2,7 @@
 
 	namespace core\model\components;
 
-	use core\model\composer\Api;
+	use core\model\composer\Composer;
 	use model\main\CoreObject;
 	use Traineratwot\PhpCli\Console;
 
@@ -85,7 +85,7 @@
 
 		final public static function composerRequire(string $package)
 		{
-			return Api::require($package);
+			return Composer::require($package);
 		}
 
 	}

@@ -2,7 +2,7 @@
 
 	namespace core\model\composer;
 
-	class Api
+	class Composer
 	{
 		/**
 		 * @noinspection PhpSameParameterValueInspection

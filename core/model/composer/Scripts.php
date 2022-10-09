@@ -202,8 +202,10 @@ HTML
 			$zipFile->deleteFromRegex("@.idea@");
 			$zipFile->deleteFromRegex("@.vscode@");
 			$zipFile->deleteFromRegex("@.git@");
+			$zipFile->deleteFromRegex("@.project-manager@");
 			$zipFile->deleteFromRegex("@node_modules@");
 			$zipFile->deleteFromRegex("@backups@");
+			$zipFile->deleteFromRegex("@packages@");
 			$zipFile->deleteFromRegex("@update@");
 			$zipFile->saveAsFile(Utilities::pathNormalize(Config::get('BASE_PATH') . '/backups/backup_' . $dt->format("Y-m-d H-i") . '_.zip'));
 			$zipFile->close();

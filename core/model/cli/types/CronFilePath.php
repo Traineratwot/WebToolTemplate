@@ -7,14 +7,14 @@
 	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\types\TString;
 
-	class FilePath extends TString
+	class CronFilePath extends TString
 	{
 		/**
 		 * @throws Exception
 		 */
 		public function validate($value)
 		{
-			$value_ = Utilities::findPath($value);
+			$value_ = Utilities::findPath(Config::get('CRON_PATH') . 'controllers/' . $value);
 			return file_exists($value_) ?: 'Invalid path "' . $value . '" ';
 		}
 	}
