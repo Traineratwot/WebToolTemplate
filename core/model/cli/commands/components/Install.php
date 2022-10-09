@@ -36,7 +36,7 @@
 		{
 			$path          = $this->getArg('path');
 			$componentName = Utilities::baseName($path);
-			$manifest      = "core\components\\{$componentName}\\{$componentName}";
+			$manifest      = "components\\{$componentName}\\{$componentName}";
 			if (class_exists($manifest)) {
 				Console::success($componentName . ' Already installed');
 				return;

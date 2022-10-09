@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\components;
+	namespace model\components;
 
 	use core\model\composer\Composer;
 	use model\main\CoreObject;

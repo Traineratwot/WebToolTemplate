@@ -30,7 +30,7 @@ PHP,
 			self::name2class($name, $class, $namespace);
 			return <<<PHP
 <?php
-	namespace core\components\\{$componentName}\classes\ajax{$namespace};
+	namespace components\\{$componentName}\classes\ajax{$namespace};
 	
 	use model\page\Ajax;
 	
@@ -78,7 +78,7 @@ PHP;
 			self::name2class($name, $class, $namespace);
 			return <<<PHP
 <?php
-	namespace core\components\\{$componentName}\classes\plugins{$namespace};
+	namespace components\\{$componentName}\classes\plugins{$namespace};
 	use model\Events\Plugin;
 	class {$class} extends Plugin
 	{
@@ -118,7 +118,7 @@ TPL;
 			return <<<PHP
 <?php
 
-	namespace core\components\\{$componentName}\page{$namespace};
+	namespace components\\{$componentName}\page{$namespace};
 
 	use model\page\Page;
 
@@ -166,7 +166,7 @@ PHP;
 			$class = self::name2class($name);
 			return <<<PHP
 <?php
-	namespace core\components\\{$componentName}\classes{$category};
+	namespace components\\{$componentName}\classes{$category};
 	use model\\CoreObject;
 
 	/**
@@ -186,9 +186,9 @@ PHP;
 			return <<<PHP
 <?php
 
-	namespace core\components\\{$componentName};
+	namespace components\\{$componentName};
 
-	use core\model\components\Manifest;
+	use model\components\Manifest;
 
 	class $componentName extends Manifest
 	{
