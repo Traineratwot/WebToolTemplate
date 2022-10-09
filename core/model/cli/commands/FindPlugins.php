@@ -15,7 +15,7 @@
 		 */
 		public function help()
 		{
-			// TODO: Implement help() method.
+			return "🔍 Находит плагиный в проекте";
 		}
 
 		public function run()

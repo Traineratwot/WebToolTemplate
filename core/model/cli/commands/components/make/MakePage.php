@@ -1,8 +1,9 @@
 <?php
 
-	namespace model\cli\commands\make;
+	namespace core\model\cli\commands\components\make;
 
-	use model\cli\Make;
+	use core\model\cli\commands\components\Make;
+	use core\model\cli\types\ComponentsEnum;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
@@ -17,18 +18,19 @@
 		 */
 		public function help()
 		{
-			return "📄 Создает траницу";
+			// TODO: Implement help() method.
 		}
 
 		public function run()
 		{
-			$url      = $this->getArg('url');
-			$template = $this->getArg('template') ?: 'base';
-			$url      = Make::pathFileUcFirst($url);
-			$p        = Utilities::pathNormalize(Config::get('VIEWS_PATH') . $url . '.php');
-			$p2       = Utilities::pathNormalize(Config::get('PAGES_PATH') . $url . '.tpl');
+			$component = $this->getArg('component');
+			$url       = $this->getArg('url');
+			$template  = $this->getArg('template') ?: 'base';
+			$url       = Make::pathFileUcFirst($url);
+			$p         = Utilities::pathNormalize(Config::get('COMPONENTS_PATH') . $component . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $url. '.php');
+			$p2        = Utilities::pathNormalize(Config::get('COMPONENTS_PATH') . $component . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $url. '.tpl');
 			if (!file_exists($p)) {
-				if (Utilities::writeFile($p, Make::makePageClass($url))) {
+				if (Utilities::writeFile($p, Make::makePageClass($component, $url))) {
 					Console::success('ok: ' . $p);
 				} else {
 					Console::failure('can`t write file: ' . $p);
@@ -37,7 +39,7 @@
 				Console::failure('Already exists: ' . $p);
 			}
 			if (!file_exists($p2)) {
-				if (Utilities::writeFile($p2, Make::makePageTpl($url, $template))) {
+				if (Utilities::writeFile($p2, Make::makePageTpl($component, $url, $template))) {
 					Console::success('ok: ' . $p2);
 				} else {
 					Console::failure('can`t write file: ' . $p);
@@ -49,6 +51,7 @@
 
 		public function setup()
 		{
+			$this->registerParameter('component', 1, ComponentsEnum::class, "Имя компонента");
 			$this->registerParameter('url', 1, TString::class, "url будующей страницы, помните что роутер НЕ учитвает регистер");
 			$this->registerParameter('template', 0, TString::class, 'template по умолчани "base"');
 		}

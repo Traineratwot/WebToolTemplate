@@ -15,7 +15,7 @@
 		 */
 		public function help()
 		{
-			return "Вывести лог ошибок";
+			return "💢 Вывести лог ошибок";
 		}
 
 		public function run()

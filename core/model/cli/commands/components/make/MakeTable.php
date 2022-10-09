@@ -1,9 +1,9 @@
 <?php
 
-	namespace model\cli\commands\make;
+	namespace core\model\cli\commands\components\make;
 
+	use core\model\cli\commands\components\Make;
 	use Exception;
-	use model\cli\Make;
 	use model\main\Core;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
@@ -20,7 +20,7 @@
 		 */
 		public function help()
 		{
-			return "🥫 Создает шаблон Класса таблицы в базе данных";
+			return "Создает шаблон Класса таблицы в базе данных";
 		}
 
 		/**

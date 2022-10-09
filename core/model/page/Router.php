@@ -22,7 +22,7 @@
 		/**
 		 * @var mixed|null
 		 */
-		public $ln;
+		public mixed $ln;
 
 		public function __construct()
 		{
@@ -51,13 +51,13 @@
 			}
 			try {
 				$this->ln = Cache::getCache('routers', 'router');
-				if (isset($this->ln[$this->alias]) && $this->ln[$this->alias] === 'route9') {
-					goto route9;
+				if (isset($this->ln[$this->alias]) && $this->ln[$this->alias] === 'routeD') {
+					goto routeD;
 				}
 				$this->_route();
-				$this->ln[$this->alias] = 'route9';
+				$this->ln[$this->alias] = 'routeD';
 				Cache::setCache('routers', $this->ln, 600, 'router');
-				route9:
+				routeD:
 				$this->advancedRoute();
 				$this->core->errorPage();
 			} catch (RouterException $e) {
@@ -125,6 +125,10 @@
 							goto route7;
 						case 'route8':
 							goto route8;
+						case 'route9':
+							goto route9;
+						case 'route10':
+							goto route10;
 					}
 				}
 				route1:
@@ -190,17 +194,44 @@
 					}
 					$this->launchPageHtml($page, $data);
 				}
+				//components
 				route8:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts).DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
 				$page  = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route8';
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
-					$this->launchComponentAjax($page, $data);
+					$this->launchAjax($page, $data);
 				}
+				route9:
+				$parts = explode('/', $this->alias);
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
+				$page  = Utilities::findPath($p);
+				if ($page) {
+					if (!isset($this->ln[$this->alias])) {
+						$this->ln[$this->alias] = 'route9';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
+					$parts = explode('/', $this->alias);
+					$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . '.tpl';
+					$tpl   = Utilities::findPath($p);
+					$this->launchPage($page, $data, $tpl);
+				}
+				route10:
+				$parts = explode('/', $this->alias);
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . '.tpl';
+				$page  = Utilities::findPath($p);
+				if ($page) {
+					if (!isset($this->ln[$this->alias])) {
+						$this->ln[$this->alias] = 'route10';
+						Cache::setCache('routers', $this->ln, 600, 'router');
+					}
+					$this->launchPageTpl($page, $data);
+				}
+
 			}
 		}
 
@@ -238,44 +269,11 @@
 		}
 
 		/**
-		 * Запускает component REST controller
-		 * @throws RouterException
-		 * @throws Exception
-		 */
-		private function launchComponentAjax($ajax, $data = [])
-		{
-			$class = include $ajax;
-			if (!class_exists($class)) {
-				$class = 'ajax\\' . $class;
-				if (!class_exists($class)) {
-					Err::fatal("class '$class' is not define");
-				}
-			}
-			$result   = new $class($this->core, $data);
-			$response = '';
-			try {
-				if ($result instanceof Ajax) {
-					try {
-						$response = $result->run();
-					} catch (Exception $e) {
-						Err::error($e->getMessage());
-					}
-				} else {
-					Err::fatal("Ajax class '$class' must be extended 'Ajax'");
-				}
-			} catch (Exception $e) {
-				Err::fatal($e->getMessage());
-				$response = json_encode($result, 256);
-			}
-			exit($response);
-		}
-
-		/**
 		 * Запускает страницу из файла .php
 		 * @throws RouterException
 		 * @throws Exception
 		 */
-		private function launchPage($page, $data = [])
+		private function launchPage($page, $data = [], string $tpl = NULL)
 		{
 			$class = include $page;
 			if (!class_exists($class)) {
@@ -290,6 +288,9 @@
 			}
 			if ($result instanceof Page) {
 				try {
+					if ($tpl) {
+						$result->source = $tpl;
+					}
 					$result->render();
 				} catch (Exception $e) {
 					Err::fatal($e->getMessage());

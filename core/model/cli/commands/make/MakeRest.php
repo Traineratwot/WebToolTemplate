@@ -18,14 +18,14 @@
 		 */
 		public function help()
 		{
-			return "Создает ajax";
+			return "🌐 Создает ajax";
 		}
 
 		public function run()
 		{
 			$url  = $this->getArg('url');
 			$type = $this->getArg('type') ?: 'any';
-			if (strpos($url, '.php') === FALSE) {
+			if (!str_contains($url, '.php')) {
 				$path = $url . '.php';
 			} else {
 				$path = $url;

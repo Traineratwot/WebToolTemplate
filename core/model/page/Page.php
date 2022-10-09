@@ -11,6 +11,7 @@
 	use model\main\Utilities;
 	use Smarty;
 	use SmartyException;
+	use tables\Users;
 	use Traineratwot\config\Config;
 
 	/**
@@ -64,7 +65,7 @@
 				if (!file_exists($this->source)) {
 					$this->source = Config::get('TEMPLATES_PATH') . preg_replace("@^(chunk|file):@i", '', $this->alias);
 					if (!file_exists($this->source)) {
-						throw new Exception('Chunk error: "' . $this->source . '" file not found ');
+						throw new \RuntimeException('Chunk error: "' . $this->source . '" file not found ');
 					}
 				}
 			} else {
@@ -107,7 +108,7 @@
 		}
 
 		/**
-		 * @return mixed
+		 * @return int|Users
 		 */
 		public static function modifier_user($value)
 		{

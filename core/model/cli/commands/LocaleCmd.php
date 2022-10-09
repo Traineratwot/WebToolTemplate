@@ -10,6 +10,7 @@
 	use Traineratwot\PhpCli\Console;
 	use Traineratwot\PhpCli\TypeException;
 	use Traineratwot\PhpCli\types\TString;
+	use traits\validators\ExceptionValidate;
 
 	class LocaleCmd extends Cmd
 	{
@@ -19,11 +20,11 @@
 		 */
 		public function help()
 		{
-			return "Управление локализацией";
+			return "🌎 Управление локализацией";
 		}
 
 		/**
-		 * @throws TypeException
+		 * @throws TypeException|ExceptionValidate
 		 */
 		public function run()
 		{

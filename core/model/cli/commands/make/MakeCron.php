@@ -17,7 +17,7 @@
 		 */
 		public function help()
 		{
-			return "создает шаблон крон задачи";
+			return "⏱ Создает шаблон крон задачи";
 		}
 
 		public function run()
