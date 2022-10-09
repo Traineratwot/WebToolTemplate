@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\cli\commands\components;
+	namespace model\cli\commands\components;
 
 	use model\main\Utilities;
 
@@ -180,10 +180,39 @@ PHP;
 PHP;
 		}
 
+		public static function makeComponentManifest(string $componentName)
+		: string
+		{
+			return <<<PHP
+<?php
+
+	namespace core\components\\{$componentName};
+
+	use core\model\components\Manifest;
+
+	class $componentName extends Manifest
+	{
+		public static function description()
+		: string
+		{
+			return '';
+		}
+
+		public static function getComposerPackage()
+		: array
+		{
+			return [];
+		}
+	}
+PHP;
+		}
+
 		public static function pathFileUcFirst($path)
 		: string
 		{
 			$file = basename($path);
 			return str_ireplace($file, ucfirst($file), $path);
 		}
+
+
 	}

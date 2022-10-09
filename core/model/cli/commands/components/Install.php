@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\cli\commands\components;
+	namespace model\cli\commands\components;
 
 	use model\cli\types\FilePath;
 	use Traineratwot\PhpCli\Cmd;

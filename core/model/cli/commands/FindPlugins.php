@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\cli\commands;
+	namespace model\cli\commands;
 
 	use model\main\Utilities;
 	use Traineratwot\config\Config;

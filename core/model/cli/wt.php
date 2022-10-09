@@ -3,7 +3,7 @@
 	namespace model\cli;
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-	use core\model\cli\commands\FindPlugins;
+	use model\cli\commands\FindPlugins;
 	use model\cli\commands\CacheCmd;
 	use model\cli\commands\CronCmd;
 	use model\cli\commands\ErrorCmd;

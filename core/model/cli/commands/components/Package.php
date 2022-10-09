@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\cli\commands\components;
+	namespace model\cli\commands\components;
 
 	use core\model\cli\types\ComponentsEnum;
 	use Traineratwot\PhpCli\Cmd;

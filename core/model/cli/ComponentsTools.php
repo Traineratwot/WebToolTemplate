@@ -3,12 +3,12 @@
 	namespace model\cli;
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-	use core\model\cli\commands\components\Init;
-	use core\model\cli\commands\components\Install;
-	use core\model\cli\commands\components\make\MakePage;
-	use core\model\cli\commands\components\make\MakePlugin;
-	use core\model\cli\commands\components\make\MakeRest;
-	use core\model\cli\commands\components\Package;
+	use model\cli\commands\components\Create;
+	use model\cli\commands\components\Install;
+	use model\cli\commands\components\make\MakePage;
+	use model\cli\commands\components\make\MakePlugin;
+	use model\cli\commands\components\make\MakeRest;
+	use model\cli\commands\components\Package;
 	use model\cli\commands\CacheCmd;
 	use model\main\Core;
 	use Traineratwot\PhpCli\CLI;
@@ -25,7 +25,7 @@
 			->registerCmd('makeAjax', new MakeRest())
 			->registerCmd('makePlugin', new MakePlugin())
 			->registerCmd('makePage', new MakePage())
-			->registerCmd('create', new Init())
+			->registerCmd('create', new Create())
 			->run()
 		;
 	} catch (TypeException $e) {

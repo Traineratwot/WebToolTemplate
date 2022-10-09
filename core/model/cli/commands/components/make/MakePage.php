@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\model\cli\commands\components\make;
+	namespace model\cli\commands\components\make;
 
-	use core\model\cli\commands\components\Make;
+	use model\cli\commands\components\Make;
 	use core\model\cli\types\ComponentsEnum;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;

@@ -1,8 +1,8 @@
 <?php
 
-	namespace core\model\cli\commands\components\make;
+	namespace model\cli\commands\components\make;
 
-	use core\model\cli\commands\components\Make;
+	use model\cli\commands\components\Make;
 	use Exception;
 	use model\main\Core;
 	use model\main\Utilities;
