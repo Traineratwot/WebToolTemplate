@@ -118,7 +118,7 @@ TPL;
 			return <<<PHP
 <?php
 
-	namespace components\\{$componentName}\page{$namespace};
+	namespace components\\{$componentName}\\views{$namespace};
 
 	use model\page\Page;
 
