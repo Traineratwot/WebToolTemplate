@@ -2,8 +2,9 @@
 
 	namespace model\cli\commands\components;
 
-	use core\model\composer\Composer;
+	use core\model\components\Manifest;
 	use model\cli\types\FilePath;
+	use model\main\Core;
 	use model\main\Utilities;
 	use PhpZip\Exception\ZipException;
 	use PhpZip\ZipFile;
@@ -33,28 +34,25 @@
 		 */
 		public function run()
 		{
-			$path = $this->getArg('path');
-			$zip  = new ZipFile();
-			$zip->openFile($path);
-			$zip->extractTo(Config::get('COMPONENTS_PATH'));
+			$path          = $this->getArg('path');
 			$componentName = Utilities::baseName($path);
 			$manifest      = "core\components\\{$componentName}\\{$componentName}";
+			if (class_exists($manifest)) {
+				Console::success($componentName . ' Already installed');
+				return;
+			}
+			$zip = new ZipFile();
+			$zip->openFile($path);
+			$zip->extractTo(Config::get('COMPONENTS_PATH'));
+			spl_autoload($manifest);
 			if (!class_exists($manifest)) {
 				Console::failure('Ошибка');
 				return;
 			}
-			$this->installComposer($manifest);
+
+			/** @var manifest $component */
+			$component = new $manifest(Core::init());
+			$component->install();
 			Console::success('ok');
 		}
-
-		public function installComposer($manifest)
-		{
-			$composer = $manifest::getComposerPackage();
-			if (!empty($composer)) {
-				foreach ($composer as $value) {
-					Composer::require($value);
-				}
-			}
-		}
-
 	}

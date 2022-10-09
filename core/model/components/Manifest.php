@@ -4,6 +4,7 @@
 
 	use core\model\composer\Composer;
 	use model\main\CoreObject;
+	use ReflectionClass;
 	use Traineratwot\PhpCli\Console;
 
 	abstract class Manifest extends CoreObject
@@ -39,17 +40,17 @@
 
 		public function afterUninstall()
 		{
-			unlink(__DIR__ . '/isInstall.lock');
+			unlink($this->getPath() . '/isInstall.lock');
 		}
 
 		public function afterInstall()
 		{
-			file_put_contents(__DIR__ . '/isInstall.lock', time());
+			file_put_contents($this->getPath() . '/isInstall.lock', time());
 		}
 
 		public function isInstalled()
 		{
-			return file_exists(__DIR__ . '/isInstall.lock');
+			return file_exists($this->getPath() . '/isInstall.lock');
 		}
 
 		//end check install
@@ -57,30 +58,34 @@
 
 		final public function uninstall()
 		{
-			Console::time(__CLASS__ . ':' . __FUNCTION__);
-			Console::info(__CLASS__ . ':beforeUninstall');
+			Console::time(get_class($this) . ':' . __FUNCTION__);
+			Console::info(get_class($this) . ':beforeUninstall');
 			$this->beforeUninstall();
-			Console::info(__CLASS__ . ':afterUninstall');
+			Console::info(get_class($this) . ':afterUninstall');
 			$this->afterUninstall();
-			Console::timeEnd(__CLASS__ . ':' . __FUNCTION__);
+			Console::timeEnd(get_class($this) . ':' . __FUNCTION__);
 
 		}
 
 		final public function install()
 		{
-			Console::time(__CLASS__ . ':' . __FUNCTION__);
-			Console::info(__CLASS__ . ':beforeInstall');
+			if ($this->isInstalled()) {
+				return FALSE;
+			}
+			Console::time(get_class($this) . ':' . __FUNCTION__);
+			Console::info(get_class($this) . ':beforeInstall');
 			$this->beforeInstall();
-
-			$packages = self::getComposerPackage();
+			/** @var Manifest $cls */
+			$cls      = get_class($this);
+			$packages = $cls::getComposerPackage();
 			if (!empty($packages)) {
 				$packages = implode(' ', $packages);
 				self::composerRequire($packages);
 			}
 
-			Console::info(__CLASS__ . ':afterInstall');
+			Console::info(get_class($this) . ':afterInstall');
 			$this->afterInstall();
-			Console::timeEnd(__CLASS__ . ':' . __FUNCTION__);
+			Console::timeEnd(get_class($this) . ':' . __FUNCTION__);
 		}
 
 		final public static function composerRequire(string $package)
@@ -88,4 +93,8 @@
 			return Composer::require($package);
 		}
 
+		final public function getPath()
+		{
+			return dirname((new ReflectionClass(get_class($this)))->getFileName());
+		}
 	}
