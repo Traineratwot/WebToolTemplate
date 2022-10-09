@@ -32,6 +32,7 @@
 	- `core/classes/smarty/plugins` => Каталог с пользовательскими `Smarty` плагинами
 	- `core/classes/tables` => Каталог с классами расширяет BdObject для работы с таблицей БД. смотри  `wt make table`
 	- `core/classes/traits` => Каталог с полезными `traits`
+	- `core/components` => Каталог с компонентами
 
 - #### console tool
 
@@ -51,6 +52,13 @@
 
 	- `wt cron {path to controller}` - сгенерировать команду запуска для crontab eg: `wt cron "category/test.php"`
 	- `wt cron {path to controller} run` - попробовать запустить задание cron: `wt cron "category/test.php" run`
+  
+    #in develop
+
+	- `components create {name}` - создает новый компонент
+	- `components package {name}` - упаковывает компонент в транспортный пакет
+	- `components install {name}` - устанавливает компонент из транспортного пакета
+	- `components make{Ajax|Table|Page} {name} ...` - аналогично `wt make...` только для компонента
 
 - #### Пользователь
 
@@ -62,8 +70,8 @@
 1. Отредактируйте функцию `WT_LOCALE_SELECT_FUNCTION` в конфиге под свой способ определить язык пользователя
 2. Создать файл локали .po из исходного кода проекта eg: `wt lang ru`
 3. Отредактируйте файл .po в паке `locale`. Я использую poEdit для этого
-5. Готово
-6. Если не работает - отключите `gettext` в конфиге
+4. Готово
+5. Если не работает - отключите `gettext` в конфиге
 
 ## API
 
