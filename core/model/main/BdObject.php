@@ -259,4 +259,13 @@ SQL;
 		{
 			return $this->get($this->primaryKey);
 		}
+
+		public function isDirty(string $key = NULL)
+		: bool
+		{
+			if ($key === NULL) {
+				return count($this->update) > 0;
+			}
+			return array_key_exists($key, $this->update);
+		}
 	}
