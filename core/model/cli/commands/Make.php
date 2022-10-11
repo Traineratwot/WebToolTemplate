@@ -71,7 +71,6 @@ PHP;
 			$n2   = [];
 			foreach ($n as $value) {
 				$n2[] = ucfirst(strtolower($value));
-				$n3[] = ucfirst(strtolower($value));
 			}
 
 			return ucfirst(implode('', $n2));
