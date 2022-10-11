@@ -2,7 +2,7 @@
 
 	namespace model\cli\commands\make;
 
-	use model\cli\Make;
+	use core\model\cli\commands\Make;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;

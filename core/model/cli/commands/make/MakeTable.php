@@ -2,8 +2,8 @@
 
 	namespace model\cli\commands\make;
 
+	use core\model\cli\commands\Make;
 	use Exception;
-	use model\cli\Make;
 	use model\main\Core;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;

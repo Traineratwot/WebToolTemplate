@@ -2,7 +2,7 @@
 
 	namespace model\cli\commands\make;
 
-	use model\cli\Make;
+	use core\model\cli\commands\Make;
 	use model\cli\types\AjaxEnum;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;

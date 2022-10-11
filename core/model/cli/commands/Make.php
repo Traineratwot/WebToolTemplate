@@ -1,6 +1,6 @@
 <?php
 
-	namespace model\cli;
+	namespace core\model\cli\commands;
 
 	use model\main\Core;
 	use model\main\Utilities;
