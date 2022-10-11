@@ -2,8 +2,10 @@
 
 	namespace model\cli\commands\components\make;
 
-	use model\cli\commands\components\Make;
+	use core\model\cli\types\ComponentsEnum;
 	use Exception;
+	use model\cli\commands\components\Make;
+	use model\cli\types\TablesEnum;
 	use model\main\Core;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
@@ -20,7 +22,7 @@
 		 */
 		public function help()
 		{
-			return "Создает шаблон Класса таблицы в базе данных";
+			return "🥫 Создает шаблон Класса таблицы в базе данных";
 		}
 
 		/**
@@ -28,9 +30,10 @@
 		 */
 		public function run()
 		{
-			$core     = Core::init();
-			$table    = $this->getArg('table');
-			$keyField = $this->getArg('keyField') ?: 'id';
+			$core      = Core::init();
+			$component = $this->getArg('component');
+			$table     = $this->getArg('table');
+			$keyField  = $this->getArg('keyField') ?: 'id';
 			if ($table) {
 				$list = $core->db->getTablesList();
 				$find = FALSE;
@@ -48,20 +51,24 @@
 					throw new TypeException("Table '$table' does not exist. Chose table from this list");
 				}
 				$class = Make::name2class($table);
-				$p     = Config::get('CLASSES_PATH') . 'tables/' . $class . '.php';
+
+				$p = Make::pathFileUcFirst($class);
+				$p = Utilities::pathNormalize(Config::get('COMPONENTS_PATH') . $component . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'tables' . DIRECTORY_SEPARATOR . $p . '.php');
 				if (!file_exists($p)) {
 					$p = Utilities::pathNormalize($p);
-					Utilities::writeFile($p, Make::makeTable($table, $keyField));
+
+					Utilities::writeFile($p, Make::makeTable($component, $table, $keyField, $namespace_class));
 					if (file_exists($p)) {
-						include_once $p;
-						$core->getObject($class);
-						Console::success('ok: ' . $p);
+						spl_autoload($namespace_class);
+						if (class_exists($namespace_class)) {
+							Console::success('ok: ' . $p);
+						} else {
+							Console::failure('err: ' . $p);
+						}
 					} else {
 						Console::failure('can`t write: ' . $p);
 					}
 				} else {
-					include_once $p;
-					$core->getObject($class);
 					Console::warning('Already exists');
 				}
 			}
@@ -69,7 +76,8 @@
 
 		public function setup()
 		{
-			$this->registerParameter('table', 1, TString::class, 'Введите имя таблицы в базе данных');
+			$this->registerParameter('component', 1, ComponentsEnum::class, "Имя компонента");
+			$this->registerParameter('table', 1, TablesEnum::class, 'Введите имя таблицы в базе данных');
 			$this->registerParameter('keyField', 0, TString::class, 'Имя ключегого поля по умолчанию id');
 		}
 	}

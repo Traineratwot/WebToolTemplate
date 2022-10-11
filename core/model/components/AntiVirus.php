@@ -1,6 +1,6 @@
 <?php
 
-	namespace core\model\components;
+	namespace model\components;
 
 	class AntiVirus
 	{

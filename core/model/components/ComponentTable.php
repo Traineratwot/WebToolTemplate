@@ -1,18 +1,16 @@
 <?php
 
-	namespace core\model\components;
+	namespace model\components;
 
-	use Traineratwot\PDOExtended\PDOE;
+	use model\main\BdObject;
 	use Traineratwot\PDOExtended\tableInfo\PDOENewDbObject;
 
-	abstract class ComponentTable
+	abstract class ComponentTable extends BdObject
 	{
-		abstract public static function table()
-		: string;
 
 		public function createTable()
-		: PDOENewDbObject
+		: PDOENewDbObject|false
 		{
-			return PDOE::createTable(self::table());
+			return FALSE;
 		}
 	}

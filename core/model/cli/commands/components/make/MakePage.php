@@ -18,7 +18,7 @@
 		 */
 		public function help()
 		{
-			// TODO: Implement help() method.
+			return "📄 Создает траницу копонента";
 		}
 
 		public function run()

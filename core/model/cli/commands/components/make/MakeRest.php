@@ -19,7 +19,7 @@
 		 */
 		public function help()
 		{
-			return "Создает ajax";
+			return "🌐 Создает ajax копонента";
 		}
 
 		public function run()

@@ -272,12 +272,12 @@
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T>  $class
-		 * @param array|string|int $where
+		 * @param int|array|string $where
 		 * @param boolean          $cache
 		 * @return BdObject|T
 		 * @throws Exception
 		 */
-		public function getObject(string $class, $where = [], bool $cache = TRUE)
+		public function getObject(string $class, int|array|string $where = [], bool $cache = TRUE)
 		{
 			$class = self::getClass($class);
 			if (!$cache || empty($where)) {

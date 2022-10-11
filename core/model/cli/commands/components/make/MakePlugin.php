@@ -18,7 +18,7 @@
 		 */
 		public function help()
 		{
-			return "Создает плагин";
+			return "🔌 Создает плагин копонента";
 		}
 
 		public function run()

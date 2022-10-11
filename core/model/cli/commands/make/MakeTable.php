@@ -4,6 +4,7 @@
 
 	use core\model\cli\commands\Make;
 	use Exception;
+	use model\cli\types\TablesEnum;
 	use model\main\Core;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
@@ -69,7 +70,7 @@
 
 		public function setup()
 		{
-			$this->registerParameter('table', 1, TString::class, 'Введите имя таблицы в базе данных');
+			$this->registerParameter('table', 1, TablesEnum::class, 'Введите имя таблицы в базе данных');
 			$this->registerParameter('keyField', 0, TString::class, 'Имя ключегого поля по умолчанию id');
 		}
 	}

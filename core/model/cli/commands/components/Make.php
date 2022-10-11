@@ -91,7 +91,7 @@ PHP;
 PHP;
 		}
 
-		public static function makePageTpl(string $componentName,string $name, string $template = 'base')
+		public static function makePageTpl(string $componentName, string $name, string $template = 'base')
 		: string
 		{
 			if (!$template) {
@@ -111,7 +111,7 @@ PHP;
 TPL;
 		}
 
-		public static function makePageClass(string $componentName,string $name)
+		public static function makePageClass(string $componentName, string $name)
 		: string
 		{
 			self::name2class($name, $class, $namespace);
@@ -135,21 +135,22 @@ TPL;
 PHP;
 		}
 
-		public static function makeTable(string $name, string $primaryKey = 'id')
+		public static function makeTable(string $componentName,string $name, string $primaryKey = 'id',&$namespace_class='')
 		: string
 		{
 			$primaryKey = $primaryKey ?: 'id';
 			$class      = self::name2class($name, $class);
+			$namespace_class ="components\\{$componentName}\classes\\tables{$namespace}\\{$class}";
 			return <<<PHP
 <?php
-	namespace tables;
-	use model\\main\\BdObject;
+	namespace components\\{$componentName}\classes\\tables{$namespace};
+	use model\components\ComponentTable;
 
 	/**
 	 * Класс для работы с таблицей `$name`
 	 * вызывается Core::getObject($class::class)
 	 */
-	class $class extends BdObject
+	class $class extends ComponentTable
 	{
 		public \$table = '$name';
 		public \$primaryKey = '$primaryKey';
