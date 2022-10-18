@@ -3,6 +3,7 @@
 	namespace model\cli;
 	require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
 
+	use model\cli\commands\DevServer;
 	use model\cli\commands\FindPlugins;
 	use model\cli\commands\CacheCmd;
 	use model\cli\commands\CronCmd;
@@ -35,6 +36,7 @@
 			->registerCmd('MakePage', new MakePage())
 			->registerCmd('MakePlugin', new MakePlugin())
 			->registerCmd('FindPlugins', new FindPlugins())
+			->registerCmd('DevServer', new DevServer())
 			->run()
 		;
 	} catch (TypeException $e) {

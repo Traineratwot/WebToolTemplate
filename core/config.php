@@ -1,6 +1,7 @@
 <?php
 	//включаем ошибки
 	use Traineratwot\config\Config;
+	use Traineratwot\config\ConfigOverridable;
 
 	date_default_timezone_set('Europe/Moscow');
 
@@ -65,9 +66,10 @@
 	Config::set('CRON_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_CRON_PATH');
 	Config::set('ASSETS_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_ASSETS_PATH');
 	Config::set('IMAGES_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR, 'WT', FALSE, 'WT_IMAGES_PATH');
-	Config::set('COMPOSER_EXEC_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR.'composer.phar', 'WT', FALSE, 'WT_COMPOSER_EXEC_PATH'); //команда запуска php скрипта
+	Config::set('COMPOSER_EXEC_PATH', realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'composer.phar', 'WT', FALSE, 'WT_COMPOSER_EXEC_PATH'); //команда запуска php скрипта
 	//настройка Cron
-	Config::set('PHP_EXEC_CMD', "php", 'WT', FALSE, 'WT_PHP_EXEC_CMD'); //команда запуска php скрипта
+	Config::set('PHP_EXEC_CMD', "php", 'WT', FALSE, 'WT_PHP_EXEC_CMD');                                                                          //команда запуска php скрипта
+	Config::set('JS_EXEC_CMD', "node", 'WT', FALSE, 'WT_JS_EXEC_CMD');                                                                           //команда запуска js скрипта
 	//Внешний url
 	Config::set('DOMAIN_URL', "https://localhost", 'WT', FALSE, 'WT_DOMAIN_URL');
 	Config::set('NODE_URL', Config::get('DOMAIN_URL') . '/node_modules' . '/', 'WT', FALSE, 'WT_NODE_URL');
@@ -118,6 +120,8 @@
 
 	Config::set('CACHE_PATH', Config::get('CACHE_PATH'), 'WT', FALSE, 'CACHE_PATH');
 	Config::set('CACHE_EXPIRATION', 600, 'PDOE', FALSE, 'CACHE_EXPIRATION');
+
+	ConfigOverridable::set('DEV_SERVER', FALSE);
 
 	//Создние всех путей
 	foreach (Config::$aliases as $key => $path) {

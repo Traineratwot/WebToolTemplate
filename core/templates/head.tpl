@@ -17,3 +17,13 @@
 </script>
 <script type="text/javascript" src="/assets/js/main.js"></script>
 <link href="/assets/css/style.css" rel="stylesheet" type="text/css"/>
+{if $core->config->get('DEV_SERVER')}
+	<script class="DEV_SERVER">
+		const ws = new WebSocket('ws://localhost:8080')
+		if(ws) {
+			ws.onmessage = function message(data) {
+				window.location.reload();
+			}
+		}
+	</script>
+{/if}

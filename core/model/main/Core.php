@@ -11,15 +11,18 @@
 	use Gettext\Loader\PoLoader;
 	use Gettext\Translator;
 	use Gettext\TranslatorFunctions;
+	use JetBrains\PhpStorm\NoReturn;
 	use model\Events\Event;
 	use model\helper\CsvTable;
 	use model\page\TmpPage;
 	use PDO;
 	use PHPMailer\PHPMailer\PHPMailer;
+	use Smarty;
 	use SmartyBC;
 	use tables\Users;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\config\Config;
+	use Traineratwot\config\ConfigOverridable;
 	use Traineratwot\PDOExtended\Dsn;
 	use Traineratwot\PDOExtended\exceptions\SqlBuildException;
 	use Traineratwot\PDOExtended\PDOE;
@@ -36,23 +39,25 @@
 		public PDOE   $db;
 		public ?Users $user = NULL;
 		/**
-		 * @var SmartyBC|null
+		 * @var Smarty|null
 		 */
-		public ?SmartyBC $smarty;
-		public bool      $isAuthenticated = FALSE;
+		public ?Smarty $smarty;
+		public bool    $isAuthenticated = FALSE;
 		/**
 		 * @var Cache
 		 */
-		public Cache $cache;
+		public Cache  $cache;
+		public Config $config;
 		/**
 		 * Переводы текущей локали
 		 * @var mixed|null
 		 */
-		public        $translation;
-		private array $_cache = [];
+		public array  $translation = [];
+		private array $_cache      = [];
 
 		public function __construct()
 		{
+			$this->devServer();
 			Event::emit('BeforeAppInit', $this);
 			try {
 
@@ -82,6 +87,18 @@
 			}
 			$this->cache = new Cache();
 			Event::emit('AfterAppInit', $this);
+			$this->config = new Config();
+		}
+
+		public function devServer()
+		{
+			if (Config::get('DEV_SERVER') !== TRUE) {
+				if (file_exists(WT_MODEL_PATH . 'tools/devServer.lock')) {
+					ConfigOverridable::set('DEV_SERVER', TRUE);
+				} else {
+					ConfigOverridable::set('DEV_SERVER', FALSE);
+				}
+			}
 		}
 
 		/**
@@ -138,10 +155,10 @@
 		}
 
 		/**
-		 * @param mixed $where
+		 * @param mixed|array $where
 		 * @return Users
 		 */
-		public function getUser($where = [])
+		public function getUser(mixed $where = [])
 		{
 			return new Users($this, $where);
 		}
@@ -340,6 +357,7 @@
 			}
 			return $data;
 		}
+
 		/**
 		 * @template T of \BdObject
 		 * @param class-string<T> $class extends BdObject
@@ -448,6 +466,7 @@
 		/**
 		 * @throws Exception
 		 */
+		#[NoReturn]
 		public function errorPage($code = 404, $msg = 'Not Found')
 		{
 			header("HTTP/1.1 $code $msg");
