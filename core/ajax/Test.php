@@ -9,8 +9,6 @@
 	{
 		function process()
 		{
-
-			//TODO YOU CODE
 			return $this->success('I am AJAX', $this->data);
 		}
 	}

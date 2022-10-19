@@ -138,6 +138,8 @@ HTML
 			$zipFile->extractTo($dist);
 			$zipFile->close();
 			self::copy(Utilities::findPath(Config::get('BASE_PATH') . 'update/WebToolTemplate-master/core/model'), Config::get('MODEL_PATH'));
+			//TODO:merge composer json and package.json
+
 			self::rmdir(Config::get('BASE_PATH') . 'update/');
 		}
 

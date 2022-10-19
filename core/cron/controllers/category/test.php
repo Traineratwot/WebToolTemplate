@@ -5,7 +5,7 @@
 	class Test extends CoreObject
 	{
 		function process(){
-			//TODO: process
+
 		}
 	}
 	$core = Core::init();

@@ -35,6 +35,6 @@
 
 		public function setup()
 		{
-			// TODO: Implement setup() method.
+
 		}
 	}
