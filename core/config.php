@@ -26,7 +26,7 @@
 		function getSystem()
 		{
 			$sys = strtolower(php_uname('s'));
-			if (strpos($sys, 'windows') !== FALSE) {
+			if (str_contains($sys, 'windows')) {
 				return 'win';
 			}
 			return 'nix';
