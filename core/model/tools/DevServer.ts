@@ -15,7 +15,7 @@ process.on('SIGINT', () => {
 	if (fs.existsSync(lock)) {
 		fs.unlinkSync(lock)
 	}
-	process.exit(1);
+	process.exit(0);
 });
 if (!fs.existsSync(lock)) {
 	fs.open(lock, 'w', (err) => {
@@ -58,8 +58,8 @@ wss.on('connection', (ws) => {
 function sendReload(p: string) {
 	console.log(p)
 	users.forEach((ws) => {
-		const ext = path.basename(p).split('.');
-		ws.send(ext[ext.length - 1]);
+		const ext = path.extname(p);
+		ws.send(ext);
 	})
 }
 
