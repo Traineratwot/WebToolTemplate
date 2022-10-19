@@ -76,14 +76,17 @@ const watch = [
 	base + path.join('**', '*.css'),
 ];
 console.log(watch)
-const watcher = chokidar.watch(watch
-	, {
-								   ignored               : /((^|[\/\\])\..)|(.*[\/\\]cache[\/\\].*)/, // ignore dotfiles
-								   persistent            : true,
-								   ignoreInitial         : true,
-								   followSymlinks        : false,
-								   ignorePermissionErrors: true,
-							   });
+const watcher = chokidar.watch(
+	watch,
+	{
+
+		ignored               : /((^|[\/\\])\..)|(.*[\/\\]cache[\/\\].*)/, // ignore dotfiles
+		persistent            : true,
+		ignoreInitial         : true,
+		followSymlinks        : false,
+		ignorePermissionErrors: true,
+	}
+);
 
 // Something to use when events are received.
 const log = console.log.bind(console);
