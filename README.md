@@ -13,7 +13,13 @@
 #### Установка
 
 1. распаковать это в директорию
-2. запустить `run install.php`
+2. запустить `composer create-project traineratwot/web-tool-template {project-name}`
+3. `cd {project-name}`
+4. **!обязательно!** `composer update`
+5. Настроить подключение к базе данных в `core/config.php`
+6. `composer wt:Install`
+7. _необязательно_ `composer wt:composer-config-update` - поможет вашей IDE ориентироваться в константах
+8. _необязательно_ `wt DevServer` - запустит наблюдатель который бдует обновлять страницу в браузере при изменении фалов
 
 #### Instructions
 
@@ -52,8 +58,8 @@
 
 	- `wt cron {path to controller}` - сгенерировать команду запуска для crontab eg: `wt cron "category/test.php"`
 	- `wt cron {path to controller} run` - попробовать запустить задание cron: `wt cron "category/test.php" run`
-  
-    #in develop
+
+  #in develop
 
 	- `components create {name}` - создает новый компонент
 	- `components package {name}` - упаковывает компонент в транспортный пакет
@@ -121,8 +127,20 @@ Console::foreground_colors //list text color
 Console::background_colors //list background color
 ```
 
+#### Config
+
+```php
+
+
+Config::get('key','?namespace') //return value;
+Config::set('key','value','?namespace') //set value;
+// тоже самое но с возможностью перезаписывать в процессе выполнения
+ConfigOverridable::set('OverridableKey','value','?namespace')
+ConfigOverridable::get('OverridableKey','?namespace')
+Config::get('OverridableKey','?namespace') //return value;
+```
 
 # FAQ
 
- - Композер выдает фатальную ошибку 
-   - if composer fatal error use 
+- Композер выдает фатальную ошибку?
+	- Это значит что у вас устаревшая версия `composer` обновите его или используйте `php composer.phar ...`
