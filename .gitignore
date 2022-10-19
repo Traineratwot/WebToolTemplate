@@ -1,4 +1,4 @@
-composer.lock
+**.lock
 /core/cache/
 config.json
 /vendor/
