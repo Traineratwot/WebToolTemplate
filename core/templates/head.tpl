@@ -23,12 +23,7 @@
 			const ws = new WebSocket('ws://localhost:{$core->config->get('DEV_SERVER_PORT')}')
 			if(ws) {
 				ws.onmessage = function message(e) {
-					const cache = e.data === 'css' || e.data === 'js'
-					if(cache) {
-						window.location.href = window.location.href
-					} else {
-						window.location.reload()
-					}
+					window.location.reload()
 				}
 			}
 		} catch(e) {
