@@ -122,6 +122,7 @@
 	Config::set('CACHE_EXPIRATION', 600, 'PDOE', FALSE, 'CACHE_EXPIRATION');
 
 	ConfigOverridable::set('DEV_SERVER', FALSE);
+	Config::set('DEV_SERVER_PORT', 8080);
 
 	//Создние всех путей
 	foreach (Config::$aliases as $key => $path) {

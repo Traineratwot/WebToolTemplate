@@ -19,11 +19,20 @@
 <link href="/assets/css/style.css" rel="stylesheet" type="text/css"/>
 {if $core->config->get('DEV_SERVER')}
 	<script class="DEV_SERVER">
-		const ws = new WebSocket('ws://localhost:8080')
-		if(ws) {
-			ws.onmessage = function message(data) {
-				window.location.reload();
+		try {
+			const ws = new WebSocket('ws://localhost:{$core->config->get('DEV_SERVER_PORT')}')
+			if(ws) {
+				ws.onmessage = function message(e) {
+					const cache = e.data === 'css' || e.data === 'js'
+					if(cache) {
+						window.location.href = window.location.href
+					} else {
+						window.location.reload()
+					}
+				}
 			}
+		} catch(e) {
+			console.warn(e)
 		}
 	</script>
 {/if}

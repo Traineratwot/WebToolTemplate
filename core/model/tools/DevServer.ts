@@ -5,7 +5,11 @@ import chokidar                     from 'chokidar';
 
 const model: string = process.argv[2].split('=')[1];
 const base: string  = process.argv[3].split('=')[1];
-const lock          = path.join(model, 'tools', 'devServer.lock')
+let port: string    = '8080'
+if (process.argv[4] !== undefined) {
+	port = process.argv[4].split('=')[1];
+}
+const lock = path.join(model, 'tools', 'devServer.lock')
 process.on('SIGINT', () => {
 	console.log('Received SIGINT. Press Control-C to exit.');
 	if (fs.existsSync(lock)) {
@@ -21,7 +25,7 @@ if (!fs.existsSync(lock)) {
 const users = new Set<WebSocket>()
 const wss   = new WebSocketServer(
 	{
-		port             : 8080,
+		port             : parseInt(port),
 		perMessageDeflate: {
 			zlibDeflateOptions: {
 				// See zlib defaults.
@@ -51,10 +55,11 @@ wss.on('connection', (ws) => {
 	})
 });
 
-function sendReload(path: string) {
-	console.log(path)
+function sendReload(p: string) {
+	console.log(p)
 	users.forEach((ws) => {
-		ws.send('reload')
+		const ext = path.basename(p).split('.');
+		ws.send(ext[ext.length - 1]);
 	})
 }
 
@@ -63,10 +68,12 @@ const watch = [
 	base + '*.js',
 	base + '*.php',
 	base + '*.tpl',
+	base + '*.css',
 
 	base + path.join('**', '*.js'),
 	base + path.join('**', '*.php'),
 	base + path.join('**', '*.tpl'),
+	base + path.join('**', '*.css'),
 ];
 console.log(watch)
 const watcher = chokidar.watch(watch
