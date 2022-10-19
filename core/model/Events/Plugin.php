@@ -4,10 +4,8 @@
 
 	abstract class Plugin
 	{
-		final public function run($data)
+		final public function run(...$args)
 		{
-			return $this->process($data);
+			return $this->process(...$args);
 		}
-
-		abstract public function process($data);
 	}

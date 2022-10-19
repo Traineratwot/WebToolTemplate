@@ -3,11 +3,11 @@
 	namespace model\cli\commands\make;
 
 	use core\model\cli\commands\Make;
+	use model\cli\types\PluginsEnum;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
 	use Traineratwot\PhpCli\Console;
-	use Traineratwot\PhpCli\types\TString;
 
 	class MakePlugin extends Cmd
 	{
@@ -23,7 +23,7 @@
 		public function run()
 		{
 			$cls = $this->getArg('path');
-			if (strpos($cls, '.php') === FALSE) {
+			if (!str_contains($cls, '.php')) {
 				$path = $cls . '.php';
 			} else {
 				$path = $cls;
@@ -41,6 +41,6 @@
 
 		public function setup()
 		{
-			$this->registerParameter('path', 1, TString::class, 'Путь до будующего плагина eg: BeforeAppInit, myCategory/AfterMyEmit');
+			$this->registerParameter('path', 1, PluginsEnum::class, 'Путь до будующего плагина eg: BeforeAppInit, myCategory/AfterMyEmit');
 		}
 	}

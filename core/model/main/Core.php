@@ -58,7 +58,7 @@
 		public function __construct()
 		{
 			$this->devServer();
-			Event::emit('BeforeAppInit', $this);
+			Event::emit('BeforeAppInit', NULL, $this);
 			try {
 
 				$dsn = new Dsn();
@@ -81,13 +81,13 @@
 				}
 				$this->auth();
 			} catch (Exception $e) {
-				if (!Event::emit('onDataBaseError', ['core' => $this, 'error' => $e])) {
+				if (!Event::emit('onDataBaseError', NULL, $this, $e)) {
 					Err::fatal($e->getMessage(), 0, 0, $e);
 				}
 			}
-			$this->cache = new Cache();
-			Event::emit('AfterAppInit', $this);
+			$this->cache  = new Cache();
 			$this->config = new Config();
+			Event::emit('AfterAppInit', NULL, $this);
 		}
 
 		public function devServer()
@@ -275,12 +275,12 @@
 				$mail->Subject = $subject;
 				$mail->Body    = $body;
 				$mail->AltBody = strip_tags($body);
-				Event::emit('BeforeMailSend', $mail);
+				Event::emit('BeforeMailSend', NULL, $mail);
 				$mail->send();
-				Event::emit('AfterMailSend', $mail);
+				Event::emit('AfterMailSend', NULL, $mail);
 				return TRUE;
 			} catch (\PHPMailer\PHPMailer\Exception $e) {
-				Event::emit('onEmailSendError', ['mail' => $mail, 'error' => $e]);
+				Event::emit('onEmailSendError', NULL, $mail, $e);
 				Err::error($e->getMessage());
 				return $mail->ErrorInfo;
 			}

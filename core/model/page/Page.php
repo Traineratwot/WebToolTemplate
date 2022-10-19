@@ -27,7 +27,7 @@
 		/**
 		 * @var mixed|string
 		 */
-		public         $source;
+		public        $source;
 		public Smarty $smarty;
 
 		/**
@@ -122,7 +122,7 @@
 
 		public static function redirect($alias, $code = 302)
 		{
-			if($code) {
+			if ($code) {
 				http_response_code($code);
 			}
 			header("Location: $alias");
@@ -143,10 +143,10 @@
 		 */
 		public function render($return = FALSE)
 		{
-			Event::emit('BeforeRender', $this);
+			Event::emit('BeforeRender', NULL, $this);
 			$this->beforeRender();
 			$this->smarty->assignGlobal('title', $this->title);
-			if (strpos($this->source, 'string:') !== 0 && strpos($this->source, 'eval:') !== 0) {
+			if (!str_starts_with($this->source, 'string:') && !str_starts_with($this->source, 'eval:')) {
 				$this->source = Utilities::pathNormalize($this->source);
 				if (!file_exists($this->source)) {
 					Err::error('can`t load: "' . $this->source . '"');
@@ -155,7 +155,7 @@
 				}
 			}
 			$page = $this->smarty->fetch($this->source);
-			$mod  = Event::emit('AfterRender', ['content' => $page, 'page' => $this]);
+			$mod  = Event::emit('AfterRender', NULL, $page, $this);
 			if ($mod) {
 				$page = $mod;
 			}

@@ -25,16 +25,18 @@
 
 		/**
 		 * Emit event
-		 * @param string $event
-		 * @param mixed  $data
-		 * @param string $category
+		 * @param string      $event
+		 * @param string|null $category
+		 * @param             ...$args
 		 * @return null
-		 *
 		 */
-		public static function emit(string $event, $data = [], string $category = '')
+		public static function emit(string $event, string $category = NULL, ...$args)
 		{
+			if (!$category) {
+				$category = '';
+			}
 			$plugin = self::load($event, $category);
-			return self::execute($plugin, $data);
+			return self::execute($plugin, ...$args);
 		}
 
 		/**
@@ -62,14 +64,15 @@
 		}
 
 		/**
-		 * @param string|callable $plugin
-		 * @param mixed           $data
+		 * @param callable|string $plugin
+		 * @param mixed           ...$args
 		 * @return mixed
 		 */
-		private static function execute($plugin, $data = [])
+		private static function execute(callable|string $plugin, ...$args)
 		{
 			if (is_string($plugin) && class_exists($plugin)) {
-				return (new $plugin())->run($data);
+				/** @var Plugin $plugin */
+				return (new $plugin())->run(...$args);
 			}
 			if (is_callable($plugin)) {
 				return $plugin($data);
