@@ -1,7 +1,7 @@
 {
 	"$schema": "https://raw.githubusercontent.com/Traineratwot/composer-config/master/composer-config-schema.json",
 	"name"       :"traineratwot/web-tool-template",
-	"version"    :"5.0.1",
+	"version"    :"5.1.0",
 	"authors"    :[
 		{
 			"name" :"Kirill",
@@ -11,7 +11,7 @@
 	"license"    :"GPL-3.0-or-later",
 	"type"       :"project",
 	"scripts"    :{
-		"up:release"               :"gh release create \"5.0.1\" --generate-notes",
+		"up:release"               :"gh release create \"5.1.0\" --generate-notes",
 		"wt:Install"               :"core\\model\\composer\\Scripts::postInstall",
 		"wt:package"               :"core\\model\\composer\\Scripts::package",
 		"wt:Update"                :"core\\model\\composer\\Scripts::engineUpdate",
@@ -95,6 +95,7 @@
 				"CHARSET_DB": "charset, default utf8mb4",
 				"SQL_LOG": "enable sql log?, log saved into cache",
 				"PHP_EXEC_CMD": "command to exec php for cron, like '/bin/php8.1/php'",
+				"JS_EXEC_CMD": "command to exec js for devServer, like 'node'",
 				"COMPOSER_EXEC_PATH": "path to executable composer.pchar",
 				"SMARTY_TEMPLATE_PATH": "smarty templdate path, use 'TEMPLATES_PATH'",
 				"SMARTY_COMPILE_PATH": "smarty cache COMPILE path",
@@ -116,7 +117,8 @@
 				"TYPE_SYSTEM": "Operation system win or nix"
 			},
 			"optional": {
-
+				"DEV_SERVER": "use dev server syste?",
+				"DEV_SERVER_PORT": "dev server websocket port"
 			}
 		}
 	}
