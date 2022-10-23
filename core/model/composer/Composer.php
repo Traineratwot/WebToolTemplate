@@ -8,10 +8,11 @@
 		 * @noinspection PhpSameParameterValueInspection
 		 * @noinspection RedundantSuppression
 		 */
-		private static function execute(string $cmd, string &$out = null)
+		private static function execute(string $cmd, string &$out = NULL)
 		: bool
 		{
-			$out  = '';
+			$out = '';
+			chdir(WT_BASE_PATH);
 			$exec = WT_PHP_EXEC_CMD . ' ' . WT_COMPOSER_EXEC_PATH . ' ' . $cmd;
 			exec($exec, $out, $code);
 			return $code === 0;
