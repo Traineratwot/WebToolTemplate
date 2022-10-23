@@ -8,7 +8,7 @@
 	abstract class ComponentTable extends BdObject
 	{
 
-		public function createTable()
+		public static function createTable()
 		: PDOENewDbObject|false
 		{
 			return FALSE;

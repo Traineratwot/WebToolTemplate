@@ -6,6 +6,7 @@
 	use model\main\CoreObject;
 	use ReflectionClass;
 	use Traineratwot\Cache\Cache;
+	use Traineratwot\PDOExtended\tableInfo\PDOENewDbObject;
 	use Traineratwot\PhpCli\Console;
 
 	abstract class Manifest extends CoreObject
@@ -75,6 +76,7 @@
 		}
 
 		final public function install()
+		: bool
 		{
 			if ($this->isInstalled()) {
 				return FALSE;
@@ -92,17 +94,19 @@
 			$tables = $cls::getTables();
 			foreach ($tables as $table) {
 				if (class_exists($table)) {
-					$tb = new$table($this->core);
-					if ($tb instanceof ComponentTable) {
-						$tb->createTable();
-						Console::info(get_class($this) . ':installed table: ' . $table);
+					$PDOENewDbObject = $table::createTable();
+					if ($PDOENewDbObject instanceof PDOENewDbObject) {
+						$sql = $PDOENewDbObject->setDriver($this->core->db->getDriver())->toSql();
+						$this->core->db->exec($sql);
 					}
+					Console::info(get_class($this) . ':installed table: ' . $table);
 				}
 			}
+			Cache::removeAll();
 			Console::info(get_class($this) . ':afterInstall');
 			$this->afterInstall();
-			Cache::removeAll();
 			Console::timeEnd(get_class($this) . ':' . __FUNCTION__);
+			return TRUE;
 		}
 
 		final public static function composerRequire(string $package)

@@ -104,7 +104,7 @@
 			if ($previous instanceof Throwable) {
 				throw new RuntimeException($msg, $previous->getCode(), $previous);
 			}
-			throw new RuntimeException($msg);
+			throw new RuntimeException($msg,(int)$line);
 		}
 
 		public static function info($msg, $line = NULL, $file = NULL)
