@@ -2,8 +2,9 @@
 
 	namespace model\cli\commands\components;
 
-	use core\model\components\Manifest;
+	use core\model\cli\types\ComponentsEnum;
 	use model\cli\types\FilePath;
+	use model\components\Manifest;
 	use model\main\Core;
 	use model\main\Utilities;
 	use PhpZip\Exception\ZipException;
@@ -26,7 +27,7 @@
 
 		public function setup()
 		{
-			$this->registerParameter('path', 1, FilePath::class, "путь до архива компонента");
+			$this->registerParameter('path', 1, [FilePath::class, ComponentsEnum::class], "путь до архива компонента");
 		}
 
 		/**
@@ -34,16 +35,20 @@
 		 */
 		public function run()
 		{
-			$path          = $this->getArg('path');
-			$componentName = Utilities::baseName($path);
-			$manifest      = "components\\{$componentName}\\{$componentName}";
-			if (class_exists($manifest)) {
-				Console::success($componentName . ' Already installed');
-				return;
+			$path = $this->getArg('path');
+			if (file_exists($path)) {
+				$componentName = Utilities::baseName($path);
+				$manifest      = "components\\{$componentName}\\{$componentName}";
+				if (class_exists($manifest)) {
+					Console::success($componentName . ' Already installed');
+					return;
+				}
+				$zip = new ZipFile();
+				$zip->openFile($path);
+				$zip->extractTo(Config::get('COMPONENTS_PATH'));
+			} else {
+				$manifest = "components\\{$path}\\{$path}";
 			}
-			$zip = new ZipFile();
-			$zip->openFile($path);
-			$zip->extractTo(Config::get('COMPONENTS_PATH'));
 			spl_autoload($manifest);
 			if (!class_exists($manifest)) {
 				Console::failure('Ошибка');

@@ -5,6 +5,7 @@
 	use core\model\composer\Composer;
 	use model\main\CoreObject;
 	use ReflectionClass;
+	use Traineratwot\Cache\Cache;
 	use Traineratwot\PhpCli\Console;
 
 	abstract class Manifest extends CoreObject
@@ -17,6 +18,12 @@
 
 		abstract public static function description()
 		: string;
+
+		/**
+		 * @return array<string>
+		 */
+		abstract public static function getTables()
+		: array;
 
 		/**
 		 * @return array<string>
@@ -82,9 +89,19 @@
 				$packages = implode(' ', $packages);
 				self::composerRequire($packages);
 			}
-
+			$tables = $cls::getTables();
+			foreach ($tables as $table) {
+				if (class_exists($table)) {
+					$tb = new$table($this->core);
+					if ($tb instanceof ComponentTable) {
+						$tb->createTable();
+						Console::info(get_class($this) . ':installed table: ' . $table);
+					}
+				}
+			}
 			Console::info(get_class($this) . ':afterInstall');
 			$this->afterInstall();
+			Cache::removeAll();
 			Console::timeEnd(get_class($this) . ':' . __FUNCTION__);
 		}
 
