@@ -36,8 +36,7 @@
 		"traineratwot/cache"          :"^2.0",
 		"traineratwot/composer-config":"^1.1.0",
 		"tiben/crontab-manager"       :"^1.3",
-		"nelexa/zip"                  :"^4.0",
-		"telegram-bot/api"            :"^2.3"
+		"nelexa/zip"                  :"^4.0"
 	},
 	"require-dev":{
 		"roave/security-advisories"    :"dev-latest",
