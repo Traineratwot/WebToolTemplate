@@ -19,3 +19,5 @@ pnpm-lock.yaml
 !/vendor/.htaccess
 backups/*.zip
 update/*
+
+.project-manager/
