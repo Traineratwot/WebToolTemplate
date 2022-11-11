@@ -78,6 +78,7 @@
 				if (Config::get('SQL_LOG')) {
 					$this->db->logOn();
 				}
+				Event::emit('AfterAppDataBaseInit', NULL, $this);
 				$this->auth();
 			} catch (Exception $e) {
 				if (!Event::emit('onDataBaseError', NULL, $this, $e)) {
