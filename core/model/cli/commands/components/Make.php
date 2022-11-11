@@ -76,11 +76,15 @@ PHP;
 		: string
 		{
 			self::name2class($name, $class, $namespace);
+			$implement = "";
+			if (file_exists(WT_MODEL_PATH . 'Events/plugins/' . $class . '.php')) {
+				$implement = "implements \core\model\Events\plugins\\{$class}";
+			}
 			return <<<PHP
 <?php
 	namespace components\\{$componentName}\classes\plugins{$namespace};
 	use model\Events\Plugin;
-	class {$class} extends Plugin
+	class {$class} extends Plugin {$implement}
 	{
 		public function process(\$data)
 		{

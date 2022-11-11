@@ -18,7 +18,6 @@
 	use PDO;
 	use PHPMailer\PHPMailer\PHPMailer;
 	use Smarty;
-	use SmartyBC;
 	use tables\Users;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\config\Config;

@@ -4,6 +4,7 @@
 
 	use model\cli\commands\components\Make;
 	use core\model\cli\types\ComponentsEnum;
+	use model\cli\types\PluginsEnum;
 	use model\main\Utilities;
 	use Traineratwot\config\Config;
 	use Traineratwot\PhpCli\Cmd;
@@ -44,6 +45,6 @@
 		public function setup()
 		{
 			$this->registerParameter('component', 1, ComponentsEnum::class, "Имя компонента");
-			$this->registerParameter('path', 1, TString::class, 'Путь до будующего плагина eg: BeforeAppInit, myCategory/AfterMyEmit');
+			$this->registerParameter('path', 1, PluginsEnum::class, 'Путь до будущего плагина eg: BeforeAppInit, myCategory/AfterMyEmit');
 		}
 	}
