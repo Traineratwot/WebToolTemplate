@@ -41,7 +41,6 @@
 				$manifest      = "components\\{$componentName}\\{$componentName}";
 				if (class_exists($manifest)) {
 					Console::success($componentName . ' Already installed');
-					return;
 				}
 				$zip = new ZipFile();
 				$zip->openFile($path);
@@ -51,7 +50,7 @@
 			}
 			spl_autoload($manifest);
 			if (!class_exists($manifest)) {
-				Console::failure('Ошибка');
+				Console::failure('Ошибка '.$manifest);
 				return;
 			}
 
