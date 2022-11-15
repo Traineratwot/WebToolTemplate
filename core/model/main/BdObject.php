@@ -172,6 +172,9 @@ SQL;
 
 		public function set($key, $value = NULL)
 		{
+			if (!$this->schema[$key]) {
+				Err::warning('Not find key :"' . $key . '" in table "' . $this->table . '"');
+			}
 			if (is_null($value) && !$this->schema[$key]['null']) {
 				$value = $this->schema[$key]['default'];
 			}
@@ -200,24 +203,27 @@ SQL;
 										->setData($this->update)
 										->where()
 										->eq($this->primaryKey, $this->data[$this->primaryKey])
-										->end()->toSql();
+										->end()->toSql()
+						;
 					}
-				}
-				if ($sql) {
-					//Err::info($sql);
-					$q = $this->core->db->exec($sql);
-					if ($q === FALSE) {
-						Err::fatal($sql);
-					}
-					if ($this->isNew()) {
-						$lastID = $this->core->db->lastInsertId();
-						if ($lastID) {
-							$this->data[$this->primaryKey] = $lastID;
+					if ($sql) {
+						//Err::info($sql);
+						$q = $this->core->db->exec($sql);
+						if ($q === FALSE) {
+							Err::fatal($sql);
 						}
-						$this->isNew = FALSE;
+						if ($this->isNew()) {
+							$lastID = $this->core->db->lastInsertId();
+							if ($lastID) {
+								$this->data[$this->primaryKey] = $lastID;
+							}
+							$this->isNew = FALSE;
+						}
 					}
 				}
-				$this->update([$this->primaryKey => $this->data[$this->primaryKey]]);
+				if (isset($this->data[$this->primaryKey])) {
+					$this->update([$this->primaryKey => $this->data[$this->primaryKey]]);
+				}
 			} catch (Exception $e) {
 				Err::fatal($e->getMessage(), 0, 0, $e);
 			}
