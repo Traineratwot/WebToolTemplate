@@ -173,7 +173,7 @@ SQL;
 		public function set($key, $value = NULL)
 		{
 			if (!$this->schema[$key]) {
-				Err::warning('Not find key :"' . $key . '" in table "' . $this->table . '"');
+				Err::warning('Not found key :"' . $key . '" in table "' . $this->table . '"');
 			}
 			if (is_null($value) && !$this->schema[$key]['null']) {
 				$value = $this->schema[$key]['default'];
