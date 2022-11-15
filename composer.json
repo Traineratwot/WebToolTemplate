@@ -1,7 +1,7 @@
 {
 	"$schema": "https://raw.githubusercontent.com/Traineratwot/composer-config/master/composer-config-schema.json",
 	"name"       :"traineratwot/web-tool-template",
-	"version"    :"5.2.0",
+	"version"    :"5.2.1",
 	"authors"    :[
 		{
 			"name" :"Kirill",
@@ -18,8 +18,8 @@
 		"wt:Test"                  :"core\\model\\composer\\Scripts::test",
 		"wt:composer-config-print" :"composer getAllConfigs",
 		"wt:composer-config-update":"composer configUpdate",
-		"composer-config-print"    :"composer getAllConfigs",
-		"composer-config-update"   :"composer configUpdate"
+		"composer-config-print": "composer getAllConfigs",
+		"composer-config-update": "composer configUpdate"
 	},
 	"require"    :{
 		"php"                         :"^8.1",
