@@ -4,7 +4,7 @@
 
 	use Exception;
 
-	trait jsonValidate
+	trait JsonValidate
 	{
 		public static function jsonValidate($string, $assoc = TRUE, $depth = 1024)
 		{

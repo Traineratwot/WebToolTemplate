@@ -12,7 +12,7 @@
 	use SplFileInfo;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\config\Config;
-	use traits\validators\jsonValidate;
+	use traits\validators\JsonValidate;
 
 	/**
 	 * Класс с утилитами

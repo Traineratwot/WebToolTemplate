@@ -2,7 +2,7 @@
 
 	namespace traits;
 	/**
-	 * Используйте это в методе initialize в классе ajax чтобы добавить базовую аутентификацию
+	 * Используйте это в методе initialize в классе ajax, чтобы добавить базовую аутентификацию
 	 */
 	trait BasicAuth
 	{
@@ -25,15 +25,15 @@
 				header('HTTP/1.0 401 Unauthorized');
 				echo 'Cancel';
 				exit;
-			} else {
-				if (
-					!in_array($user, $_SERVER['PHP_AUTH_USER']) or
-					!in_array($password, $_SERVER['PHP_AUTH_PW'])
-				) {
-					header('HTTP/1.0 401 Unauthorized');
-					return 'Wrong username || password';
-				}
-				return TRUE;
 			}
+
+			if (
+				!in_array($user, $_SERVER['PHP_AUTH_USER'], TRUE) or
+				!in_array($password, $_SERVER['PHP_AUTH_PW'], TRUE)
+			) {
+				header('HTTP/1.0 401 Unauthorized');
+				return 'Wrong username || password';
+			}
+			return TRUE;
 		}
 	}

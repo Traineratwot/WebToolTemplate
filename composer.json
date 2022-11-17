@@ -17,7 +17,9 @@
 		"wt:Update"                :"core\\model\\composer\\Scripts::engineUpdate",
 		"wt:Test"                  :"core\\model\\composer\\Scripts::test",
 		"wt:composer-config-print" :"composer getAllConfigs",
-		"wt:composer-config-update":"composer configUpdate"
+		"wt:composer-config-update":"composer configUpdate",
+		"composer-config-print": "composer getAllConfigs",
+		"composer-config-update": "composer configUpdate"
 	},
 	"require"    :{
 		"php"                         :"^8.1",

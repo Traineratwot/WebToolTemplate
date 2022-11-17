@@ -2,8 +2,11 @@
 
 	namespace traits\validators;
 
-	trait imgValidate
+	trait ImgValidate
 	{
+		/**
+		 * @throws ExceptionValidate
+		 */
 		public static function imgValidate($url, $maxW = 0, $maxH = 0, $minW = 0, $minH = 0)
 		{
 			$info = getimagesize($url);

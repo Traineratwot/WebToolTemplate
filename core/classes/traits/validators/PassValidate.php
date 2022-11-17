@@ -4,6 +4,9 @@
 
 	trait PassValidate
 	{
+		/**
+		 * @throws ExceptionValidate
+		 */
 		public static function passValidate($value, $length = 6)
 		{
 			$value = strip_tags($value);

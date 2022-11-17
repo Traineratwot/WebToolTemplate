@@ -6,7 +6,7 @@
 	use DOMXPath;
 	use function __;
 
-	trait htmlValidate
+	trait HtmlValidate
 	{
 		/**
 		 * @throws ExceptionValidate
