@@ -119,7 +119,7 @@
 		: PDOENewDbObject|false
 		{
 			return PDOE::createTable('users')
-				->addInt('id')
+					   ->addInt('id', 20)
 				->setPrimaryKey('id')
 				->addString('email')
 				->addString('password')

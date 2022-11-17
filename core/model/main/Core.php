@@ -59,7 +59,6 @@
 			$this->devServer();
 			Event::emit('BeforeAppInit', NULL, $this);
 			try {
-
 				$dsn = new Dsn();
 				$dsn->setDriver(Config::get('TYPE_DB'));
 				$dsn->setDatabase(Config::get('DATABASE_DB'));
@@ -82,7 +81,7 @@
 				$this->auth();
 			} catch (Exception $e) {
 				if (!Event::emit('onDataBaseError', NULL, $this, $e)) {
-					Err::fatal($e->getMessage(), 0, 0, $e);
+					Err::error($e->getMessage(), 0, 0, $e);
 				}
 			}
 			$this->cache  = new Cache();
