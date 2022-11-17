@@ -8,6 +8,7 @@
 	use model\main\Utilities;
 	use PhpZip\Exception\ZipException;
 	use PhpZip\ZipFile;
+	use tables\Users;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\config\Config;
 	use Traineratwot\PDOExtended\PDOE;
@@ -38,43 +39,10 @@
 				Cache::removeAll();
 				$needInstall = !($core->db->tableExists("users"));
 				if ($needInstall) {
-					Console::info('Install Database');
-					if ($core->db->dsn->getDriver() === 'sqlite') {
-						if (!file_exists(Config::get('HOST_DB'))) {
-							file_put_contents(Config::get('HOST_DB'), '');
-						}
-						$core->db->exec(<<<HTML
-CREATE TABLE users
-(
-	id       INTEGER
-		PRIMARY KEY AUTOINCREMENT,
-	email    VARCHAR(64)
-		UNIQUE
-			ON CONFLICT FAIL,
-	password VARCHAR(64),
-	authKey  VARCHAR(64),
-	salt     VARCHAR(64) DEFAULT 0
-);
-HTML
-						);
-					} else {
-						$core->db->exec(<<<HTML
-CREATE TABLE `users` (
-	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`email` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`password` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`authKey` VARCHAR(256) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`salt` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`time_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-	PRIMARY KEY (`id`) USING BTREE,
-	UNIQUE INDEX `email` (`email`) USING BTREE,
-	UNIQUE INDEX `authKey` (`authKey`) USING BTREE
-)
-COLLATE='utf8mb4_unicode_ci'
-ENGINE=InnoDB
-AUTO_INCREMENT=0;
-HTML
-						);
+					$t = Users::createTable();
+					if ($t) {
+						Console::info('install `users` table');
+						$t->setDriver($core->db->getDriver())->run();
 					}
 				}
 

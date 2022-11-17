@@ -5,7 +5,8 @@
 	use model\main\Err;
 	use model\main\User;
 	use model\main\Utilities;
-	use Traineratwot\config\Config;
+	use Traineratwot\PDOExtended\PDOE;
+	use Traineratwot\PDOExtended\tableInfo\PDOENewDbObject;
 
 
 	/**
@@ -112,5 +113,18 @@
 		: bool
 		{
 			return password_verify($password . $this->get('salt'), $this->get('password'));
+		}
+
+		public static function createTable()
+		: PDOENewDbObject|false
+		{
+			return PDOE::createTable('users')
+				->addInt('id')
+				->setPrimaryKey('id')
+				->addString('email')
+				->addString('password')
+				->addString('authKey')
+				->addString('salt')
+			;
 		}
 	}

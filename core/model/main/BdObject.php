@@ -5,6 +5,7 @@
 	use Exception;
 	use PDO;
 	use PDOException;
+	use Traineratwot\PDOExtended\tableInfo\PDOENewDbObject;
 
 	/**
 	 * Класс для работы с таблицей как с объектом
@@ -273,5 +274,11 @@ SQL;
 				return count($this->update) > 0;
 			}
 			return array_key_exists($key, $this->update);
+		}
+
+		public static function createTable()
+		: PDOENewDbObject|false
+		{
+			return FALSE;
 		}
 	}
