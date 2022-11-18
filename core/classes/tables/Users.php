@@ -77,9 +77,9 @@
 				}
 				$pass = $password;
 				$this->setPassword($pass);
-				$authKey = Utilities::hash($email . $this->get('password'));
+				$auth_key = Utilities::hash($email . $this->get('password'));
 				$this->set('email', $email);
-				$this->set('authKey', $authKey);
+				$this->set('auth_key', $auth_key);
 				$this->save();
 				if ($this->isNew()) {
 					Err::fatal('Failed write to DataBase', __FILE__, __FILE__);
@@ -102,10 +102,10 @@
 		public function login()
 		{
 			WT_RESTART_SESSION_FUNCTION();
-			$_SESSION['authKey'] = $this->get('authKey');
+			$_SESSION['auth_key'] = $this->get('auth_key');
 			$_SESSION['ip']      = Utilities::getIp();
-			$hash                = Utilities::hash($_SESSION['authKey'] . $_SESSION['ip']);
-			setCookie('authKey', $hash, time() + 3600 * 24 * 30, '/');
+			$hash                = Utilities::hash($_SESSION['auth_key'] . $_SESSION['ip']);
+			setCookie('auth_key', $hash, time() + 3600 * 24 * 30, '/');
 			setCookie('userId', $this->get('id'), time() + 3600 * 24 * 30, '/');
 		}
 
@@ -123,10 +123,10 @@
 					   ->setPrimaryKey('id')
 					   ->addString('email', 200)
 					   ->addString('password', 200)
-					   ->addString('authKey', 200)
+					   ->addString('auth_key', 200)
 					   ->addString('salt', 200)
 					   ->addUniqueKey('email')
-					   ->addUniqueKey('authKey')
+					   ->addUniqueKey('auth_key')
 			;
 		}
 	}

@@ -21,10 +21,10 @@
 			try {
 				$user = $this->core->getUser(['email' => $this->email]);
 				if (!$user->isNew()) {
-					$authKey = $user->get('authKey');
+					$auth_key = $user->get('auth_key');
 					$t       = $user->sendMail('Восстановление доступа к ' . $_SERVER['SERVER_NAME'], <<<HTML
 <p><strong>Ссылка на смену пароля</strong></p>
-<p><a href="{$_SERVER['SERVER_NAME']}/user/ChangePassword?action=resume&authKey=$authKey">Востановить пароль</a></p>
+<p><a href="{$_SERVER['SERVER_NAME']}/user/ChangePassword?action=resume&auth_key=$auth_key">Востановить пароль</a></p>
 HTML
 					);
 					if ($t === TRUE) {

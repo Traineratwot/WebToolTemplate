@@ -27,8 +27,8 @@
 					$salt  = Utilities::id(8);
 					$email = $this->core->user->get('email');
 					$this->core->user->setPassword($this->password);
-					$authKey = md5($this->core->user->get('password') . $email . $salt);
-					$this->core->user->set('authKey', $authKey);
+					$auth_key = md5($this->core->user->get('password') . $email . $salt);
+					$this->core->user->set('auth_key', $auth_key);
 					$this->core->user->save();
 					session_unset();
 					return $this->success('Ok');

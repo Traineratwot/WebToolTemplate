@@ -130,18 +130,18 @@
 				}
 				return;
 			}
-			if (isset($_SESSION['authKey']) && $_SESSION['authKey'] && $_SESSION['ip'] === Utilities::getIp()) {
-				$u = $this->getUser(['authKey' => $_SESSION['authKey']]);
+			if (isset($_SESSION['auth_key']) && $_SESSION['auth_key'] && $_SESSION['ip'] === Utilities::getIp()) {
+				$u = $this->getUser(['auth_key' => $_SESSION['auth_key']]);
 				if (!$u->isNew) {
 					$this->user = &$u;
 				} else {
 					$u->logout();
 				}
 			} else {
-				$authKey = strip_tags($_COOKIE['authKey']);
+				$auth_key = strip_tags($_COOKIE['auth_key']);
 				$id      = (int)$_COOKIE['userId'];
 				$u       = $this->getUser($id);
-				if (!$u->isNew && $authKey === Utilities::hash($u->get('authKey') . Utilities::getIp())) {
+				if (!$u->isNew && $auth_key === Utilities::hash($u->get('auth_key') . Utilities::getIp())) {
 					$this->user = &$u;
 					$this->user->login();
 				}

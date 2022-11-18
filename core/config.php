@@ -42,7 +42,7 @@
 
 		function WT_RESTART_SESSION_FUNCTION()
 		{
-			setcookie('authKey', 'WT');
+			setcookie('auth_key', 'WT');
 			setcookie('userId', 'WT');
 			session_unset();
 			WT_START_SESSION_FUNCTION();
