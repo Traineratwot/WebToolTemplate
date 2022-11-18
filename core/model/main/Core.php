@@ -81,7 +81,7 @@
 				$this->auth();
 			} catch (Exception $e) {
 				if (!Event::emit('onDataBaseError', NULL, $this, $e)) {
-					Err::error($e->getMessage(), 0, 0, $e);
+					Err::fatal($e->getMessage(), 0, 0, $e);
 				}
 			}
 			$this->cache  = new Cache();

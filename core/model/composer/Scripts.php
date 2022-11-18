@@ -4,13 +4,12 @@
 
 	use DateTime;
 	use Exception;
-	use model\main\Core;
 	use model\main\Utilities;
 	use PhpZip\Exception\ZipException;
 	use PhpZip\ZipFile;
 	use tables\Users;
-	use Traineratwot\Cache\Cache;
 	use Traineratwot\config\Config;
+	use Traineratwot\PDOExtended\Dsn;
 	use Traineratwot\PDOExtended\PDOE;
 	use Traineratwot\PhpCli\Console;
 
@@ -35,14 +34,27 @@
 				exec('chmod 744 -R -f ' . Config::get('AJAX_PATH'));
 			}
 			try {
-				$core = Core::init();
-				Cache::removeAll();
-				$needInstall = !($core->db->tableExists("users"));
+				$dsn = new Dsn();
+				$dsn->setDriver(Config::get('TYPE_DB'));
+				$dsn->setDatabase(Config::get('DATABASE_DB'));
+				if (Config::get('CHARSET_DB')) {
+					$dsn->setCharset(Config::get('CHARSET_DB'));
+				}
+				if (Config::get('HOST_DB')) {
+					$dsn->setHost(Config::get('HOST_DB'));
+				} else {
+					$dsn->setSocket(Config::get('SOCKET_DB'));
+				}
+				$dsn->setPort((int)Config::get('PORT_DB'));
+				$dsn->setPassword(Config::get('PASS_DB'));
+				$dsn->setUsername(Config::get('USER_DB'));
+				$db          = PDOE::init($dsn);
+				$needInstall = !($db->tableExists("users"));
 				if ($needInstall) {
 					$t = Users::createTable();
 					if ($t) {
 						Console::info('install `users` table');
-						$t->setDriver($core->db->getDriver())->run();
+						$db->exec($t->setDriver($db->getDriver())->toSql());
 					}
 				}
 
