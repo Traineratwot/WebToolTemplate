@@ -120,11 +120,13 @@
 		{
 			return PDOE::createTable('users')
 					   ->addInt('id', 20)
-				->setPrimaryKey('id')
-				->addString('email')
-				->addString('password')
-				->addString('authKey')
-				->addString('salt')
+					   ->setPrimaryKey('id')
+					   ->addString('email', 200)
+					   ->addString('password', 200)
+					   ->addString('authKey', 200)
+					   ->addString('salt', 200)
+					   ->addUniqueKey('email')
+					   ->addUniqueKey('authKey')
 			;
 		}
 	}
