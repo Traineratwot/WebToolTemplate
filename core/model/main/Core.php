@@ -409,6 +409,9 @@
 				Err::error("Can't set locale to '$_lang'");
 				$lang = setlocale(LC_ALL, $_lang, substr($_lang, 0, 2) . '.utf8', substr($_lang, 0, 5) . '.utf8');
 			}
+			if (!$lang) {
+				$lang = $_lang;
+			}
 			$php = '';
 			if ($_gt && $lang) {
 				$domain = Config::get('LOCALE_DOMAIN');

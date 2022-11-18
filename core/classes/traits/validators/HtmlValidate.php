@@ -13,7 +13,7 @@
 		 */
 		public static function htmlValidate($string)
 		{
-			if (is_string($string)) {
+			if (is_string($string) && !empty($string)) {
 				$document = new DOMDocument();
 				$document->loadHTML($string);
 				$xpath = new DOMXpath($document);
