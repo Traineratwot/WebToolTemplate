@@ -40,7 +40,7 @@
 				$this->data = $data;
 			}
 			if (!$this->alias) {
-				$this->alias  = mb_strtolower(rtrim($_GET['a'], '/'));
+				$this->alias  = mb_strtolower(rtrim($_GET['q'], '/'));
 			}
 			if (!$this->source) {
 				$this->prepareAlias();
@@ -58,9 +58,9 @@
 		 */
 		public function prepareAlias()
 		{
-			if (strpos($this->alias, 'string:') === 0 || strpos($this->alias, 'eval:') === 0) {
+			if (str_starts_with($this->alias, 'string:') || str_starts_with($this->alias, 'eval:')) {
 				$this->source = $this->alias;
-			} elseif (strpos($this->alias, 'chunk:') === 0 || strpos($this->alias, 'file:') === 0) {
+			} elseif (str_starts_with($this->alias, 'chunk:') || str_starts_with($this->alias, 'file:')) {
 				$this->source = Config::get('TEMPLATES_PATH') . preg_replace("@^(chunk|file):@i", '', $this->alias) . '.tpl';
 				if (!file_exists($this->source)) {
 					$this->source = Config::get('TEMPLATES_PATH') . preg_replace("@^(chunk|file):@i", '', $this->alias);
