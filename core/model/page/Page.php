@@ -40,7 +40,7 @@
 				$this->data = $data;
 			}
 			if (!$this->alias) {
-				$this->alias = $_GET['q'];
+				$this->alias  = mb_strtolower(rtrim($_GET['a'], '/'));
 			}
 			if (!$this->source) {
 				$this->prepareAlias();
