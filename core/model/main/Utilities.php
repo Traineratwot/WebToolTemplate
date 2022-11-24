@@ -188,6 +188,10 @@
 		 */
 		public static function glob(string $baseDir, string $pattern, int $flags = GLOB_NOSORT | GLOB_BRACE)
 		{
+			if(!file_exists($baseDir)){
+				Err::error("folder does not exist: ".$baseDir);
+				return [];
+			}
 			$IteratorDirs = new RecursiveDirectoryIterator($baseDir, FilesystemIterator::SKIP_DOTS);
 			$Iterator     = new RecursiveIteratorIterator($IteratorDirs);
 			$fileList     = [];

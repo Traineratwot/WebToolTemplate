@@ -3,6 +3,7 @@
 	namespace model\Events;
 
 	use Exception;
+	use model\main\Err;
 	use model\main\Utilities;
 	use ReflectionClass;
 	use RuntimeException;
@@ -79,7 +80,7 @@
 				}
 				return self::$plugins[$category][$event];
 			} catch (Exception $e) {
-
+				Err::fatal($e->getMessage(), NULL, NULL, $e);
 			}
 			return FALSE;
 		}
