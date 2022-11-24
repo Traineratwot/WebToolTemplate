@@ -29,10 +29,10 @@
 			$this->core = Core::init();
 			if (isset($_GET['a'])) {
 				$this->isAjax = TRUE;
-				$this->alias  = mb_strtolower($_GET['a']);
+				$this->alias  = mb_strtolower(rtrim($_GET['a'], '/'));
 			} elseif (isset($_GET['q'])) {
 				$this->isAjax = FALSE;
-				$this->alias  = mb_strtolower($_GET['q']);
+				$this->alias  = mb_strtolower(rtrim($_GET['q'], '/'));
 			} else {
 				$this->isAjax = FALSE;
 				$this->alias  = 'index';
