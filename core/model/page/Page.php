@@ -167,11 +167,9 @@
 				return $page;
 			}
 			echo $page;
-			if (function_exists('fastcgi_finish_request')) {
-				fastcgi_finish_request();
-				Event::emit('AfterRenderOut', NULL, $page, $this);
-				$this->afterRenderOut($page);
-			}
+			Utilities::finishRequest();
+			Event::emit('AfterRenderOut', NULL, $page, $this);
+			$this->afterRenderOut($page);
 			return TRUE;
 		}
 

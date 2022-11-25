@@ -105,10 +105,8 @@
 				$output = json_encode($o, 256);
 			}
 			echo $output;
-			if (function_exists('fastcgi_finish_request')) {
-				fastcgi_finish_request();
-				$this->afterProcess($o);
-			}
+			Utilities::finishRequest();
+			$this->afterProcess($o);
 		}
 
 		public function initialize()

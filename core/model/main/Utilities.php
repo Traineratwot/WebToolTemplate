@@ -450,7 +450,7 @@
 		public static function phoneFormat(string $phone, $pattern = 'number')
 		: string
 		{
-			$phone = (string)(int)self::rawText($phone);
+			$phone = (int)self::rawText($phone);
 
 			switch ($pattern) {
 				case 'number':
@@ -461,5 +461,20 @@
 					break;
 			}
 			return $phone;
+		}
+
+		public static function finishRequest()
+		: void
+		{
+			if (function_exists('fastcgi_finish_request')) {
+				session_write_close();
+				$result = fastcgi_finish_request();
+				if (!$result) {
+					Err::error("fastcgi_finish_request error");
+				}
+				session_start();
+			} else {
+				Err::error("function 'fastcgi_finish_request' not exists");
+			}
 		}
 	}

@@ -8,7 +8,7 @@
 
 	class Err
 	{
-		public const template = "[+lvl+] [+datetime+] - +message+ (+file+:+line+)\n";
+		public const template = "[+lvl+] [+datetime+] [+function+] - +message+ (+file+:+line+)\n";
 
 		public static function err($msg, $line = NULL, $file = NULL)
 		{
@@ -31,13 +31,15 @@
 
 		public static function error($msg, $line = NULL, $file = NULL)
 		{
-			$d    = self::getTrace(__FUNCTION__);
-			$line = $line ?: $d['line'];
-			$file = $file ?: $d['file'];
+			$d        = self::getTrace(__FUNCTION__);
+			$line     = $line ?: $d['line'];
+			$file     = $file ?: $d['file'];
+			$function = $d['function'];
 			self::save(self::pretty([
 										'lvl'      => 'error',
 										'datetime' => date('Y-m-d H:i:s'),
 										'message'  => $msg,
+										'function' => $function,
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
@@ -70,13 +72,15 @@
 
 		public static function warning($msg, $line = NULL, $file = NULL)
 		{
-			$d    = self::getTrace(__FUNCTION__);
-			$line = $line ?: $d['line'];
-			$file = $file ?: $d['file'];
+			$d        = self::getTrace(__FUNCTION__);
+			$line     = $line ?: $d['line'];
+			$file     = $file ?: $d['file'];
+			$function = $d['function'];
 			self::save(self::pretty([
 										'lvl'      => 'warning',
 										'datetime' => date('Y-m-d H:i:s'),
 										'message'  => $msg,
+										'function' => $function,
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
@@ -92,13 +96,15 @@
 		 */
 		public static function fatal($msg, $line = NULL, $file = NULL, $previous = NULL)
 		{
-			$d    = self::getTrace(__FUNCTION__);
-			$line = $line ?: $d['line'];
-			$file = $file ?: $d['file'];
+			$d        = self::getTrace(__FUNCTION__);
+			$line     = $line ?: $d['line'];
+			$file     = $file ?: $d['file'];
+			$function = $d['function'];
 			self::save(self::pretty([
 										'lvl'      => 'error',
 										'datetime' => date('Y-m-d H:i:s'),
 										'message'  => $msg,
+										'function' => $function,
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
@@ -110,13 +116,15 @@
 
 		public static function info($msg, $line = NULL, $file = NULL)
 		{
-			$d    = self::getTrace(__FUNCTION__);
-			$line = $line ?: $d['line'];
-			$file = $file ?: $d['file'];
+			$d        = self::getTrace(__FUNCTION__);
+			$line     = $line ?: $d['line'];
+			$file     = $file ?: $d['file'];
+			$function = $d['function'];
 			self::save(self::pretty([
 										'lvl'      => 'info',
 										'datetime' => date('Y-m-d H:i:s'),
 										'message'  => $msg,
+										'function' => $function,
 										'file'     => basename($file) ?: NULL,
 										'line'     => $line ?: NULL,
 									]));
