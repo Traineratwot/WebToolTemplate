@@ -6,6 +6,7 @@
 	use model\main\Core;
 	use model\main\Err;
 	use model\main\Utilities;
+	use Throwable;
 	use Traineratwot\Cache\Cache;
 	use Traineratwot\Cache\CacheException;
 	use Traineratwot\config\Config;
@@ -268,6 +269,7 @@
 		 * Запускает REST controller
 		 * @throws RouterException
 		 * @throws Exception
+		 * @throws Throwable
 		 */
 		private function launchAjax($ajax, $data = [])
 		{
@@ -283,15 +285,15 @@
 			try {
 				if ($result instanceof Ajax) {
 					try {
-						$response = $result->run();
+						$result->run();
 					} catch (Exception $e) {
 						Err::error($e->getMessage());
 					}
 				} else {
 					Err::fatal("Ajax class '$class' must be extended 'Ajax'");
 				}
-			} catch (Exception $e) {
-				Err::fatal($e->getMessage());
+			} catch (Throwable $e) {
+				Err::fatal($e->getMessage(), NULL, NULL, $e);
 				$response = json_encode($result, 256);
 			}
 			exit($response);

@@ -3,6 +3,7 @@
 	namespace model\page;
 
 	use Exception;
+	use JetBrains\PhpStorm\NoReturn;
 	use model\helper\PostFiles;
 	use model\main\Core;
 	use model\main\CoreObject;
@@ -83,6 +84,7 @@
 			}
 		}
 
+		#[NoReturn]
 		final public function run()
 		{
 			$initialized = $this->initialize();
@@ -97,11 +99,16 @@
 			foreach ($this->headers as $key => $value) {
 				header("$key: $value");
 			}
+			$output = $o;
 			if (is_array($o) || is_object($o)) {
 				Utilities::headerJson();
-				$o = json_encode($o, 256);
+				$output = json_encode($o, 256);
 			}
-			return $o;
+			echo $output;
+			if (function_exists('fastcgi_finish_request')) {
+				fastcgi_finish_request();
+				$this->afterProcess($o);
+			}
 		}
 
 		public function initialize()
@@ -198,5 +205,14 @@
 				'object'  => $object,
 				'code'    => $this->httpResponseCode,
 			];
+		}
+
+		/**
+		 * @param mixed $response
+		 * @return void
+		 */
+		public function afterProcess($response = NULL)
+		: void
+		{
 		}
 	}

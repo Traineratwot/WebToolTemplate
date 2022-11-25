@@ -159,14 +159,34 @@
 			if ($mod) {
 				$page = $mod;
 			}
+			$mod = $this->afterRender($page);
+			if ($mod) {
+				$page = $mod;
+			}
 			if ($return) {
 				return $page;
 			}
 			echo $page;
+			if (function_exists('fastcgi_finish_request')) {
+				fastcgi_finish_request();
+				Event::emit('AfterRenderOut', NULL, $page, $this);
+				$this->afterRenderOut($page);
+			}
 			return TRUE;
 		}
 
 		public function beforeRender()
+		{
+
+		}
+
+		public function afterRender(string $content)
+		: string|false
+		{
+			return FALSE;
+		}
+
+		public function afterRenderOut(string $content)
 		{
 
 		}

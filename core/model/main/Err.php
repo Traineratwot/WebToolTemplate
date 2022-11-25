@@ -88,6 +88,7 @@
 		 * @param           $file
 		 * @param Throwable $previous = null
 		 * @return mixed
+		 * @throws Throwable
 		 */
 		public static function fatal($msg, $line = NULL, $file = NULL, $previous = NULL)
 		{
@@ -102,7 +103,7 @@
 										'line'     => $line ?: NULL,
 									]));
 			if ($previous instanceof Throwable) {
-				throw new RuntimeException($msg, $previous->getCode(), $previous);
+				throw $previous;
 			}
 			throw new RuntimeException($msg,(int)$line);
 		}

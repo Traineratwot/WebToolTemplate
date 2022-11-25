@@ -32,7 +32,7 @@
 		"gettext/json"                :"^1.0",
 		"gettext/translator"          :"^1.0",
 		"traineratwot/php-cli"        :"dev-main",
-		"traineratwot/pdo-extended"   :"^2.0",
+		"traineratwot/pdo-extended"   :"dev-master",
 		"traineratwot/cache"          :"^2.0",
 		"traineratwot/composer-config":"^1.1.0",
 		"tiben/crontab-manager"       :"^1.3",
