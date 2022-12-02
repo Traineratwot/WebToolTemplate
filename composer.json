@@ -1,7 +1,7 @@
 {
 	"$schema": "https://raw.githubusercontent.com/Traineratwot/composer-config/master/composer-config-schema.json",
 	"name"       :"traineratwot/web-tool-template",
-	"version"    :"5.2.2",
+	"version"    :"5.2.3",
 	"authors"    :[
 		{
 			"name" :"Kirill",
