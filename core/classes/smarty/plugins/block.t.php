@@ -60,12 +60,12 @@
 	 *   - domain - Textdomain to be used, default if skipped (dgettext() instead of gettext())
 	 *   - context - gettext context. reserved for future use.
 	 *
-	 * @param array  $params
-	 * @param string $text
-	 * @return string
 	 * @see http://www.smarty.net/docs/en/plugins.block.functions.tpl
+	 *@param string $text
+	 * @param array $params
+	 * @return string
 	 */
-	function smarty_block_t($params, $text, &$smarty, &$repeat)
+	function smarty_block_t(mixed $params, mixed $text, &$smarty, &$repeat)
 	{
 		if (!isset($text)) {
 			return $text;
@@ -111,7 +111,7 @@
 			// use specified textdomain if available
 			if (isset($domain, $context)) {
 
-				if (Config::get('USE_GETTEXT') && function_exists('dnpgettext')) {
+				if (function_exists('dnpgettext') && Config::get('USE_GETTEXT')) {
 					$text = dnpgettext($domain, $context, $text, $plural, $count);
 				} else {
 					$text = dnp__($domain, $context, $text, $plural, $count);
@@ -124,7 +124,7 @@
 				}
 
 			} elseif (isset($context)) {
-				if (Config::get('USE_GETTEXT') && function_exists('npgettext')) {
+				if (function_exists('npgettext') && Config::get('USE_GETTEXT')) {
 					$text = npgettext($context, $text, $plural, $count);
 				} else {
 					$text = np__($context, $text, $plural, $count);
@@ -137,33 +137,28 @@
 					$text = n__($text, $plural, $count);
 				}
 			}
-		} else {
-			// use specified textdomain if available
-			if (isset($domain) && isset($context)) {
-				if (Config::get('USE_GETTEXT') && function_exists('dpgettext')) {
-					$text = dpgettext($domain, $context, $text);
-				} else {
-					$text = dp__($domain, $context, $text);
-				}
-			} elseif (isset($domain)) {
-				if (Config::get('USE_GETTEXT')) {
-					$text = dgettext($domain, $text);
-				} else {
-					$text = d__($domain, $text);
-				}
-			} elseif (isset($context)) {
-				if (Config::get('USE_GETTEXT') && function_exists('pgettext')) {
-					$text = pgettext($context, $text);
-				} else {
-					$text = p__($context, $text);
-				}
-			} else {
-				if (Config::get('USE_GETTEXT')) {
-					$text = _($text);
-				} else {
-					$text = __($text);
-				}
+		} elseif (isset($domain, $context)) {
+			if (function_exists('dpgettext') && Config::get('USE_GETTEXT')) {
+				$text = dpgettext($domain, $context, $text);
+			} elseif(function_exists('dp__')) {
+				$text = dp__($domain, $context, $text);
 			}
+		} elseif (isset($domain)) {
+			if (Config::get('USE_GETTEXT')) {
+				$text = dgettext($domain, $text);
+			} elseif(function_exists('d__')) {
+				$text = d__($domain, $text);
+			}
+		} elseif (isset($context)) {
+			if (Config::get('USE_GETTEXT') && function_exists('pgettext')) {
+				$text = pgettext($context, $text);
+			} elseif(function_exists('p__')) {
+				$text = p__($context, $text);
+			}
+		} elseif (Config::get('USE_GETTEXT')) {
+			$text = _($text);
+		} else if(function_exists('__')){
+			$text = __($text);
 		}
 
 		// run strarg if there are parameters
