@@ -202,8 +202,8 @@
 				//components
 				route8:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
-				$page  = Utilities::findPath($p);
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . implode('/', $parts) . '.php';
+				$page = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
 						$this->ln[$this->alias] = 'route8';
@@ -213,7 +213,7 @@
 				}
 				route11:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . implode($parts) . 'index.php';
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . implode('/', $parts) . 'index.php';
 				$page  = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
@@ -221,13 +221,13 @@
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$parts = explode('/', $this->alias);
-					$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . 'index.tpl';
+					$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode('/', $parts) . 'index.tpl';
 					$tpl   = Utilities::findPath($p);
 					$this->launchPage($page, $data, $tpl);
 				}
 				route12:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . 'index.tpl';
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode('/', $parts) . 'index.tpl';
 				$page  = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
@@ -238,7 +238,7 @@
 				}
 				route9:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . implode($parts) . '.php';
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . implode('/', $parts) . '.php';
 				$page  = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
@@ -246,13 +246,13 @@
 						Cache::setCache('routers', $this->ln, 600, 'router');
 					}
 					$parts = explode('/', $this->alias);
-					$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . '.tpl';
+					$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode('/', $parts) . '.tpl';
 					$tpl   = Utilities::findPath($p);
 					$this->launchPage($page, $data, $tpl);
 				}
 				route10:
 				$parts = explode('/', $this->alias);
-				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode($parts) . '.tpl';
+				$p     = Config::get('COMPONENTS_PATH') . array_shift($parts) . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . implode('/', $parts) . '.tpl';
 				$page  = Utilities::findPath($p);
 				if ($page) {
 					if (!isset($this->ln[$this->alias])) {
