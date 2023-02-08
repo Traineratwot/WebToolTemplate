@@ -47,9 +47,11 @@
 					if ($find === FALSE) {
 						Console::info('    ' . str_replace($s, '', $cron));
 					} elseif ($find === 'error') {
-						Console::warning('    ' . str_replace($s, '', $cron));
-					} else {
+						Console::error('    ' . str_replace($s, '', $cron));
+					} elseif($find->enabled) {
 						Console::success('    ' . str_replace($s, '', $cron));
+					}else{
+						Console::warning('    ' . str_replace($s, '', $cron).' --disabled');
 					}
 				}
 			} else {
@@ -108,7 +110,7 @@
 			}
 		}
 
-		public function setup()
+		public function setup():void
 		{
 			$this->registerParameter('path', 0, CronFilePath::class, "Относительный путь  от папки 'controllers' до файла задания");
 
@@ -136,13 +138,8 @@
 				if (count($list) === 1) {
 					return $list[0];
 				}
-				echo '<pre>';
-				var_dump($list);
-				die;
 				return 'error';
 			}
-
-
 			return FALSE;
 		}
 	}
