@@ -15,6 +15,15 @@
 
 	class CronCmd extends Cmd
 	{
+		public CrontabRepository $crontabRepository;
+		public CrontabAdapter    $crontabAdapter;
+
+		public function __construct()
+		{
+			$this->crontabAdapter    = new CrontabAdapter();
+			$this->crontabRepository = new CrontabRepository($this->crontabAdapter);
+		}
+
 		/**
 		 * @inheritDoc
 		 */
@@ -34,7 +43,14 @@
 				$s = Utilities::pathNormalize(Config::get('CRON_PATH') . 'controllers/', '/');
 				foreach ($array_cron as $cron) {
 					$cron = Utilities::pathNormalize($cron, '/');
-					Console::info('    ' . str_replace($s, '', $cron));
+					$find = $this->findInCronTab($cron);
+					if ($find === FALSE) {
+						Console::info('    ' . str_replace($s, '', $cron));
+					} elseif ($find === 'error') {
+						Console::warning('    ' . str_replace($s, '', $cron));
+					} else {
+						Console::success('    ' . str_replace($s, '', $cron));
+					}
 				}
 			} else {
 				$cmd     = $this->getArg('cmd') ?: Config::get('PHP_EXEC_CMD', NULL, 'php');
@@ -54,27 +70,25 @@
 						Console::error('Невозможно добавить задачу на windows');
 						return;
 					}
-					$enable            = $this->getArg('disable');
-					$enable            = is_null($enable);
-					$minutes           = $this->getArg('minutes') ?: '*';
-					$hours             = $this->getArg('hours') ?: '*';
-					$day               = $this->getArg('day') ?: '*';
-					$months            = $this->getArg('months') ?: '*';
-					$week              = $this->getArg('week') ?: '*';
-					$crn               = implode(' ', [
+					$enable     = $this->getArg('disable');
+					$enable     = is_null($enable);
+					$minutes    = $this->getArg('minutes') ?: '*';
+					$hours      = $this->getArg('hours') ?: '*';
+					$day        = $this->getArg('day') ?: '*';
+					$months     = $this->getArg('months') ?: '*';
+					$week       = $this->getArg('week') ?: '*';
+					$crn        = implode(' ', [
 						$minutes,
 						$hours,
 						$day,
 						$months,
 						$week,
 					]);
-					$CrontabAdapter    = new CrontabAdapter();
-					$crontabRepository = new CrontabRepository($CrontabAdapter);
-					$crontabJob        = new CrontabJob();
-					$key               = md5($command);
-					$results           = $crontabRepository->findJobByRegex('@' . preg_quote($key, '@') . '@');
+					$crontabJob = new CrontabJob();
+					$key        = md5($command);
+					$results    = $this->crontabRepository->findJobByRegex('@' . preg_quote($key, '@') . '@');
 					foreach ($results as $j) {
-						$crontabRepository->removeJob($j);
+						$this->crontabRepository->removeJob($j);
 					}
 
 					$crontabJob
@@ -87,8 +101,8 @@
 						->setComments($key)
 						->setEnabled($enable)
 					;
-					$crontabRepository->addJob($crontabJob);
-					$crontabRepository->persist();
+					$this->crontabRepository->addJob($crontabJob);
+					$this->crontabRepository->persist();
 					Console::info($crn);
 				}
 			}
@@ -109,5 +123,26 @@
 			$this->registerOption('week', 'w', 0, TString::class, "week. default '*'");
 			$this->registerOption('disable', 'D', 0, TBool::class, "disable cron job");
 
+		}
+
+		private function findInCronTab(string $cron)
+		: CrontabJob|bool|string
+		{
+			$chunk = str_replace(WT_CRON_PATH . 'controllers/', '', $cron);
+			$chunk = preg_quote($chunk, '/');
+			$list  = $this->crontabRepository?->findJobByRegex("@.+{$chunk}.+@");
+
+			if (!empty($list)) {
+				if (count($list) === 1) {
+					return $list[0];
+				}
+				echo '<pre>';
+				var_dump($list);
+				die;
+				return 'error';
+			}
+
+
+			return FALSE;
 		}
 	}
