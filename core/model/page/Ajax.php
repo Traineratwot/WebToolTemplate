@@ -59,21 +59,21 @@
 			if (!empty($data)) {
 				$this->data = $data;
 			}
-			$this->ip               = Utilities::getIp();
-			$this->GET              = $_GET;
+//			$this->ip               = Utilities::getIp();
+//			$this->GET              = $_GET;
 			$this->httpResponseCode = 200;
-			$this->POST             = $_POST;
-			$this->PUT              = file_get_contents('php://input');
-			$this->HEADERS          = Utilities::getRequestHeaders();
-			$this->REQUEST          = array_merge($_GET, $_POST);
-			try {
-				if ($put = Utilities::jsonValidate($this->PUT)) {
-					$this->PUT = $put;
-				}
-			} catch (Exception $e) {
-
-			}
-			$this->REQUEST['PUT'] = $this->PUT;
+//			$this->POST             = $_POST;
+//			$this->PUT              = file_get_contents('php://input');
+//			$this->HEADERS          = Utilities::getRequestHeaders();
+//			$this->REQUEST          = array_merge($_GET, $_POST);
+//			try {
+//				if ($put = Utilities::jsonValidate($this->PUT)) {
+//					$this->PUT = $put;
+//				}
+//			} catch (Exception $e) {
+//
+//			}
+//			$this->REQUEST['PUT'] = $this->PUT;
 			$this->FILES          = [];
 			if (!empty($_FILES)) {
 				try {

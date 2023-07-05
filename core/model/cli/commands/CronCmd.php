@@ -20,8 +20,8 @@
 
 		public function __construct()
 		{
-			$this->crontabAdapter    = new CrontabAdapter();
-			$this->crontabRepository = new CrontabRepository($this->crontabAdapter);
+                $this->crontabAdapter = new CrontabAdapter();
+                $this->crontabRepository = new CrontabRepository($this->crontabAdapter);
 		}
 
 		/**
